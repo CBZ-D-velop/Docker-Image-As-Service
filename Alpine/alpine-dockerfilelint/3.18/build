@@ -1,0 +1,42 @@
+#!/bin/bash
+
+TAG_FILE=".tag"
+ENV_FILE=".env"
+
+# Check if the tag file exists; if not, create it with the initial value of 0.1
+if [ ! -e "$TAG_FILE" ]; then
+    MAJOR_TAG="0"
+    MINOR_TAG="1"
+else
+    source ./$TAG_FILE
+    # If the --major argument is passed, round up to the next integer and add .0
+    if [ "$1" == "--major" ]; then
+        MAJOR_TAG=$(($MAJOR_TAG + 1))
+        MINOR_TAG="0"
+    else
+    MINOR_TAG=$(($MINOR_TAG + 1))
+    fi
+fi
+
+echo "MAJOR_TAG=$MAJOR_TAG" > "$TAG_FILE"
+echo "MINOR_TAG=$MINOR_TAG" >> "$TAG_FILE"
+
+source ./$TAG_FILE
+
+VERSION="$MAJOR_TAG.$MINOR_TAG"
+
+echo "current version for build: $VERSION"
+
+source ./$ENV_FILE
+
+docker build \
+    --build-arg VERSION=${VERSION} \
+    --build-arg MAINTAINER=${MAINTAINER} \
+    --build-arg MAINTAINER_ADDRESS=${MAINTAINER_ADDRESS} \
+    --build-arg DEFAULT_USER=${DEFAULT_USER} \
+    --build-arg DEFAULT_GROUP=${DEFAULT_GROUP} \
+    --build-arg DEFAULT_WORKDIR=${DEFAULT_WORKDIR} \
+    --build-arg HADOLINT_VERSION=${HADOLINT_VERSION} \
+    -t ${NAMESPACE}/${IMAGE_NAME}:${VERSION} .
+
+docker push ${NAMESPACE}/${IMAGE_NAME}:${VERSION}

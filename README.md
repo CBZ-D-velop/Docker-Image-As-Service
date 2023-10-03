@@ -10,6 +10,16 @@
 
 ![Tag: Docker](https://img.shields.io/badge/Tech-Docker-orange)
 
+This Git repository serves as a valuable resource for managing Dockerfiles and associated scripts. Docker containers have become a cornerstone of modern software deployment, and this repository is designed to simplify the organization and maintenance of Docker images.
+
+The repository structure follows a clear pattern, with Dockerfiles and related assets stored in specific paths. For example, the path format './Base/name/usedTag' includes 'Base' to denote the base image used, 'name' representing the image name, and 'usedTag' indicating the specific tag used from the base image. As an example, './Debian/debian-ansible/11' holds the materials and Dockerfile necessary to build the 'debian-ansible' image based on 'Debian:11'.
+
+In addition to Dockerfiles, this repository also contains scripts that facilitate various tasks, such as managing image tags and versions, loading variables, and importing files into Docker images. These scripts streamline the Docker image creation and management process, making it easier to maintain a consistent and efficient containerized application stack.
+
+Whether you're developing microservices, maintaining containerized applications, or building custom Docker images, this repository simplifies the process of Docker image management. It provides a structured and organized approach to Dockerfile storage and associated scripts, promoting efficiency and consistency in your containerization workflow.
+
+By utilizing this Git repository, you can take full advantage of Docker's flexibility and portability while maintaining a well-structured and organized Docker image management strategy.
+
 ## TBD
 
 ```SHELL
@@ -24,8 +34,20 @@ Here you can put your change to keep a trace of your work and decisions.
 
 * First init of this project by Lord Robin Crombez
 
+### Added script for build
+
+* Build script available to load vars, build, push, tag
+* Argument --major available for Major versionning
+* Added some Dockerfile
+
 ## Authors
 
 * Lord Robin Crombez
 
 ## Sources
+
+* [husiang/yamllint](https://hub.docker.com/r/chusiang/yamllint/dockerfile)
+* [Installing Python in Alpine Linux](https://www.askpython.com/python/examples/python-alpine-linux)
+* [Install Python on Alpine Linux](https://devcoops.com/install-python-on-alpine-linux/)
+* [alpine:3.18](https://hub.docker.com/layers/library/alpine/3.18/images/sha256-48d9183eb12a05c99bcc0bf44a003607b8e941e1d4f41f9ad12bdcc4b5672f86?context=explore)
+* [j2lint](https://github.com/aristanetworks/j2lint)
