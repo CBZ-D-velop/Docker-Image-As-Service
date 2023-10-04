@@ -19,9 +19,9 @@ ENV ENV_HADOLINT_VERSION="${HADOLINT_VERSION}"
 
 LABEL version="${ENV_VERSION}"
 LABEL maintainer="${ENV_MAINTAINER} <${ENV_MAINTAINER_ADDRESS}>"
-LABEL maintainer_address="${ENV_MAINTAINER_ADDRESS}"
+LABEL "maintainer-address"="${ENV_MAINTAINER_ADDRESS}"
 
-LABEL HADOLINT_VERSION="${ENV_HADOLINT_VERSION}"
+LABEL "hadolint-version"="${ENV_HADOLINT_VERSION}"
 
 # Check if the user exists, and create it if not
 RUN if ! id -u ${ENV_DEFAULT_USER} > /dev/null 2>&1; then \
