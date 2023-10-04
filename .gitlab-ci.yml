@@ -19,7 +19,7 @@ stages:
   stage: hadolint
   image: $NEXUS_ADDRESS/$DOCKER_IMAGE_DOCKERFILE_LINT
   script:
-    - hadolint $path/Dockerfile
+    - hadolint $(pwd)/$path/Dockerfile
   allow_failure: false
   retry: 2
 
@@ -45,29 +45,29 @@ include:
 hadolint_alpine_ansiblelint:
   <<: *hadolint
   variables:
-    path: "./Alpine/alpine-ansiblelint/3.18"
+    path: "Alpine/alpine-ansiblelint/3.18"
 
 hadolint_alpine_dockerfilelint:
   <<: *hadolint
   variables:
-    path: "./Alpine/alpine-dockerfilelint/3.18"
+    path: "Alpine/alpine-dockerfilelint/3.18"
 
 hadolint_alpine_jinjalint:
   <<: *hadolint
   variables:
-    path: "./Alpine/alpine-jinjalint/3.18"
+    path: "Alpine/alpine-jinjalint/3.18"
 
 hadolint_alpine_yamllint:
   <<: *hadolint
   variables:
-    path: "./Alpine/alpine-yamllint/3.18"
+    path: "Alpine/alpine-yamllint/3.18"
 
 hadolint_debian_ansible:
   <<: *hadolint
   variables:
-    path: "./Debian/debian-ansible/11"
+    path: "Debian/debian-ansible/11"
 
 hadolint_docker_molecule:
   <<: *hadolint
   variables:
-    path: "./Docker/docker-molecule/dind"
+    path: "Docker/docker-molecule/dind"
