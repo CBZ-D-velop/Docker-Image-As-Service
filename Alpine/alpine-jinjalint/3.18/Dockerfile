@@ -16,8 +16,8 @@ ENV ENV_DEFAULT_WORKDIR="${DEFAULT_WORKDIR}"
 ENV ENV_VERSION="${VERSION}"
 
 LABEL version="${ENV_VERSION}"
-LABEL maintainer= "${ENV_MAINTAINER} <${ENV_MAINTAINER_ADDRESS}>"
-LABEL maintainer_address= "${ENV_MAINTAINER_ADDRESS}"
+LABEL maintainer="${ENV_MAINTAINER} <${ENV_MAINTAINER_ADDRESS}>"
+LABEL maintainer_address="${ENV_MAINTAINER_ADDRESS}"
 
 # Check if the user exists, and create it if not
 RUN if ! id -u ${ENV_DEFAULT_USER} > /dev/null 2>&1; then \
