@@ -41,7 +41,7 @@ RUN apk add --update --no-cache python3 && \
     ln -sf python3 /usr/bin/python && \
     python3 -m ensurepip && \
     python3 -m pip install --no-cache-dir --upgrade pip setuptools && \
-    python3 --version && \
+    python3 --version
 
 # Isntall molecule
 # Install comunity additions

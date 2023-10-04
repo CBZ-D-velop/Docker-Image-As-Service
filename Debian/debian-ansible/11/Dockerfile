@@ -31,7 +31,8 @@ RUN mkdir -p ${ENV_DEFAULT_WORKDIR}
 WORKDIR ${ENV_DEFAULT_WORKDIR}
 
 # Update the host, fix upgrade
-RUN set -o pipefail; echo "debconf debconf/frontend select Noninteractive" | debconf-set-selections && \
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+RUN echo "debconf debconf/frontend select Noninteractive" | debconf-set-selections && \
     apt-mark hold debian-archive-keyring && apt-get update && apt-get upgrade -y && \
     apt-get autoclean -y && apt-get clean -y && apt-get autoremove -y && apt-get autoremove --purge -y
 
