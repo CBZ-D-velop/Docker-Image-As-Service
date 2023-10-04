@@ -15,8 +15,9 @@ ENV ENV_DEFAULT_GROUP="${DEFAULT_GROUP}"
 ENV ENV_DEFAULT_WORKDIR="${DEFAULT_WORKDIR}"
 ENV ENV_VERSION="${VERSION}"
 
-LABEL VERSION="${ENV_VERSION}"
-MAINTAINER ${ENV_MAINTAINER} <${ENV_MAINTAINER_ADDRESS}>
+LABEL version="${ENV_VERSION}"
+LABEL maintainer= "${ENV_MAINTAINER} <${ENV_MAINTAINER_ADDRESS}>"
+LABEL maintainer_address= "${ENV_MAINTAINER_ADDRESS}"
 
 # Check if the user exists, and create it if not
 RUN if ! id -u ${ENV_DEFAULT_USER} > /dev/null 2>&1; then \
@@ -40,15 +41,15 @@ RUN apk add --update --no-cache python3 && \
     pip3 install --no-cache --upgrade pip setuptools
 
 # Install ansible-lint
-RUN apk add ansible-lint
+RUN apk add --update --no-cache ansible-lint && \
+    ansible-lint --version
 
 # Remove packages cache
 RUN apk del build-dependencies; \
     rm -rf /var/cache/apk/* && \
     rm -rf ~/.cache/*
 
-# Check ansible-lint
-RUN ansible-lint --version
-
 # Set CMD
-CMD [ "ansible-lint", "--version" ]
+USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"
+ENTRYPOINT ["ansible-lint"]
+CMD ["--version"]

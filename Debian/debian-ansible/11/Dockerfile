@@ -15,8 +15,9 @@ ENV ENV_DEFAULT_GROUP="${DEFAULT_GROUP}"
 ENV ENV_DEFAULT_WORKDIR="${DEFAULT_WORKDIR}"
 ENV ENV_VERSION="${VERSION}"
 
-LABEL VERSION="${ENV_VERSION}"
-MAINTAINER ${ENV_MAINTAINER} <${ENV_MAINTAINER_ADDRESS}>
+LABEL version="${ENV_VERSION}"
+LABEL maintainer= "${ENV_MAINTAINER} <${ENV_MAINTAINER_ADDRESS}>"
+LABEL maintainer_address= "${ENV_MAINTAINER_ADDRESS}"
 
 # Check if the user exists, and create it if not
 RUN if ! id -u ${ENV_DEFAULT_USER} > /dev/null 2>&1; then \
@@ -30,15 +31,22 @@ RUN mkdir -p ${ENV_DEFAULT_WORKDIR}
 WORKDIR ${ENV_DEFAULT_WORKDIR}
 
 # Update the host, fix upgrade
-RUN echo "debconf debconf/frontend select Noninteractive" | debconf-set-selections && \
-    apt-mark hold debian-archive-keyring && apt update
+RUN set -o pipefail; echo "debconf debconf/frontend select Noninteractive" | debconf-set-selections && \
+    apt-mark hold debian-archive-keyring && apt-get update && apt-get upgrade -y && \
+    apt-get autoclean -y && apt-get clean -y && apt-get autoremove -y && apt-get autoremove --purge -y
 
 # Install basics requirements
-RUN apt install -y rsync curl python3 python3-jmespath python3-pip \
+RUN apt-get install -y rsync curl python3 python3-jmespath python3-pip \
     python3-lxml libssl-dev libffi-dev git wget \
     lsb-release gnupg2 software-properties-common \
     apt-transport-https ca-certificates sudo nano \
     net-tools procps openssl lsof initscripts zip \
     tree python3-apt python3-pip python3-setuptools \
     iftop htop cron virtualenv nethogs iproute2 \
-    git
+    git && \
+    apt-get autoclean -y && apt-get clean -y && apt-get autoremove -y && apt-get autoremove --purge -y
+
+# Set CMD
+USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"
+ENTRYPOINT ["bash"]
+CMD [""]

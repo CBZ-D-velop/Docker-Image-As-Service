@@ -15,8 +15,9 @@ ENV ENV_DEFAULT_GROUP="${DEFAULT_GROUP}"
 ENV ENV_DEFAULT_WORKDIR="${DEFAULT_WORKDIR}"
 ENV ENV_VERSION="${VERSION}"
 
-LABEL VERSION="${ENV_VERSION}"
-MAINTAINER ${ENV_MAINTAINER} <${ENV_MAINTAINER_ADDRESS}>
+LABEL version="${ENV_VERSION}"
+LABEL maintainer= "${ENV_MAINTAINER} <${ENV_MAINTAINER_ADDRESS}>"
+LABEL maintainer_address= "${ENV_MAINTAINER_ADDRESS}"
 
 # Check if the user exists, and create it if not
 RUN if ! id -u ${ENV_DEFAULT_USER} > /dev/null 2>&1; then \
@@ -39,20 +40,17 @@ RUN apk update && \
 RUN apk add --update --no-cache python3 && \
     ln -sf python3 /usr/bin/python && \
     python3 -m ensurepip && \
-    python3 -m pip install --no-cache-dir --upgrade pip setuptools
+    python3 -m pip install --no-cache-dir --upgrade pip setuptools && \
+    python3 --version && \
 
 # Isntall molecule
 # Install comunity additions
 COPY --chown="${DEFAULT_USER}:${DEFAULT_GROUP}" ./requirements.txt ./requirements.txt
 RUN python3 -m pip install --no-cache-dir -r ./requirements.txt && \
     ansible-galaxy collection install community.general && \
-    ansible-galaxy collection install community.docker
-
-# Retrieve informations
-RUN python3 --version && \
+    ansible-galaxy collection install community.docker && \
     ansible --version && \
-    molecule --version && \
-    git --version
+    molecule --version
 
 # Remove packages cache
 RUN apk del build-dependencies; \
@@ -61,4 +59,5 @@ RUN apk del build-dependencies; \
 
 # Set CMD
 USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"
-CMD [ "molecule", "--version" ]
+ENTRYPOINT ["molecule"]
+CMD ["--version"]

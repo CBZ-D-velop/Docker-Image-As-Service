@@ -17,9 +17,11 @@ ENV ENV_DEFAULT_WORKDIR="${DEFAULT_WORKDIR}"
 ENV ENV_VERSION="${VERSION}"
 ENV ENV_HADOLINT_VERSION="${HADOLINT_VERSION}"
 
-LABEL VERSION="${ENV_VERSION}"
+LABEL version="${ENV_VERSION}"
+LABEL maintainer= "${ENV_MAINTAINER} <${ENV_MAINTAINER_ADDRESS}>"
+LABEL maintainer_address= "${ENV_MAINTAINER_ADDRESS}"
+
 LABEL HADOLINT_VERSION="${ENV_HADOLINT_VERSION}"
-MAINTAINER ${ENV_MAINTAINER} <${ENV_MAINTAINER_ADDRESS}>
 
 # Check if the user exists, and create it if not
 RUN if ! id -u ${ENV_DEFAULT_USER} > /dev/null 2>&1; then \
@@ -42,15 +44,15 @@ RUN apk add --update --no-cache git shellcheck
 # Install hadolint
 RUN wget -q https://github.com/hadolint/hadolint/releases/download/v${ENV_HADOLINT_VERSION}/hadolint-Linux-x86_64 && \
     mv hadolint-Linux-x86_64 /usr/local/bin/hadolint && \
-    chmod +x /usr/local/bin/hadolint
+    chmod +x /usr/local/bin/hadolint && \
+    hadolint --help
 
 # Remove packages cache
 RUN apk del build-dependencies; \
     rm -rf /var/cache/apk/* && \
     rm -rf ~/.cache/*
 
-# Check hadolint
-RUN hadolint --help
-
 # Set CMD
-CMD [ "hadolint", "--help" ]
+USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"
+ENTRYPOINT ["hadolint"]
+CMD ["--help"]
