@@ -19,7 +19,8 @@ stages:
   stage: hadolint
   image: $NEXUS_ADDRESS/$DOCKER_IMAGE_DOCKERFILE_LINT
   script:
-    - hadolint $(pwd)/$path/Dockerfile
+    - "echo 'hadolint $(pwd)/$path/Dockerfile'"
+    - "hadolint $(pwd)/$path/Dockerfile"
   allow_failure: false
   retry: 2
 
