@@ -37,7 +37,7 @@ RUN echo "debconf debconf/frontend select Noninteractive" | debconf-set-selectio
     apt-get autoclean -y && apt-get clean -y && apt-get autoremove -y && apt-get autoremove --purge -y
 
 # Install basics requirements
-RUN apt-get install -y rsync curl python3 python3-jmespath python3-pip \
+RUN apt-get install --no-install-recommends -y rsync curl python3 python3-jmespath python3-pip \
     python3-lxml libssl-dev libffi-dev git wget \
     lsb-release gnupg2 software-properties-common \
     apt-transport-https ca-certificates sudo nano \
@@ -46,6 +46,9 @@ RUN apt-get install -y rsync curl python3 python3-jmespath python3-pip \
     iftop htop cron virtualenv nethogs iproute2 \
     git && \
     apt-get autoclean -y && apt-get clean -y && apt-get autoremove -y && apt-get autoremove --purge -y
+
+# Remove packages cache
+RUN rm -rf /var/lib/apt/lists/*
 
 # Set CMD
 USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"

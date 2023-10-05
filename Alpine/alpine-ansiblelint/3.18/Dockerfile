@@ -38,7 +38,7 @@ RUN apk update && \
 RUN apk add --update --no-cache python3 && \
     ln -sf python3 /usr/bin/python && \
     python3 -m ensurepip && \
-    pip3 install --no-cache --upgrade pip setuptools
+    pip3 install --no-cache-dir --upgrade pip setuptools
 
 # Install ansible-lint
 RUN apk add --update --no-cache-dir ansible-lint && \
