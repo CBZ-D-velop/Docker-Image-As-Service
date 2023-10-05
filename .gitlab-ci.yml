@@ -32,7 +32,7 @@ stages:
     - "cd $(pwd)/$type/$name/latest"
     - "pwd"
     - "ls -all"
-    - "./build --testbuild"
+    - "bash build --testbuild"
   allow_failure: false
   retry: 2
 
