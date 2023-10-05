@@ -1,4 +1,5 @@
-FROM docker:dind
+# FROM 3.18
+FROM alpine@sha256:48d9183eb12a05c99bcc0bf44a003607b8e941e1d4f41f9ad12bdcc4b5672f86
 
 ARG VERSION=""
 ARG MAINTAINER=""
@@ -31,26 +32,18 @@ RUN mkdir -p ${ENV_DEFAULT_WORKDIR}
 WORKDIR ${ENV_DEFAULT_WORKDIR}
 
 # Update installed packages
-# Start and enable docker
 RUN apk update && \
-    apk add --no-cache make openrc docker git && \
-    rc-update add docker boot
+    apk add --no-cache make
 
 # Install python and pip
 RUN apk add --update --no-cache python3 && \
     ln -sf python3 /usr/bin/python && \
     python3 -m ensurepip && \
-    python3 -m pip install --no-cache-dir --upgrade pip setuptools && \
-    python3 --version
+    pip3 install --no-cache-dir --upgrade pip setuptools
 
-# Isntall molecule
-# Install comunity additions
-COPY --chown="${DEFAULT_USER}:${DEFAULT_GROUP}" ./requirements.txt ./requirements.txt
-RUN python3 -m pip install --no-cache-dir -r ./requirements.txt && \
-    ansible-galaxy collection install community.general && \
-    ansible-galaxy collection install community.docker && \
-    ansible --version && \
-    molecule --version
+# Install ansible-lint
+RUN apk add --update --no-cache ansible-lint && \
+    ansible-lint --version
 
 # Remove packages cache
 RUN apk del build-dependencies; \
@@ -59,4 +52,4 @@ RUN apk del build-dependencies; \
 
 # Set CMD
 USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"
-CMD ["molecule", "--version"]
+CMD ["ansible-lint", "--version"]

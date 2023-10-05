@@ -1,4 +1,5 @@
-from alpine@sha256:48d9183eb12a05c99bcc0bf44a003607b8e941e1d4f41f9ad12bdcc4b5672f86
+# FROM 3.18
+FROM alpine@sha256:48d9183eb12a05c99bcc0bf44a003607b8e941e1d4f41f9ad12bdcc4b5672f86
 
 ARG VERSION=""
 ARG MAINTAINER=""
@@ -40,9 +41,9 @@ RUN apk add --update --no-cache python3 && \
     python3 -m ensurepip && \
     pip3 install --no-cache-dir --upgrade pip setuptools
 
-# Install j2lint
-RUN pip3 install --no-cache-dir j2lint && \
-    j2lint --version
+# Install yamllint
+RUN pip3 install --no-cache-dir yamllint && \
+    yamllint --version
 
 # Remove packages cache
 RUN apk del build-dependencies; \
@@ -51,4 +52,4 @@ RUN apk del build-dependencies; \
 
 # Set CMD
 USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"
-CMD ["j2lint", "--version"]
+CMD ["yamllint", "--version"]

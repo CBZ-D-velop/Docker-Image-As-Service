@@ -12,8 +12,6 @@
 
 This Git repository serves as a valuable resource for managing Dockerfiles and associated scripts. Docker containers have become a cornerstone of modern software deployment, and this repository is designed to simplify the organization and maintenance of Docker images.
 
-The repository structure follows a clear pattern, with Dockerfiles and related assets stored in specific paths. For example, the path format './Base/name/usedTag' includes 'Base' to denote the base image used, 'name' representing the image name, and 'usedTag' indicating the specific tag used from the base image. As an example, './Debian/debian-ansible/11' holds the materials and Dockerfile necessary to build the 'debian-ansible' image based on 'Debian:11'.
-
 In addition to Dockerfiles, this repository also contains scripts that facilitate various tasks, such as managing image tags and versions, loading variables, and importing files into Docker images. These scripts streamline the Docker image creation and management process, making it easier to maintain a consistent and efficient containerized application stack.
 
 Whether you're developing microservices, maintaining containerized applications, or building custom Docker images, this repository simplifies the process of Docker image management. It provides a structured and organized approach to Dockerfile storage and associated scripts, promoting efficiency and consistency in your containerization workflow.

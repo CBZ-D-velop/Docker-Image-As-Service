@@ -19,7 +19,7 @@ stages:
   stage: hadolint
   image: $NEXUS_ADDRESS/$DOCKER_IMAGE_DOCKERFILE_LINT
   script:
-    - "hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 $(pwd)/$path/Dockerfile"
+    - "hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 $(pwd)/$type/$name/latest/Dockerfile"
   allow_failure: false
   retry: 2
 
@@ -39,35 +39,45 @@ include:
   allow_failure: false
 
 ############################################
-#### hadolint
+#### hadolint / Lint
 ############################################
 
 hadolint_alpine_ansiblelint:
   <<: *hadolint
   variables:
-    path: "Alpine/alpine-ansiblelint/3.18"
+    type: "Lint"
+    name: "alpine-ansiblelint"
 
 hadolint_alpine_dockerfilelint:
   <<: *hadolint
   variables:
-    path: "Alpine/alpine-dockerfilelint/3.18"
+    type: "Lint"
+    name: "alpine-dockerfilelint"
 
 hadolint_alpine_jinjalint:
   <<: *hadolint
   variables:
-    path: "Alpine/alpine-jinjalint/3.18"
+    type: "Lint"
+    name: "alpine-jinjalint"
 
 hadolint_alpine_yamllint:
   <<: *hadolint
   variables:
-    path: "Alpine/alpine-yamllint/3.18"
+    type: "Lint"
+    name: "alpine-yamllint"
+
+############################################
+#### hadolint / Ansible
+############################################
 
 hadolint_debian_ansible:
   <<: *hadolint
   variables:
-    path: "Debian/debian-ansible/11"
+    type: "Ansible"
+    name: "debian-ansible"
 
 hadolint_docker_molecule:
   <<: *hadolint
   variables:
-    path: "Docker/docker-molecule/dind"
+    type: "Ansible"
+    name: "docker-molecule"

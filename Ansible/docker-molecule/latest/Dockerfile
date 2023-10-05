@@ -1,4 +1,5 @@
-from alpine@sha256:48d9183eb12a05c99bcc0bf44a003607b8e941e1d4f41f9ad12bdcc4b5672f86
+# FROM dind
+FROM docker:dind
 
 ARG VERSION=""
 ARG MAINTAINER=""
@@ -31,18 +32,26 @@ RUN mkdir -p ${ENV_DEFAULT_WORKDIR}
 WORKDIR ${ENV_DEFAULT_WORKDIR}
 
 # Update installed packages
+# Start and enable docker
 RUN apk update && \
-    apk add --no-cache make
+    apk add --no-cache make openrc docker git && \
+    rc-update add docker boot
 
 # Install python and pip
 RUN apk add --update --no-cache python3 && \
     ln -sf python3 /usr/bin/python && \
     python3 -m ensurepip && \
-    pip3 install --no-cache-dir --upgrade pip setuptools
+    python3 -m pip install --no-cache-dir --upgrade pip setuptools && \
+    python3 --version
 
-# Install yamllint
-RUN pip3 install --no-cache-dir yamllint && \
-    yamllint --version
+# Isntall molecule
+# Install comunity additions
+COPY --chown="${DEFAULT_USER}:${DEFAULT_GROUP}" ./requirements.txt ./requirements.txt
+RUN python3 -m pip install --no-cache-dir -r ./requirements.txt && \
+    ansible-galaxy collection install community.general && \
+    ansible-galaxy collection install community.docker && \
+    ansible --version && \
+    molecule --version
 
 # Remove packages cache
 RUN apk del build-dependencies; \
@@ -51,4 +60,4 @@ RUN apk del build-dependencies; \
 
 # Set CMD
 USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"
-CMD ["yamllint", "--version"]
+CMD ["molecule", "--version"]
