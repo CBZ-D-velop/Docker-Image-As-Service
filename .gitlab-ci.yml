@@ -17,7 +17,7 @@ stages:
 # To start, we need to lint Dockerfile with hadolint
 .hadolint: &hadolint
   stage: hadolint
-  image: $NEXUS_ADDRESS/$DOCKER_IMAGE_DOCKERFILE_LINT
+  image: robincbz/alpine-dockerfilelint:0.8
   script:
     - "hadolint $(pwd)/$path/Dockerfile"
   allow_failure: false
