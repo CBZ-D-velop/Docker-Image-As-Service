@@ -27,7 +27,7 @@ stages:
 # After that we will try to build the Dockerfile
 .testbuild: &testbuild
   stage: testbuild
-  image: robincbz/docker-build:0.1
+  image: $NEXUS_ADDRESS/$DOCKER_IMAGE_DOCKERFILE_BUILD
   script:
     - "cd $(pwd)/$type/$name/latest"
     - "bash build --testbuild"
@@ -77,11 +77,11 @@ hadolint_alpine_yamllint:
     type: "Lint"
     name: "alpine-yamllint"
 
-hadolint_debian_ansible:
+hadolint_debian_11_ansible:
   <<: *hadolint
   variables:
     type: "Ansible"
-    name: "debian-ansible"
+    name: "debian-11-ansible"
 
 hadolint_docker_molecule:
   <<: *hadolint
@@ -89,11 +89,11 @@ hadolint_docker_molecule:
     type: "Ansible"
     name: "docker-molecule"
 
-hadolint_docker_build:
+hadolint_docker_dockerfilebuild:
   <<: *hadolint
   variables:
     type: "Build"
-    name: "docker-build"
+    name: "docker-dockerfilebuild"
 
 ############################################
 #### testbuild
@@ -131,13 +131,13 @@ testbuild_alpine_yamllint:
   needs:
     - "hadolint_alpine_yamllint"
 
-testbuild_debian_ansible:
+testbuild_debian_11_ansible:
   <<: *testbuild
   variables:
     type: "Ansible"
     name: "debian-ansible"
   needs:
-    - "hadolint_debian_ansible"
+    - "hadolint_debian_11_ansible"
 
 testbuild_docker_molecule:
   <<: *testbuild
@@ -147,10 +147,10 @@ testbuild_docker_molecule:
   needs:
     - "hadolint_docker_molecule"
 
-testbuild_docker_build:
+testbuild_docker_dockerfilebuild:
   <<: *testbuild
   variables:
     type: "Build"
     name: "docker-build"
   needs:
-    - "hadolint_docker_build"
+    - "hadolint_docker_dockerfilebuild"

@@ -34,8 +34,7 @@ WORKDIR ${ENV_DEFAULT_WORKDIR}
 # Update the host, fix upgrade
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN echo "debconf debconf/frontend select Noninteractive" | debconf-set-selections && \
-    apt-mark hold debian-archive-keyring && apt-get update && apt-get upgrade -y && \
-    apt-get autoclean -y && apt-get clean -y && apt-get autoremove -y && apt-get autoremove --purge -y && rm -rf /var/lib/apt/lists/*
+    apt-mark hold debian-archive-keyring && apt-get update
 
 # Install basics requirements
 RUN apt-get install --no-install-recommends -y rsync curl python3 python3-jmespath python3-pip \
@@ -46,7 +45,8 @@ RUN apt-get install --no-install-recommends -y rsync curl python3 python3-jmespa
     tree python3-apt python3-pip python3-setuptools \
     iftop htop cron virtualenv nethogs iproute2 \
     git && \
-    apt-get autoclean -y && apt-get clean -y && apt-get autoremove -y && apt-get autoremove --purge -y && rm -rf /var/lib/apt/lists/*
+    apt-get autoclean -y && apt-get clean -y && apt-get autoremove -y && \
+    apt-get autoremove --purge -y && rm -rf /var/lib/apt/lists/*
 
 # Set CMD
 USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"
