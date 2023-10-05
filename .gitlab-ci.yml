@@ -151,6 +151,6 @@ testbuild_docker_dockerfilebuild:
   <<: *testbuild
   variables:
     type: "Build"
-    name: "docker-build"
+    name: "docker-dockerfilebuild"
   needs:
     - "hadolint_docker_dockerfilebuild"
