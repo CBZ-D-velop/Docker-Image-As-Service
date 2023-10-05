@@ -51,5 +51,4 @@ RUN apk del build-dependencies; \
 
 # Set CMD
 USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"
-ENTRYPOINT ["j2lint"]
-CMD ["--version"]
+CMD ["j2lint", "--version"]

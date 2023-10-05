@@ -49,5 +49,4 @@ RUN apt-get install -y rsync curl python3 python3-jmespath python3-pip \
 
 # Set CMD
 USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"
-ENTRYPOINT ["bash"]
-CMD [""]
+CMD ["bash"]

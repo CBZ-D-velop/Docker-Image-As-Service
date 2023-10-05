@@ -59,5 +59,4 @@ RUN apk del build-dependencies; \
 
 # Set CMD
 USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"
-ENTRYPOINT ["molecule"]
-CMD ["--version"]
+CMD ["molecule", "--version"]

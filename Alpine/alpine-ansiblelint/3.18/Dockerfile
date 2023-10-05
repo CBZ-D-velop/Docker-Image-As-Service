@@ -51,5 +51,4 @@ RUN apk del build-dependencies; \
 
 # Set CMD
 USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"
-ENTRYPOINT ["ansible-lint"]
-CMD ["--version"]
+CMD ["ansible-lint", "--version"]

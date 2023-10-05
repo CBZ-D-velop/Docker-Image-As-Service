@@ -54,5 +54,4 @@ RUN apk del build-dependencies; \
 
 # Set CMD
 USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"
-ENTRYPOINT ["/usr/local/bin/hadolint"]
-CMD ["--help"]
+CMD ["hadolint", "--help"]
