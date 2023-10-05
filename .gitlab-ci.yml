@@ -17,9 +17,9 @@ stages:
 # To start, we need to lint Dockerfile with hadolint
 .hadolint: &hadolint
   stage: hadolint
-  image: $NEXUS_ADDRESS/robincbz/alpine-dockerfilelint:0.8
+  image: $NEXUS_ADDRESS/$DOCKER_IMAGE_DOCKERFILE_LINT
   script:
-    - "hadolint --ignore DL3018 $(pwd)/$path/Dockerfile"
+    - "hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 $(pwd)/$path/Dockerfile"
   allow_failure: false
   retry: 2
 

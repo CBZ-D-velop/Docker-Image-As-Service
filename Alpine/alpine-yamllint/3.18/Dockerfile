@@ -38,10 +38,10 @@ RUN apk update && \
 RUN apk add --update --no-cache python3 && \
     ln -sf python3 /usr/bin/python && \
     python3 -m ensurepip && \
-    pip3 install --no-cache --upgrade pip setuptools
+    pip3 install --no-cache-dir --upgrade pip setuptools
 
 # Install yamllint
-RUN pip3 install --no-cache yamllint && \
+RUN pip3 install --no-cache-dir yamllint && \
     yamllint --version
 
 # Remove packages cache

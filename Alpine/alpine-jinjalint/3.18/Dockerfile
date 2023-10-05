@@ -38,10 +38,10 @@ RUN apk update && \
 RUN apk add --update --no-cache python3 && \
     ln -sf python3 /usr/bin/python && \
     python3 -m ensurepip && \
-    pip3 install --no-cache --upgrade pip setuptools
+    pip3 install --no-cache-dir --upgrade pip setuptools
 
 # Install j2lint
-RUN pip3 install --no-cache j2lint && \
+RUN pip3 install --no-cache-dir j2lint && \
     j2lint --version
 
 # Remove packages cache

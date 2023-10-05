@@ -41,7 +41,7 @@ RUN apk add --update --no-cache python3 && \
     pip3 install --no-cache --upgrade pip setuptools
 
 # Install ansible-lint
-RUN apk add --update --no-cache ansible-lint && \
+RUN apk add --update --no-cache-dir ansible-lint && \
     ansible-lint --version
 
 # Remove packages cache
