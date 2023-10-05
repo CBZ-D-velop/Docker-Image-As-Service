@@ -46,10 +46,7 @@ RUN apt-get install --no-install-recommends -y rsync curl python3 python3-jmespa
     tree python3-apt python3-pip python3-setuptools \
     iftop htop cron virtualenv nethogs iproute2 \
     git && \
-    apt-get autoclean -y && apt-get clean -y && apt-get autoremove -y && apt-get autoremove --purge -y
-
-# Remove packages cache
-RUN rm -rf /var/lib/apt/lists/*
+    apt-get autoclean -y && apt-get clean -y && apt-get autoremove -y && apt-get autoremove --purge -y && rm -rf /var/lib/apt/lists/*
 
 # Set CMD
 USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"
