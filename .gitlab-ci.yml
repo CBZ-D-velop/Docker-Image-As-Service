@@ -135,7 +135,7 @@ testbuild_debian_11_ansible:
   <<: *testbuild
   variables:
     type: "Ansible"
-    name: "debian-ansible"
+    name: "debian-11-ansible"
   needs:
     - "hadolint_debian_11_ansible"
 
