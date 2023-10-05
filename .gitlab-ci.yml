@@ -20,7 +20,7 @@ stages:
   stage: hadolint
   image: $NEXUS_ADDRESS/$DOCKER_IMAGE_DOCKERFILE_LINT
   script:
-    - "hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DLDL3009 $(pwd)/$type/$name/latest/Dockerfile"
+    - "hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 $(pwd)/$type/$name/latest/Dockerfile"
   allow_failure: false
   retry: 2
 
