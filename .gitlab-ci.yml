@@ -30,6 +30,8 @@ stages:
   image: docker:dind
   script:
     - "cd $(pwd)/$type/$name/latest"
+    - "pwd"
+    - "ls -all"
     - "./build --testbuild"
   allow_failure: false
   retry: 2
