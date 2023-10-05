@@ -35,7 +35,7 @@ WORKDIR ${ENV_DEFAULT_WORKDIR}
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN echo "debconf debconf/frontend select Noninteractive" | debconf-set-selections && \
     apt-mark hold debian-archive-keyring && apt-get update && apt-get upgrade -y && \
-    apt-get autoclean -y && apt-get clean -y && apt-get autoremove -y && apt-get autoremove --purge -y
+    apt-get autoclean -y && apt-get clean -y && apt-get autoremove -y && apt-get autoremove --purge -y && rm -rf /var/lib/apt/lists/*
 
 # Install basics requirements
 RUN apt-get install --no-install-recommends -y rsync curl python3 python3-jmespath python3-pip \

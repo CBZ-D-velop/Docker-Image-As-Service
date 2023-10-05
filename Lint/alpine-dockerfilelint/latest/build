@@ -13,14 +13,19 @@ else
     if [ "$1" == "--major" ]; then
         MAJOR_TAG=$((${MAJOR_TAG} + 1))
         MINOR_TAG="0"
+        VERSION="${MAJOR_TAG}.${MINOR_TAG}"
+
+    # If the --test argument is passed, no touch to any value of version
+    elif [ "$1" == "--testbuild" ]; then
+        echo "=== TEST BUILD ==="
+        VERSION="testbuild-${MAJOR_TAG}.${MINOR_TAG}"
     else
-    MINOR_TAG=$((${MINOR_TAG} + 1))
+        MINOR_TAG=$((${MINOR_TAG} + 1))
+        VERSION="${MAJOR_TAG}.${MINOR_TAG}"
     fi
 fi
 
-VERSION="${MAJOR_TAG}.${MINOR_TAG}"
 source ./$ENV_FILE
-
 docker build \
     --build-arg VERSION=${VERSION} \
     --build-arg MAINTAINER=${MAINTAINER} \
@@ -28,15 +33,21 @@ docker build \
     --build-arg DEFAULT_USER=${DEFAULT_USER} \
     --build-arg DEFAULT_GROUP=${DEFAULT_GROUP} \
     --build-arg DEFAULT_WORKDIR=${DEFAULT_WORKDIR} \
+    --build-arg HADOLINT_VERSION=${HADOLINT_VERSION} \
     -t ${NAMESPACE}/${IMAGE_NAME}:${VERSION} .
 
-echo "MAJOR_TAG=${MAJOR_TAG}" > "${TAG_FILE}"
-echo "MINOR_TAG=${MINOR_TAG}" >> "${TAG_FILE}"
+if [ "$1" == "--testbuild" ]; then
+    echo "=== TEST BUILD COMPLETE ==="
 
-docker push ${NAMESPACE}/${IMAGE_NAME}:${VERSION}
-docker tag ${NAMESPACE}/${IMAGE_NAME}:${VERSION} ${NAMESPACE}/${IMAGE_NAME}:latest
-docker push ${NAMESPACE}/${IMAGE_NAME}:latest
+else
+    echo "MAJOR_TAG=${MAJOR_TAG}" > "${TAG_FILE}"
+    echo "MINOR_TAG=${MINOR_TAG}" >> "${TAG_FILE}"
 
-mkdir -p ../${VERSION}
-cp -R . ../${VERSION}
-rm ../${VERSION}/build ../${VERSION}/.tag
+    docker push ${NAMESPACE}/${IMAGE_NAME}:${VERSION}
+    docker tag ${NAMESPACE}/${IMAGE_NAME}:${VERSION} ${NAMESPACE}/${IMAGE_NAME}:latest
+    docker push ${NAMESPACE}/${IMAGE_NAME}:latest
+
+    mkdir -p ../${VERSION}
+    cp -R . ../${VERSION}
+    rm ../${VERSION}/build ../${VERSION}/.tag
+fi

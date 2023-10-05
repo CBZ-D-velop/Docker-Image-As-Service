@@ -9,6 +9,7 @@
 stages:
 - gitlab-test
 - hadolint
+- testbuild
 
 ###############################################################################
 #################### actions
@@ -20,6 +21,16 @@ stages:
   image: $NEXUS_ADDRESS/$DOCKER_IMAGE_DOCKERFILE_LINT
   script:
     - "hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 $(pwd)/$type/$name/latest/Dockerfile"
+  allow_failure: false
+  retry: 2
+
+# After that we will try to build the Dockerfile
+.testbuild: &testbuild
+  stage: testbuild
+  image: docker:dind
+  script:
+    - "cd $(pwd)/$type/$name/latest"
+    - "./build --testbuild"
   allow_failure: false
   retry: 2
 
@@ -39,7 +50,7 @@ include:
   allow_failure: false
 
 ############################################
-#### hadolint / Lint
+#### hadolint
 ############################################
 
 hadolint_alpine_ansiblelint:
@@ -66,10 +77,6 @@ hadolint_alpine_yamllint:
     type: "Lint"
     name: "alpine-yamllint"
 
-############################################
-#### hadolint / Ansible
-############################################
-
 hadolint_debian_ansible:
   <<: *hadolint
   variables:
@@ -81,3 +88,55 @@ hadolint_docker_molecule:
   variables:
     type: "Ansible"
     name: "docker-molecule"
+
+############################################
+#### testbuild
+############################################
+
+testbuild_alpine_ansiblelint:
+  <<: *testbuild
+  variables:
+    type: "Lint"
+    name: "alpine-ansiblelint"
+  needs:
+    - "hadolint_alpine_ansiblelint"
+
+testbuild_alpine_dockerfilelint:
+  <<: *testbuild
+  variables:
+    type: "Lint"
+    name: "alpine-dockerfilelint"
+  needs:
+    - "hadolint_alpine_ansiblelint"
+
+testbuild_alpine_jinjalint:
+  <<: *testbuild
+  variables:
+    type: "Lint"
+    name: "alpine-jinjalint"
+  needs:
+    - "hadolint_alpine_ansiblelint"
+
+testbuild_alpine_yamllint:
+  <<: *testbuild
+  variables:
+    type: "Lint"
+    name: "alpine-yamllint"
+  needs:
+    - "hadolint_alpine_ansiblelint"
+
+testbuild_debian_ansible:
+  <<: *testbuild
+  variables:
+    type: "Ansible"
+    name: "debian-ansible"
+  needs:
+    - "hadolint_alpine_ansiblelint"
+
+testbuild_docker_molecule:
+  <<: *testbuild
+  variables:
+    type: "Ansible"
+    name: "docker-molecule"
+  needs:
+    - "hadolint_alpine_ansiblelint"
