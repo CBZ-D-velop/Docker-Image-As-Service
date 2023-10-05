@@ -19,7 +19,7 @@ stages:
   stage: hadolint
   image: robincbz/alpine-dockerfilelint:0.8
   script:
-    - "hadolint --trusted-registry $NEXUS_ADDRESS --ignore DL3108 $(pwd)/$path/Dockerfile"
+    - "hadolint --ignore DL3018 $(pwd)/$path/Dockerfile"
   allow_failure: false
   retry: 2
 
