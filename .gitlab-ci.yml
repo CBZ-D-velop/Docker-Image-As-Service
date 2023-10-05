@@ -17,7 +17,7 @@ stages:
 # To start, we need to lint Dockerfile with hadolint
 .hadolint: &hadolint
   stage: hadolint
-  image: $NEXUS_ADDRESS/$DOCKER_IMAGE_DOCKERFILE_LINT
+  image: $DOCKER_IMAGE_DOCKERFILE_LINT
   script:
     - "hadolint --trusted-registry $NEXUS_ADDRESS --ignore DL3108 $(pwd)/$path/Dockerfile"
   allow_failure: false
