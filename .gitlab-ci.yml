@@ -27,11 +27,9 @@ stages:
 # After that we will try to build the Dockerfile
 .testbuild: &testbuild
   stage: testbuild
-  image: docker:dind
+  image: robincbz/docker-build:0.1
   script:
     - "cd $(pwd)/$type/$name/latest"
-    - "pwd"
-    - "ls -all"
     - "bash build --testbuild"
   allow_failure: false
   retry: 2
@@ -91,6 +89,12 @@ hadolint_docker_molecule:
     type: "Ansible"
     name: "docker-molecule"
 
+hadolint_docker_build:
+  <<: *hadolint
+  variables:
+    type: "Build"
+    name: "docker-build"
+
 ############################################
 #### testbuild
 ############################################
@@ -142,3 +146,11 @@ testbuild_docker_molecule:
     name: "docker-molecule"
   needs:
     - "hadolint_docker_molecule"
+
+testbuild_docker_build:
+  <<: *testbuild
+  variables:
+    type: "Build"
+    name: "docker-build"
+  needs:
+    - "hadolint_docker_build"

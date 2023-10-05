@@ -37,7 +37,7 @@ WORKDIR ${ENV_DEFAULT_WORKDIR}
 
 # Update installed packages
 RUN apk update && \
-    apk add --no-cache make
+    apk add --no-cache make bash
 
 # Install python and pip
 RUN apk add --update --no-cache git shellcheck
