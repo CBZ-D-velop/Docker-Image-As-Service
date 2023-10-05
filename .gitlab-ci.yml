@@ -107,7 +107,7 @@ testbuild_alpine_dockerfilelint:
     type: "Lint"
     name: "alpine-dockerfilelint"
   needs:
-    - "hadolint_alpine_ansiblelint"
+    - "hadolint_alpine_dockerfilelint"
 
 testbuild_alpine_jinjalint:
   <<: *testbuild
@@ -115,7 +115,7 @@ testbuild_alpine_jinjalint:
     type: "Lint"
     name: "alpine-jinjalint"
   needs:
-    - "hadolint_alpine_ansiblelint"
+    - "hadolint_alpine_jinjalint"
 
 testbuild_alpine_yamllint:
   <<: *testbuild
@@ -123,7 +123,7 @@ testbuild_alpine_yamllint:
     type: "Lint"
     name: "alpine-yamllint"
   needs:
-    - "hadolint_alpine_ansiblelint"
+    - "hadolint_alpine_yamllint"
 
 testbuild_debian_ansible:
   <<: *testbuild
@@ -131,7 +131,7 @@ testbuild_debian_ansible:
     type: "Ansible"
     name: "debian-ansible"
   needs:
-    - "hadolint_alpine_ansiblelint"
+    - "hadolint_debian_ansible"
 
 testbuild_docker_molecule:
   <<: *testbuild
@@ -139,4 +139,4 @@ testbuild_docker_molecule:
     type: "Ansible"
     name: "docker-molecule"
   needs:
-    - "hadolint_alpine_ansiblelint"
+    - "hadolint_docker_molecule"
