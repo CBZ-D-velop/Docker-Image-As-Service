@@ -1,0 +1,156 @@
+# You can override the included template(s) by including variable overrides
+# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
+# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
+# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
+# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
+# Note that environment variables can be set in several places
+# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
+
+stages:
+- gitlab-test
+- hadolint
+- testbuild
+
+###############################################################################
+#################### actions
+###############################################################################
+
+# To start, we need to lint Dockerfile with hadolint
+.hadolint: &hadolint
+  stage: hadolint
+  image: $NEXUS_ADDRESS/$DOCKER_IMAGE_DOCKERFILE_LINT
+  script:
+    - "hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 $(pwd)/$type/$name/latest/Dockerfile"
+  allow_failure: false
+  retry: 2
+
+# After that we will try to build the Dockerfile
+.testbuild: &testbuild
+  stage: testbuild
+  image: $NEXUS_ADDRESS/$DOCKER_IMAGE_DOCKERFILE_BUILD
+  script:
+    - "cd $(pwd)/$type/$name/latest"
+    - "bash build --testbuild"
+  allow_failure: false
+  retry: 2
+
+###############################################################################
+#################### CI JOBS
+###############################################################################
+
+############################################
+#### gitlab-test
+############################################
+
+# As a GitLab ci, we use the default template :)
+sast:
+  stage: gitlab-test
+include:
+- template: Security/SAST.gitlab-ci.yml
+  allow_failure: false
+
+############################################
+#### hadolint
+############################################
+
+hadolint_alpine_ansiblelint:
+  <<: *hadolint
+  variables:
+    type: "Lint"
+    name: "alpine-ansiblelint"
+
+hadolint_alpine_dockerfilelint:
+  <<: *hadolint
+  variables:
+    type: "Lint"
+    name: "alpine-dockerfilelint"
+
+hadolint_alpine_jinjalint:
+  <<: *hadolint
+  variables:
+    type: "Lint"
+    name: "alpine-jinjalint"
+
+hadolint_alpine_yamllint:
+  <<: *hadolint
+  variables:
+    type: "Lint"
+    name: "alpine-yamllint"
+
+hadolint_debian_11_ansible:
+  <<: *hadolint
+  variables:
+    type: "Ansible"
+    name: "debian-11-ansible"
+
+hadolint_docker_molecule:
+  <<: *hadolint
+  variables:
+    type: "Ansible"
+    name: "docker-molecule"
+
+hadolint_docker_dockerfilebuild:
+  <<: *hadolint
+  variables:
+    type: "Build"
+    name: "docker-dockerfilebuild"
+
+############################################
+#### testbuild
+############################################
+
+testbuild_alpine_ansiblelint:
+  <<: *testbuild
+  variables:
+    type: "Lint"
+    name: "alpine-ansiblelint"
+  needs:
+    - "hadolint_alpine_ansiblelint"
+
+testbuild_alpine_dockerfilelint:
+  <<: *testbuild
+  variables:
+    type: "Lint"
+    name: "alpine-dockerfilelint"
+  needs:
+    - "hadolint_alpine_dockerfilelint"
+
+testbuild_alpine_jinjalint:
+  <<: *testbuild
+  variables:
+    type: "Lint"
+    name: "alpine-jinjalint"
+  needs:
+    - "hadolint_alpine_jinjalint"
+
+testbuild_alpine_yamllint:
+  <<: *testbuild
+  variables:
+    type: "Lint"
+    name: "alpine-yamllint"
+  needs:
+    - "hadolint_alpine_yamllint"
+
+testbuild_debian_11_ansible:
+  <<: *testbuild
+  variables:
+    type: "Ansible"
+    name: "debian-11-ansible"
+  needs:
+    - "hadolint_debian_11_ansible"
+
+testbuild_docker_molecule:
+  <<: *testbuild
+  variables:
+    type: "Ansible"
+    name: "docker-molecule"
+  needs:
+    - "hadolint_docker_molecule"
+
+testbuild_docker_dockerfilebuild:
+  <<: *testbuild
+  variables:
+    type: "Build"
+    name: "docker-dockerfilebuild"
+  needs:
+    - "hadolint_docker_dockerfilebuild"
