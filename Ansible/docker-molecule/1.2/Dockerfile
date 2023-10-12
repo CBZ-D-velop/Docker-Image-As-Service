@@ -35,7 +35,7 @@ WORKDIR ${ENV_DEFAULT_WORKDIR}
 # Start and enable docker
 RUN apk update && \
     apk add --no-cache make openrc docker git tar unzip bzip2 && \
-    rc-update add docker boot
+    rc-update add docker boot bash
 
 # Install python and pip
 RUN apk add --update --no-cache python3 && \
@@ -48,6 +48,7 @@ RUN apk add --update --no-cache python3 && \
 # Install comunity additions
 COPY --chown="${DEFAULT_USER}:${DEFAULT_GROUP}" ./requirements.txt ./requirements.txt
 RUN python3 -m pip install --no-cache-dir -r ./requirements.txt && \
+    python3 -m pip install --no-cache-dir requests && \
     ansible-galaxy collection install community.general && \
     ansible-galaxy collection install community.docker && \
     ansible --version && \
