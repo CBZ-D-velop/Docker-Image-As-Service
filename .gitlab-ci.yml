@@ -177,7 +177,7 @@ cicdbuild_alpine_ansiblelint:
     type: "Lint"
     name: "alpine-ansiblelint"
   needs:
-    - "hadolint_alpine_ansiblelint"
+    - "testbuild_alpine_ansiblelint"
 
 cicdbuild_alpine_dockerfilelint:
   <<: *cicdbuild
