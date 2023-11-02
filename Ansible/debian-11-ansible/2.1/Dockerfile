@@ -34,12 +34,10 @@ WORKDIR ${ENV_DEFAULT_WORKDIR}
 # Update the host, fix upgrade
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN echo "debconf debconf/frontend select Noninteractive" | debconf-set-selections && \
-    apt-mark hold debian-archive-keyring && apt-get update && apt-get upgrade -y && \
-    apt-get upgrade debian-archive-keyring -y --allow-change-held-packages
+    apt-mark hold debian-archive-keyring && apt-get update
 
 # Install basics requirements
-RUN apt-get install --no-install-recommends -y \
-    rsync curl python3 python3-jmespath python3-pip \
+RUN apt-get install --no-install-recommends -y rsync curl python3 python3-jmespath python3-pip \
     python3-lxml libssl-dev libffi-dev git wget \
     lsb-release gnupg2 software-properties-common \
     apt-transport-https ca-certificates sudo nano \

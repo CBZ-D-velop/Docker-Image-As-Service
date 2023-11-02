@@ -1,4 +1,4 @@
-# Labo-CBZ Dockerfiles
+# Docker-Image-As-Service
 
 ![Licence Status](https://img.shields.io/badge/licence-MIT-brightgreen)
 ![CI Status](https://img.shields.io/badge/CI-success-brightgreen)
@@ -28,7 +28,9 @@ After that, the script can take two arguments or none:
 
 * ./build --major: This command creates a new major version tag. If the current version is 0.12, the next major version will be 1.0. The resulting image will be pushed to the repository, a new folder will be created, and all the contents of the latest folder will be copied (excluding the build script or the .tag file).
 
-* ./build --testbuild: This final command will only build the Dockerfile without incrementing the current version or pushing it to the repository. The created image will be tagged as "testbuild-version". This command is intended for testing the Dockerfile. Layers are not deleted, image just builded to, so next build will be more fast.
+* ./build --testbuild: This command will only build the Dockerfile without incrementing the current version or pushing it to the repository. The created image will be tagged as "testbuild-version". This command is intended for testing the Dockerfile. Layers are not deleted, image just builded to, so next build will be more fast.
+
+* ./build --cicdbuild: This command is used inside the CI/CD pipeline. Any run will build the image as "cicd-current_latest_version" and push into the Docker repository. So 1 tag is created or updated and the latest tag is to. The goal of this option if to automated the process of image building, as service.
 
 ```SHELL
 # Build the latest image, from Ansible/debian-11-ansible/latest
@@ -109,6 +111,10 @@ Here you can put your change to keep a trace of your work and decisions.
 * This repository have a CI/CD to build Dockerfiles in --testbuild mode (setted to lates)
 * This repository can be forked and modified to lint, build, analyse and push image from Dockerfile
 
+### 2023-11-02: Docker Image As Service
+
+* All images are now builded and updated by the CICD pipeline
+* New tag for the build with the current version / latest
 
 ## Authors
 
