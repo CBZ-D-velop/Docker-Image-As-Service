@@ -39,7 +39,7 @@ RUN echo "debconf debconf/frontend select Noninteractive" | debconf-set-selectio
 
 # Install basics requirements
 RUN apt-get install --no-install-recommends -y \
-    rsync curl python3 python3-jmespath python3-pip \
+    rsync curl git python3 python3-jmespath python3-pip \
     python3-lxml gnupg2 software-properties-common \
     apt-transport-https ca-certificates sudo \
     openssl zip python3-apt python3-pip python3-setuptools \
@@ -60,6 +60,10 @@ COPY --chown="${DEFAULT_USER}:${DEFAULT_GROUP}" ./requirements.txt ./requirement
 RUN python3 -m pip install --no-cache-dir -r ./requirements.txt && \
     python3 -m pip install --no-cache-dir requests && \
     ansible --version
+
+# Fix the /etc/hosts file
+RUN cat "127.0.0.1    $(hostname)" >> /etc/hosts && \
+    cat "127.0.0.1    localhost" >> /etc/hosts
 
 # Set CMD
 USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"
