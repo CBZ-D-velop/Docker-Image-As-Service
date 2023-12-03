@@ -110,7 +110,7 @@ hadolint_docker_dockerfilebuild:
 hadolint_debian_11_certification:
   <<: *hadolint
   variables:
-    type: "Build"
+    type: "Ansible"
     name: "debian-11-certification"
 
 ############################################
