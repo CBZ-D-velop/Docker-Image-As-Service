@@ -107,6 +107,12 @@ hadolint_docker_dockerfilebuild:
     type: "Build"
     name: "docker-dockerfilebuild"
 
+hadolint_debian_11_certification:
+  <<: *hadolint
+  variables:
+    type: "Build"
+    name: "debian-11-certification"
+
 ############################################
 #### testbuild
 ############################################
@@ -167,6 +173,14 @@ testbuild_docker_dockerfilebuild:
   needs:
     - "hadolint_docker_dockerfilebuild"
 
+testbuild_debian_11_certification:
+  <<: *testbuild
+  variables:
+    type: "Ansible"
+    name: "debian-11-certification"
+  needs:
+    - "hadolint_debian_11_certification"
+
 ############################################
 #### cicdbuild
 ############################################
@@ -226,3 +240,11 @@ cicdbuild_docker_dockerfilebuild:
     name: "docker-dockerfilebuild"
   needs:
     - "testbuild_docker_dockerfilebuild"
+
+cicdbuild_debian_11_certification:
+  <<: *cicdbuild
+  variables:
+    type: "Ansible"
+    name: "debian-11-certification"
+  needs:
+    - "testbuild_debian_11_certification"
