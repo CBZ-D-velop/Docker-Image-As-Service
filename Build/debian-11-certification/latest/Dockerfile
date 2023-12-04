@@ -61,10 +61,6 @@ RUN python3 -m pip install --no-cache-dir -r ./requirements.txt && \
     python3 -m pip install --no-cache-dir requests && \
     ansible --version
 
-# Fix the /etc/hosts file
-RUN cat "127.0.0.1    $(hostname)" >> /etc/hosts && \
-    cat "127.0.0.1    localhost" >> /etc/hosts
-
 # Set CMD
 USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"
 CMD ["/sbin/init"]

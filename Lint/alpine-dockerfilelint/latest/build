@@ -41,7 +41,14 @@ docker build \
     --build-arg HADOLINT_VERSION=${HADOLINT_VERSION} \
     -t ${NAMESPACE}/${IMAGE_NAME}:${VERSION} .
 
+BUILD_EXIT_CODE=$?
+if [ ${BUILD_EXIT_CODE} -ne 0 ]; then
+    echo "Build failed with exit code ${BUILD_EXIT_CODE}"
+    exit 1
+fi
+
 if [ "$1" == "--testbuild" ]; then
+
     echo "=== TEST BUILD COMPLETE ==="
 elif [ "$1" == "--cicdbuild" ]; then
 
