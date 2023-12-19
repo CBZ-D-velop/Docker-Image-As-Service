@@ -12,6 +12,9 @@ stages:
 - testbuild
 - cicdbuild
 
+variables:
+  MAIN_BRANCH: "main"
+
 ###############################################################################
 #################### actions
 ###############################################################################
@@ -36,7 +39,7 @@ stages:
   retry: 2
 
 # After that we will build the Dockerfile and push it as cicd
-.testbuild: &cicdbuild
+.cicdbuild: &cicdbuild
   stage: cicdbuild
   image: $NEXUS_ADDRESS/$DOCKER_IMAGE_DOCKERFILE_BUILD
   script:
@@ -45,6 +48,8 @@ stages:
     - "bash build --cicdbuild"
   allow_failure: false
   retry: 2
+  rules:
+    - if: $CI_COMMIT_BRANCH == $MAIN_BRANCH
 
 ###############################################################################
 #################### CI JOBS
@@ -107,6 +112,12 @@ hadolint_docker_dockerfilebuild:
     type: "Build"
     name: "docker-dockerfilebuild"
 
+hadolint_debian_11_certification:
+  <<: *hadolint
+  variables:
+    type: "Build"
+    name: "debian-11-certification"
+
 ############################################
 #### testbuild
 ############################################
@@ -167,6 +178,14 @@ testbuild_docker_dockerfilebuild:
   needs:
     - "hadolint_docker_dockerfilebuild"
 
+testbuild_debian_11_certification:
+  <<: *testbuild
+  variables:
+    type: "Build"
+    name: "debian-11-certification"
+  needs:
+    - "hadolint_debian_11_certification"
+
 ############################################
 #### cicdbuild
 ############################################
@@ -226,3 +245,11 @@ cicdbuild_docker_dockerfilebuild:
     name: "docker-dockerfilebuild"
   needs:
     - "testbuild_docker_dockerfilebuild"
+
+cicdbuild_debian_11_certification:
+  <<: *cicdbuild
+  variables:
+    type: "Build"
+    name: "debian-11-certification"
+  needs:
+    - "testbuild_debian_11_certification"
