@@ -12,6 +12,9 @@ stages:
 - testbuild
 - cicdbuild
 
+variables:
+  MAIN_BRANCH: "main"
+
 ###############################################################################
 #################### actions
 ###############################################################################
@@ -36,7 +39,7 @@ stages:
   retry: 2
 
 # After that we will build the Dockerfile and push it as cicd
-.testbuild: &cicdbuild
+.cicdbuild: &cicdbuild
   stage: cicdbuild
   image: $NEXUS_ADDRESS/$DOCKER_IMAGE_DOCKERFILE_BUILD
   script:
@@ -45,6 +48,8 @@ stages:
     - "bash build --cicdbuild"
   allow_failure: false
   retry: 2
+  rules:
+    - if: $CI_COMMIT_BRANCH == $MAIN_BRANCH
 
 ###############################################################################
 #################### CI JOBS
