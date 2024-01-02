@@ -41,14 +41,13 @@ RUN apk update && \
 RUN apk add --update --no-cache python3 && \
     ln -sf python3 /usr/bin/python && \
     python3 -m ensurepip && \
-    python3 -m pip install --no-cache-dir --upgrade pip setuptools && \
+    python3 -m pip install --no-cache-dir --upgrade pip setuptools --break-system-packages && \
     python3 --version
 
 # Isntall molecule
 # Install comunity additions
 COPY --chown="${DEFAULT_USER}:${DEFAULT_GROUP}" ./requirements.txt ./requirements.txt
-RUN python3 -m pip install --no-cache-dir -r ./requirements.txt && \
-    python3 -m pip install --no-cache-dir requests && \
+RUN python3 -m pip install --break-system-packages --no-cache-dir -r ./requirements.txt && \
     ansible-galaxy collection install community.general && \
     ansible-galaxy collection install community.docker && \
     ansible --version && \
