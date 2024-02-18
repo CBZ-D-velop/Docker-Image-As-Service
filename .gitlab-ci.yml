@@ -12,9 +12,6 @@ stages:
 - testbuild
 - cicdbuild
 
-variables:
-  MAIN_BRANCH: "main"
-
 ###############################################################################
 #################### actions
 ###############################################################################
@@ -24,19 +21,23 @@ variables:
   stage: hadolint
   image: $NEXUS_ADDRESS/$DOCKER_IMAGE_DOCKERFILE_LINT
   script:
-    - "hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 $(pwd)/$type/$name/latest/Dockerfile"
+    - "hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 $(pwd)/$TYPE/$NAME/latest/Dockerfile"
   allow_failure: false
   retry: 2
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop"
 
 # After that we will try to build the Dockerfile
 .testbuild: &testbuild
   stage: testbuild
   image: $NEXUS_ADDRESS/$DOCKER_IMAGE_DOCKERFILE_BUILD
   script:
-    - "cd $(pwd)/$type/$name/latest"
+    - "cd $(pwd)/$TYPE/$NAME/latest"
     - "bash build --testbuild"
   allow_failure: false
   retry: 2
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop"
 
 # After that we will build the Dockerfile and push it as cicd
 .cicdbuild: &cicdbuild
@@ -44,12 +45,12 @@ variables:
   image: $NEXUS_ADDRESS/$DOCKER_IMAGE_DOCKERFILE_BUILD
   script:
     - "docker login -u \"$DOCKER_HUB_REPOS_USERNAME\" -p \"$DOCKER_HUB_REPOS_PASSWORD\""
-    - "cd $(pwd)/$type/$name/latest"
+    - "cd $(pwd)/$TYPE/$NAME/latest"
     - "bash build --cicdbuild"
   allow_failure: false
   retry: 2
   rules:
-    - if: $CI_COMMIT_BRANCH == $MAIN_BRANCH
+    - if: $CI_COMMIT_BRANCH == main
 
 ###############################################################################
 #################### CI JOBS
@@ -73,50 +74,56 @@ include:
 hadolint_alpine_ansiblelint:
   <<: *hadolint
   variables:
-    type: "Lint"
-    name: "alpine-ansiblelint"
+    TYPE: "Lint"
+    NAME: "alpine-ansiblelint"
 
 hadolint_alpine_dockerfilelint:
   <<: *hadolint
   variables:
-    type: "Lint"
-    name: "alpine-dockerfilelint"
+    TYPE: "Lint"
+    NAME: "alpine-dockerfilelint"
 
 hadolint_alpine_jinjalint:
   <<: *hadolint
   variables:
-    type: "Lint"
-    name: "alpine-jinjalint"
+    TYPE: "Lint"
+    NAME: "alpine-jinjalint"
 
 hadolint_alpine_yamllint:
   <<: *hadolint
   variables:
-    type: "Lint"
-    name: "alpine-yamllint"
+    TYPE: "Lint"
+    NAME: "alpine-yamllint"
 
 hadolint_debian_11_ansible:
   <<: *hadolint
   variables:
-    type: "Ansible"
-    name: "debian-11-ansible"
+    TYPE: "Ansible"
+    NAME: "debian-11-ansible"
+
+hadolint_debian_12_ansible:
+  <<: *hadolint
+  variables:
+    TYPE: "Ansible"
+    NAME: "debian-12-ansible"
 
 hadolint_docker_molecule:
   <<: *hadolint
   variables:
-    type: "Ansible"
-    name: "docker-molecule"
+    TYPE: "Ansible"
+    NAME: "docker-molecule"
 
 hadolint_docker_dockerfilebuild:
   <<: *hadolint
   variables:
-    type: "Build"
-    name: "docker-dockerfilebuild"
+    TYPE: "Build"
+    NAME: "docker-dockerfilebuild"
 
 hadolint_debian_11_certification:
   <<: *hadolint
   variables:
-    type: "Build"
-    name: "debian-11-certification"
+    TYPE: "Build"
+    NAME: "debian-11-certification"
 
 ############################################
 #### testbuild
@@ -125,64 +132,72 @@ hadolint_debian_11_certification:
 testbuild_alpine_ansiblelint:
   <<: *testbuild
   variables:
-    type: "Lint"
-    name: "alpine-ansiblelint"
+    TYPE: "Lint"
+    NAME: "alpine-ansiblelint"
   needs:
     - "hadolint_alpine_ansiblelint"
 
 testbuild_alpine_dockerfilelint:
   <<: *testbuild
   variables:
-    type: "Lint"
-    name: "alpine-dockerfilelint"
+    TYPE: "Lint"
+    NAME: "alpine-dockerfilelint"
   needs:
     - "hadolint_alpine_dockerfilelint"
 
 testbuild_alpine_jinjalint:
   <<: *testbuild
   variables:
-    type: "Lint"
-    name: "alpine-jinjalint"
+    TYPE: "Lint"
+    NAME: "alpine-jinjalint"
   needs:
     - "hadolint_alpine_jinjalint"
 
 testbuild_alpine_yamllint:
   <<: *testbuild
   variables:
-    type: "Lint"
-    name: "alpine-yamllint"
+    TYPE: "Lint"
+    NAME: "alpine-yamllint"
   needs:
     - "hadolint_alpine_yamllint"
 
 testbuild_debian_11_ansible:
   <<: *testbuild
   variables:
-    type: "Ansible"
-    name: "debian-11-ansible"
+    TYPE: "Ansible"
+    NAME: "debian-11-ansible"
   needs:
     - "hadolint_debian_11_ansible"
+
+testbuild_debian_12_ansible:
+  <<: *testbuild
+  variables:
+    TYPE: "Ansible"
+    NAME: "debian-12-ansible"
+  needs:
+    - "hadolint_debian_12_ansible"
 
 testbuild_docker_molecule:
   <<: *testbuild
   variables:
-    type: "Ansible"
-    name: "docker-molecule"
+    TYPE: "Ansible"
+    NAME: "docker-molecule"
   needs:
     - "hadolint_docker_molecule"
 
 testbuild_docker_dockerfilebuild:
   <<: *testbuild
   variables:
-    type: "Build"
-    name: "docker-dockerfilebuild"
+    TYPE: "Build"
+    NAME: "docker-dockerfilebuild"
   needs:
     - "hadolint_docker_dockerfilebuild"
 
 testbuild_debian_11_certification:
   <<: *testbuild
   variables:
-    type: "Build"
-    name: "debian-11-certification"
+    TYPE: "Build"
+    NAME: "debian-11-certification"
   needs:
     - "hadolint_debian_11_certification"
 
@@ -193,63 +208,59 @@ testbuild_debian_11_certification:
 cicdbuild_alpine_ansiblelint:
   <<: *cicdbuild
   variables:
-    type: "Lint"
-    name: "alpine-ansiblelint"
-  needs:
-    - "testbuild_alpine_ansiblelint"
+    TYPE: "Lint"
+    NAME: "alpine-ansiblelint"
 
 cicdbuild_alpine_dockerfilelint:
   <<: *cicdbuild
   variables:
-    type: "Lint"
-    name: "alpine-dockerfilelint"
-  needs:
-    - "testbuild_alpine_dockerfilelint"
+    TYPE: "Lint"
+    NAME: "alpine-dockerfilelint"
 
 cicdbuild_alpine_jinjalint:
   <<: *cicdbuild
   variables:
-    type: "Lint"
-    name: "alpine-jinjalint"
-  needs:
-    - "testbuild_alpine_jinjalint"
+    TYPE: "Lint"
+    NAME: "alpine-jinjalint"
 
 cicdbuild_alpine_yamllint:
   <<: *cicdbuild
   variables:
-    type: "Lint"
-    name: "alpine-yamllint"
-  needs:
-    - "testbuild_alpine_yamllint"
+    TYPE: "Lint"
+    NAME: "alpine-yamllint"
 
 cicdbuild_debian_11_ansible:
   <<: *cicdbuild
   variables:
-    type: "Ansible"
-    name: "debian-11-ansible"
-  needs:
-    - "testbuild_debian_11_ansible"
+    TYPE: "Ansible"
+    NAME: "debian-11-ansible"
+
+cicdbuild_debian_12_ansible:
+  <<: *cicdbuild
+  variables:
+    TYPE: "Ansible"
+    NAME: "debian-12-ansible"
+
+cicdbuild_debian_11_ansible:
+  <<: *cicdbuild
+  variables:
+    TYPE: "Ansible"
+    NAME: "debian-11-ansible"
 
 cicdbuild_docker_molecule:
   <<: *cicdbuild
   variables:
-    type: "Ansible"
-    name: "docker-molecule"
-  needs:
-    - "testbuild_docker_molecule"
+    TYPE: "Ansible"
+    NAME: "docker-molecule"
 
 cicdbuild_docker_dockerfilebuild:
   <<: *cicdbuild
   variables:
-    type: "Build"
-    name: "docker-dockerfilebuild"
-  needs:
-    - "testbuild_docker_dockerfilebuild"
+    TYPE: "Build"
+    NAME: "docker-dockerfilebuild"
 
 cicdbuild_debian_11_certification:
   <<: *cicdbuild
   variables:
-    type: "Build"
-    name: "debian-11-certification"
-  needs:
-    - "testbuild_debian_11_certification"
+    TYPE: "Build"
+    NAME: "debian-11-certification"
