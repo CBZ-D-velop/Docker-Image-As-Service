@@ -1,5 +1,5 @@
 # FROM 11
-FROM debian@sha256:fc27237003ad8ffa4608590057eed4e1db8ce6098434b5ecda23f533a5b12e56
+FROM debian@sha256:4effa16ae79ab36347d55ebb6bb4aad411077b72ad735054e684b3eeba373a35
 
 ARG VERSION=""
 ARG MAINTAINER=""
@@ -43,16 +43,23 @@ RUN apt-get install --no-install-recommends -y \
     python3-lxml libssl-dev libffi-dev git wget \
     lsb-release gnupg2 software-properties-common \
     apt-transport-https ca-certificates sudo nano \
-    net-tools procps openssl lsof zip \
+    net-tools procps openssl lsof initscripts zip \
     tree python3-apt python3-pip python3-setuptools \
     iftop htop cron virtualenv nethogs iproute2 \
     git init bzip2 tar unzip locales
+
+# install Java
+RUN echo "deb http://deb.debian.org/debian/ sid main" > /etc/apt/sources.list.d/java && \
+    apt-get update && \
+    apt-get install -y openjdk-11-jdk && \
+    rm /etc/apt/sources.list.d/java && \
+    apt-get update
 
 # CLear all apt files
 RUN apt-get autoclean -y && apt-get clean -y && apt-get autoremove -y && \
     apt-get autoremove --purge -y && rm -rf /var/lib/apt/lists/*
 
-RUN python3 -m pip install --break-system-packages --no-cache-dir requests
+RUN python3 -m pip install --no-cache-dir requests
 
 # Set CMD
 USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"

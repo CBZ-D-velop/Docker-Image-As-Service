@@ -101,11 +101,11 @@ hadolint_debian_11_ansible:
     TYPE: "Ansible"
     NAME: "debian-11-ansible"
 
-hadolint_debian_12_ansible:
+hadolint_ubuntu_22_ansible:
   <<: *hadolint
   variables:
     TYPE: "Ansible"
-    NAME: "debian-12-ansible"
+    NAME: "ubuntu-22-ansible"
 
 hadolint_docker_molecule:
   <<: *hadolint
@@ -169,13 +169,13 @@ testbuild_debian_11_ansible:
   needs:
     - "hadolint_debian_11_ansible"
 
-testbuild_debian_12_ansible:
+testbuild_ubuntu_22_ansible:
   <<: *testbuild
   variables:
     TYPE: "Ansible"
-    NAME: "debian-12-ansible"
+    NAME: "ubuntu-22-ansible"
   needs:
-    - "hadolint_debian_12_ansible"
+    - "hadolint_ubuntu_22_ansible"
 
 testbuild_docker_molecule:
   <<: *testbuild
@@ -241,11 +241,11 @@ cicdbuild_debian_12_ansible:
     TYPE: "Ansible"
     NAME: "debian-12-ansible"
 
-cicdbuild_debian_11_ansible:
+cicdbuild_ubuntu_22_ansible:
   <<: *cicdbuild
   variables:
     TYPE: "Ansible"
-    NAME: "debian-11-ansible"
+    NAME: "ubuntu-22-ansible"
 
 cicdbuild_docker_molecule:
   <<: *cicdbuild
