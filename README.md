@@ -124,6 +124,8 @@ Here you can put your change to keep a trace of your work and decisions.
 * Added Ubuntu 22 for Ansible dev
 * Fix all images build
 * Added for major versions
+* Added passlib python lib for password hash
+* Added Alpine Git, to publish
 
 ## Authors
 

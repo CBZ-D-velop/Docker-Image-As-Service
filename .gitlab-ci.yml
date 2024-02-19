@@ -131,6 +131,12 @@ hadolint_debian_11_certification:
     TYPE: "Build"
     NAME: "debian-11-certification"
 
+hadolint_alpine_git:
+  <<: *hadolint
+  variables:
+    TYPE: "Publish"
+    NAME: "alpine-git"
+
 ############################################
 #### testbuild
 ############################################
@@ -215,6 +221,14 @@ testbuild_debian_11_certification:
   needs:
     - "hadolint_debian_11_certification"
 
+testbuild_alpine_git:
+  <<: *testbuild
+  variables:
+    TYPE: "Publish"
+    NAME: "alpine-git"
+  needs:
+    - "hadolint_alpine_git"
+
 ############################################
 #### cicdbuild
 ############################################
@@ -284,3 +298,9 @@ cicdbuild_debian_11_certification:
   variables:
     TYPE: "Build"
     NAME: "debian-11-certification"
+
+cicdbuild_alpine_git:
+  <<: *cicdbuild
+  variables:
+    TYPE: "Publish"
+    NAME: "alpine-git"
