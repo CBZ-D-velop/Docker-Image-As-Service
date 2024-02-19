@@ -50,7 +50,7 @@ stages:
   allow_failure: false
   retry: 2
   rules:
-    - if: $CI_COMMIT_BRANCH == main
+    - if: $CI_COMMIT_BRANCH == "main"
 
 ###############################################################################
 #################### CI JOBS
@@ -107,11 +107,17 @@ hadolint_ubuntu_22_ansible:
     TYPE: "Ansible"
     NAME: "ubuntu-22-ansible"
 
-hadolint_docker_molecule:
+hadolint_docker_dind_molecule:
   <<: *hadolint
   variables:
     TYPE: "Ansible"
-    NAME: "docker-molecule"
+    NAME: "docker-dind-molecule"
+
+hadolint_docker_dind_ansible:
+  <<: *hadolint
+  variables:
+    TYPE: "Ansible"
+    NAME: "docker-dind-ansible"
 
 hadolint_docker_dockerfilebuild:
   <<: *hadolint
@@ -177,13 +183,21 @@ testbuild_ubuntu_22_ansible:
   needs:
     - "hadolint_ubuntu_22_ansible"
 
-testbuild_docker_molecule:
+testbuild_docker_dind_molecule:
   <<: *testbuild
   variables:
     TYPE: "Ansible"
-    NAME: "docker-molecule"
+    NAME: "docker-dind-molecule"
   needs:
-    - "hadolint_docker_molecule"
+    - "hadolint_docker_dind_molecule"
+
+testbuild_docker_dind_ansible:
+  <<: *testbuild
+  variables:
+    TYPE: "Ansible"
+    NAME: "docker-dind-ansible"
+  needs:
+    - "hadolint_docker_dind_ansible"
 
 testbuild_docker_dockerfilebuild:
   <<: *testbuild
@@ -247,11 +261,17 @@ cicdbuild_ubuntu_22_ansible:
     TYPE: "Ansible"
     NAME: "ubuntu-22-ansible"
 
-cicdbuild_docker_molecule:
+cicdbuild_docker_dind_molecule:
   <<: *cicdbuild
   variables:
     TYPE: "Ansible"
-    NAME: "docker-molecule"
+    NAME: "docker-dind-molecule"
+
+cicdbuild_docker_dind_ansible:
+  <<: *cicdbuild
+  variables:
+    TYPE: "Ansible"
+    NAME: "docker-dind-ansible"
 
 cicdbuild_docker_dockerfilebuild:
   <<: *cicdbuild

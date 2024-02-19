@@ -116,6 +116,15 @@ Here you can put your change to keep a trace of your work and decisions.
 * All images are now builded and updated by the CICD pipeline
 * New tag for the build with the current version / latest
 
+### 2024-02-19: Updates majors
+
+* New CICD for image building
+* Added Docker Dind for Ansible dev
+* Added Debian 12 for Ansible dev
+* Added Ubuntu 22 for Ansible dev
+* Fix all images build
+* Added for major versions
+
 ## Authors
 
 * Lord Robin Crombez

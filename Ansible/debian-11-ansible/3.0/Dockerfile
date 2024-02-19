@@ -46,14 +46,7 @@ RUN apt-get install --no-install-recommends -y \
     net-tools procps openssl lsof zip \
     tree python3-apt python3-pip python3-setuptools \
     iftop htop cron virtualenv nethogs iproute2 \
-    git init bzip2 tar unzip locales
-
-# install Java
-RUN echo "deb http://deb.debian.org/debian/ sid main" > /etc/apt/sources.list.d/java && \
-    apt-get update && \
-    apt-get install -y openjdk-11-jdk && \
-    rm /etc/apt/sources.list.d/java && \
-    apt-get update
+    git init bzip2 tar unzip locales iptables-persistent
 
 # CLear all apt files
 RUN apt-get autoclean -y && apt-get clean -y && apt-get autoremove -y && \
