@@ -1,5 +1,5 @@
-# FROM 12.5
-FROM debian@sha256:fc27237003ad8ffa4608590057eed4e1db8ce6098434b5ecda23f533a5b12e56
+# FROM 11
+FROM ubuntu@sha256:81bba8d1dde7fc1883b6e95cd46d6c9f4874374f2b360c8db82620b33f6b5ca1
 
 ARG VERSION=""
 ARG MAINTAINER=""
@@ -34,12 +34,11 @@ WORKDIR ${ENV_DEFAULT_WORKDIR}
 # Update the host, fix upgrade
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN echo "debconf debconf/frontend select Noninteractive" | debconf-set-selections && \
-    apt-mark hold debian-archive-keyring && apt-get update && apt-get upgrade -y && \
-    apt-get upgrade debian-archive-keyring -y --allow-change-held-packages
+    apt-get update && apt-get upgrade -y
 
 # Install basics requirements
 RUN apt-get install --no-install-recommends -y \
-    rsync curl python3 python3-jmespath python3-pip \
+    init rsync curl python3 python3-jmespath python3-pip \
     python3-lxml libssl-dev libffi-dev git wget \
     lsb-release gnupg2 software-properties-common \
     apt-transport-https ca-certificates sudo nano \
@@ -52,8 +51,8 @@ RUN apt-get install --no-install-recommends -y \
 RUN apt-get autoclean -y && apt-get clean -y && apt-get autoremove -y && \
     apt-get autoremove --purge -y && rm -rf /var/lib/apt/lists/*
 
-RUN python3 -m pip install --break-system-packages --no-cache-dir requests passlib
+RUN python3 -m pip install --no-cache-dir requests passlib
 
 # Set CMD
 USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"
-CMD ["bash"]
+CMD ["/sbin/init"]

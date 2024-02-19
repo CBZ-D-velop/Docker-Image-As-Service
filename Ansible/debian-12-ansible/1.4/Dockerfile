@@ -39,7 +39,7 @@ RUN echo "debconf debconf/frontend select Noninteractive" | debconf-set-selectio
 
 # Install basics requirements
 RUN apt-get install --no-install-recommends -y \
-    rsync curl python3 python3-jmespath python3-pip \
+    init rsync curl python3 python3-jmespath python3-pip \
     python3-lxml libssl-dev libffi-dev git wget \
     lsb-release gnupg2 software-properties-common \
     apt-transport-https ca-certificates sudo nano \
@@ -56,4 +56,4 @@ RUN python3 -m pip install --break-system-packages --no-cache-dir requests passl
 
 # Set CMD
 USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"
-CMD ["bash"]
+CMD ["/sbin/init"]
