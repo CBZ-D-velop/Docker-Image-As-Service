@@ -1,0 +1,70 @@
+#!/bin/bash
+
+TAG_FILE=".tag"
+ENV_FILE=".env"
+
+# Check if the tag file exists; if not, create it with the initial value of 0.1
+if [ ! -e "${TAG_FILE}" ]; then
+    MAJOR_TAG="0"
+    MINOR_TAG="1"
+else
+    source ./${TAG_FILE}
+    # If the --major argument is passed, round up to the next integer and add .0
+    if [ "$1" == "--major" ]; then
+        MAJOR_TAG=$((${MAJOR_TAG} + 1))
+        MINOR_TAG="0"
+        VERSION="${MAJOR_TAG}.${MINOR_TAG}"
+
+    # If the --testbuild argument is passed, no touch to any value of version
+    elif [ "$1" == "--testbuild" ]; then
+        echo "=== TEST BUILD ==="
+        VERSION="testbuild-${MAJOR_TAG}.${MINOR_TAG}"
+    # If the --cicdbuild argument is passed, no touch to any value of version
+    elif [ "$1" == "--cicdbuild" ]; then
+        echo "=== CICD BUILD ==="
+        DATE=$(date +'%m-%d-%Y')
+        VERSION="cicd-${DATE}-${MAJOR_TAG}.${MINOR_TAG}"
+    else
+        MINOR_TAG=$((${MINOR_TAG} + 1))
+        VERSION="${MAJOR_TAG}.${MINOR_TAG}"
+    fi
+fi
+
+source ./$ENV_FILE
+docker build \
+    --build-arg VERSION=${VERSION} \
+    --build-arg MAINTAINER=${MAINTAINER} \
+    --build-arg MAINTAINER_ADDRESS=${MAINTAINER_ADDRESS} \
+    --build-arg DEFAULT_USER=${DEFAULT_USER} \
+    --build-arg DEFAULT_GROUP=${DEFAULT_GROUP} \
+    --build-arg DEFAULT_WORKDIR=${DEFAULT_WORKDIR} \
+    -t ${NAMESPACE}/${IMAGE_NAME}:${VERSION} .
+
+BUILD_EXIT_CODE=$?
+if [ ${BUILD_EXIT_CODE} -ne 0 ]; then
+    echo "Build failed with exit code ${BUILD_EXIT_CODE}"
+    exit 1
+fi
+
+if [ "$1" == "--testbuild" ]; then
+
+    echo "=== TEST BUILD COMPLETE ==="
+elif [ "$1" == "--cicdbuild" ]; then
+
+    docker push ${NAMESPACE}/${IMAGE_NAME}:${VERSION}
+    docker tag ${NAMESPACE}/${IMAGE_NAME}:${VERSION} ${NAMESPACE}/${IMAGE_NAME}:latest
+    docker push ${NAMESPACE}/${IMAGE_NAME}:latest
+
+    echo "=== CICD BUILD COMPLETE ==="
+else
+    echo "MAJOR_TAG=${MAJOR_TAG}" > "${TAG_FILE}"
+    echo "MINOR_TAG=${MINOR_TAG}" >> "${TAG_FILE}"
+
+    docker push ${NAMESPACE}/${IMAGE_NAME}:${VERSION}
+    docker tag ${NAMESPACE}/${IMAGE_NAME}:${VERSION} ${NAMESPACE}/${IMAGE_NAME}:latest
+    docker push ${NAMESPACE}/${IMAGE_NAME}:latest
+
+    mkdir -p ../${VERSION}
+    cp -R . ../${VERSION}
+    rm ../${VERSION}/build ../${VERSION}/.tag
+fi

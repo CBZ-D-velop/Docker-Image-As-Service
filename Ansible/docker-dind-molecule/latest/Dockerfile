@@ -7,6 +7,7 @@ ARG MAINTAINER_ADDRESS=""
 ARG DEFAULT_USER=""
 ARG DEFAULT_GROUP=""
 ARG DEFAULT_WORKDIR=""
+ARG DOCKER_TIMEOUT=""
 
 ENV ENV_MAINTAINER="${MAINTAINER}"
 ENV ENV_MAINTAINER_ADDRESS="${MAINTAINER_ADDRESS}"
@@ -15,6 +16,7 @@ ENV ENV_DEFAULT_USER="${DEFAULT_USER}"
 ENV ENV_DEFAULT_GROUP="${DEFAULT_GROUP}"
 ENV ENV_DEFAULT_WORKDIR="${DEFAULT_WORKDIR}"
 ENV ENV_VERSION="${VERSION}"
+ENV ENV_DOCKER_TIMEOUT="${DOCKER_TIMEOUT}"
 
 LABEL "version"="${ENV_VERSION}"
 LABEL "maintainer"="${ENV_MAINTAINER} <${ENV_MAINTAINER_ADDRESS}>"
@@ -59,6 +61,20 @@ RUN apk del build-dependencies; \
     rm -rf /var/cache/apk/* && \
     rm -rf ~/.cache/*
 
+# Increase default docker timeout
+ENV DOCKER_CLIENT_TIMEOUT=${ENV_DOCKER_TIMEOUT}
+ENV COMPOSE_HTTP_TIMEOUT=${ENV_DOCKER_TIMEOUT}
+
+RUN export DOCKER_CLIENT_TIMEOUT=${ENV_DOCKER_TIMEOUT} && \
+    export COMPOSE_HTTP_TIMEOUT=${ENV_DOCKER_TIMEOUT} && \
+    systemctl restart docker
+
+RUN echo '#!/bin/sh' > /usr/local/bin/entrypoint.sh && \
+    echo "export DOCKER_CLIENT_TIMEOUT=${ENV_DOCKER_TIMEOUT}" >> /usr/local/bin/entrypoint.sh && \
+    echo "export COMPOSE_HTTP_TIMEOUT=${ENV_DOCKER_TIMEOUT}" >> /usr/local/bin/sentrypoint.sh && \
+    echo "systemctl restart docker" >> /usr/local/bin/entrypoint.sh && \
+    chmod +x /usr/local/bin/entrypoint.sh
+
 # Set CMD
 USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"
-CMD ["molecule", "--version"]
+CMD ["/usr/local/bin/entrypoint.sh"]

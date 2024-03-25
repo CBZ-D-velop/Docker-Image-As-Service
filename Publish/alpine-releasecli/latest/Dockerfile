@@ -1,5 +1,5 @@
-# FROM dind
-FROM docker@sha256:826fc608d01af1f6fba86ee2df8332d10d7c0a3361d95a02dbd20d2c122496c8
+# FROM v0.16.0
+FROM registry.gitlab.com/gitlab-org/release-cli:v0.16.0
 
 ARG VERSION=""
 ARG MAINTAINER=""
@@ -32,10 +32,11 @@ RUN mkdir -p ${ENV_DEFAULT_WORKDIR}
 WORKDIR ${ENV_DEFAULT_WORKDIR}
 
 # Update installed packages
-# Start and enable docker
 RUN apk update && \
-    apk add --no-cache make openrc docker git bash && \
-    rc-update add docker boot
+    apk add --no-cache make bash
+
+# Install tools
+RUN apk add --update --no-cache git openssl openssh curl
 
 # Remove packages cache
 RUN apk del build-dependencies; \
@@ -44,4 +45,4 @@ RUN apk del build-dependencies; \
 
 # Set CMD
 USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"
-CMD ["docker", "--version"]
+CMD ["ssh", "-V"]
