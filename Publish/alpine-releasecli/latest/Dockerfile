@@ -37,7 +37,6 @@ RUN apk update && \
 
 # Install tools
 RUN apk add --update --no-cache git openssl openssh curl
-
 # Remove packages cache
 RUN apk del build-dependencies; \
     rm -rf /var/cache/apk/* && \
