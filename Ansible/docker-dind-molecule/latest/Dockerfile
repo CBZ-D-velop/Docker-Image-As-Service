@@ -65,8 +65,8 @@ RUN apk del build-dependencies; \
 ENV DOCKER_CLIENT_TIMEOUT=${ENV_DOCKER_TIMEOUT}
 ENV COMPOSE_HTTP_TIMEOUT=${ENV_DOCKER_TIMEOUT}
 
-RUN export DOCKER_CLIENT_TIMEOUT=${ENV_DOCKER_TIMEOUT} \
-    export COMPOSE_HTTP_TIMEOUT=${ENV_DOCKER_TIMEOUT} \
+RUN export DOCKER_CLIENT_TIMEOUT=${ENV_DOCKER_TIMEOUT} && \
+    export COMPOSE_HTTP_TIMEOUT=${ENV_DOCKER_TIMEOUT} && \
     systemctl restart docker
 
 RUN echo '#!/bin/sh' > /usr/local/bin/entrypoint.sh && \

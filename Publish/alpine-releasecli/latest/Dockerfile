@@ -35,11 +35,8 @@ WORKDIR ${ENV_DEFAULT_WORKDIR}
 RUN apk update && \
     apk add --no-cache make bash
 
-# Install python and pip
-RUN apk add --update --no-cache git openssl openssh curl && \
-    ssh -V && \
-    git --version && \
-    release-cli -v
+# Install tools
+RUN apk add --update --no-cache git openssl openssh curl
 
 # Remove packages cache
 RUN apk del build-dependencies; \
