@@ -41,7 +41,7 @@ variables:
   stage: testbuild
   image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD
   script:
-    - "cd && cd ./${TYPE}/${NAME}/latest && bash build -- testbuild"
+    - "cd ./${TYPE}/${NAME}/latest && bash build -- testbuild"
   allow_failure: false
 
 ###############################################################################
