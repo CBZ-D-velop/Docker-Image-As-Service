@@ -41,7 +41,7 @@ variables:
   stage: testbuild
   image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD
   script:
-    - "cd ./${TYPE}/${NAME}/latest && bash build -- testbuild"
+    - "cd ./${TYPE}/${NAME}/latest && bash build --testbuild"
   allow_failure: false
 
 ###############################################################################
@@ -252,7 +252,7 @@ testbuild_alpine_jinjalint:
     TYPE: "Lint"
     NAME: "alpine-jinjalint"
 
-testbuild_alpine_alpine_sonarcli:
+testbuild_alpine_sonarcli:
   <<: *testbuild
   variables:
     TYPE: "Lint"
