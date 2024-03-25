@@ -1,5 +1,5 @@
 # FROM dind
-FROM docker:dind
+FROM docker@sha256:826fc608d01af1f6fba86ee2df8332d10d7c0a3361d95a02dbd20d2c122496c8
 
 ARG VERSION=""
 ARG MAINTAINER=""
@@ -34,7 +34,7 @@ WORKDIR ${ENV_DEFAULT_WORKDIR}
 # Update installed packages
 # Start and enable docker
 RUN apk update && \
-    apk add --no-cache make openrc docker git bash && \
+    apk add --no-cache make openrc docker git bash curl wget zip unzip tar gzip && \
     rc-update add docker boot
 
 # Remove packages cache

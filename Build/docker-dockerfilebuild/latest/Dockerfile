@@ -34,7 +34,7 @@ WORKDIR ${ENV_DEFAULT_WORKDIR}
 # Update installed packages
 # Start and enable docker
 RUN apk update && \
-    apk add --no-cache make openrc docker git bash && \
+    apk add --no-cache make openrc docker git bash curl wget zip unzip tar gzip && \
     rc-update add docker boot
 
 # Remove packages cache

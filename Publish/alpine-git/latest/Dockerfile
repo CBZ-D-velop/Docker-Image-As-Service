@@ -36,7 +36,7 @@ RUN apk update && \
     apk add --no-cache make bash
 
 # Install python and pip
-RUN apk add --update --no-cache git openssl openssh
+RUN apk add --update --no-cache git openssl openssh curl
 
 # Remove packages cache
 RUN apk del build-dependencies; \
