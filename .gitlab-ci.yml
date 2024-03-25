@@ -14,14 +14,23 @@ stages:
 - testbuild
 - publish
 
+variables:
+  ANSIBLE_FORCE_COLOR: "true"
+  PY_COLORS: "1"
+  #
+  DOCKER_IMAGE_SONAR_SCANNER_CLI: "robincbz/alpine-sonarcli:latest"
+  DOCKER_IMAGE_ALPINE_GIT: robincbz/alpine-git:latest
+  DOCKER_IMAGE_ALPINE_RELEASE_CLI: "robincbz/alpine-releasecli:latest"
+  DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT: "robincbz/alpine-dockerfilelint:latest"
+
 ###############################################################################
-#################### actions
+#################### EXTENDABLES
 ###############################################################################
 
 # To start, we need to lint Dockerfile with hadolint
 .hadolint: &hadolint
   stage: lint
-  image: $NEXUS_ADDRESS/$DOCKER_IMAGE_DOCKERFILE_LINT
+  image: $NEXUS_ADDRESS/$DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT
   script:
     - "hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 $(pwd)/$TYPE/$NAME/latest/Dockerfile"
   allow_failure: false
