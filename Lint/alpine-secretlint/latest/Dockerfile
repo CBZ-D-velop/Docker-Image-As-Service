@@ -53,4 +53,4 @@ RUN apk del build-dependencies; \
 
 # Set CMD
 USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"
-CMD ["trufflehog", "--help"]
+CMD ["detect-secrets", "--version"]
