@@ -21,7 +21,7 @@ else
         VERSION="testbuild-${MAJOR_TAG}.${MINOR_TAG}"
     elif [ "$1" == "--dockerscout" ]; then
         echo "=== DOKCER SCOUT BUILD ==="
-        echo "NAMESPACE=\"local-docker-scout\"" >> ./$ENV_FILE
+        echo "NAMESPACE=\"localdockerscout\"" >> ./$ENV_FILE
     # If the --cicdbuild argument is passed, no touch to any value of version
     elif [ "$1" == "--cicdbuild" ]; then
         echo "=== CICD BUILD ==="
