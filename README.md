@@ -127,6 +127,15 @@ Here you can put your change to keep a trace of your work and decisions.
 * Added passlib python lib for password hash
 * Added Alpine Git, to publish
 
+### 2024-03-26/25 New CICD
+
+* Images follow a new CICD besed on DevSecOps and AS SERVICE
+* Each image / Dockerfile is analysed separatly
+* Added Sonarqube, for global quality
+* Added Hadolint, specialized support
+* Added detect-secrets for secret detection in images
+* Cut pipeline file in multiples based on stage
+
 ## Authors
 
 * Lord Robin Crombez

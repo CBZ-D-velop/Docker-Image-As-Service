@@ -23,7 +23,7 @@ variables:
   DOCKER_IMAGE_ALPINE_RELEASE_CLI: "robincbz/alpine-releasecli:latest"
   DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT: "robincbz/alpine-dockerfilelint:latest"
   DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD: "robincbz/docker-dockerfilebuild:latest"
-
+  DOCKER_IMAGE_DOCKER_SECRET_LINT: "robincbz/alpine-secretlint:latest"
 
 ###############################################################################
 #################### EXTENDABLES
@@ -37,12 +37,24 @@ variables:
     - "hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 $(pwd)/$TYPE/$NAME/latest/Dockerfile"
   allow_failure: false
 
+.secretlint: &secretlint
+  stage: lint
+  image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_DOCKER_SECRET_LINT
+  script:
+    - "detect-secrets -C $(pwd)/$TYPE/$NAME/latest scan > .secrets.baseline"
+    - "detect-secrets scan"
+    - "detect-secrets audit .secrets.baseline"
+  allow_failure: false
+
 .testbuild: &testbuild
   stage: testbuild
   image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD
   script:
     - "cd ./${TYPE}/${NAME}/latest && bash build --testbuild"
   allow_failure: false
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
 
 ###############################################################################
 #################### CI JOBS
@@ -129,7 +141,13 @@ hadolint_alpine_jinjalint:
     TYPE: "Lint"
     NAME: "alpine-jinjalint"
 
-hadolint_alpine_alpine_sonarcli:
+hadolint_alpine_secretlint:
+  <<: *hadolint
+  variables:
+    TYPE: "Lint"
+    NAME: "alpine-secretlint"
+
+hadolint_alpine_sonarcli:
   <<: *hadolint
   variables:
     TYPE: "Lint"
@@ -160,8 +178,144 @@ hadolint_alpine_releasecli:
     NAME: "alpine-releasecli"
 
 ############################################
-#### lint
+#### security
 ############################################
+
+secretlint_debian_11_ansible:
+  <<: *secretlint
+  variables:
+    TYPE: "Ansible"
+    NAME: "debian-11-ansible"
+  needs:
+    - "hadolint_debian_11_ansible"
+
+secretlint_debian_12_ansible:
+  <<: *secretlint
+  variables:
+    TYPE: "Ansible"
+    NAME: "debian-12-ansible"
+  needs:
+    - "hadolint_debian_12_ansible"
+
+secretlint_docker_dind_ansible:
+  <<: *secretlint
+  variables:
+    TYPE: "Ansible"
+    NAME: "docker-dind-ansible"
+  needs:
+    - "hadolint_docker_dind_ansible"
+
+secretlint_docker_dind_molecule:
+  <<: *secretlint
+  variables:
+    TYPE: "Ansible"
+    NAME: "docker-dind-molecule"
+  needs:
+    - "hadolint_docker_dind_molecule"
+
+secretlint_ubuntu_22_ansible:
+  <<: *secretlint
+  variables:
+    TYPE: "Ansible"
+    NAME: "ubuntu-22-ansible"
+  needs:
+    - "hadolint_ubuntu_22_ansible"
+
+secretlint_debian_11_certification:
+  <<: *secretlint
+  variables:
+    TYPE: "Build"
+    NAME: "debian-11-certification"
+  needs:
+    - "hadolint_debian_11_certification"
+
+secretlint_debian_npmbuild:
+  <<: *secretlint
+  variables:
+    TYPE: "Build"
+    NAME: "debian-npmbuild"
+  needs:
+    - "hadolint_debian_npmbuild"
+
+secretlint_docker_dockerfilebuild:
+  <<: *secretlint
+  variables:
+    TYPE: "Build"
+    NAME: "docker-dockerfilebuild"
+  needs:
+    - "hadolint_docker_dockerfilebuild"
+
+secretlint_alpine_ansiblelint:
+  <<: *secretlint
+  variables:
+    TYPE: "Lint"
+    NAME: "alpine-ansiblelint"
+  needs:
+    - "hadolint_alpine_ansiblelint"
+
+secretlint_alpine_dockerfilelint:
+  <<: *secretlint
+  variables:
+    TYPE: "Lint"
+    NAME: "alpine-dockerfilelint"
+  needs:
+    - "hadolint_alpine_dockerfilelint"
+
+secretlint_alpine_jinjalint:
+  <<: *secretlint
+  variables:
+    TYPE: "Lint"
+    NAME: "alpine-jinjalint"
+  needs:
+    - "hadolint_alpine_jinjalint"
+
+secretlint_alpine_secretlint:
+  <<: *secretlint
+  variables:
+    TYPE: "Lint"
+    NAME: "alpine-secretlint"
+  needs:
+    - "hadolint_alpine_secretlint"
+
+secretlint_alpine_sonarcli:
+  <<: *secretlint
+  variables:
+    TYPE: "Lint"
+    NAME: "alpine-sonarcli"
+  needs:
+    - "hadolint_alpine_sonarcli"
+
+secretlint_alpine_yamllint:
+  <<: *secretlint
+  variables:
+    TYPE: "Lint"
+    NAME: "alpine-yamllint"
+  needs:
+    - "hadolint_alpine_yamllint"
+
+secretlint_alpine_markdownlint:
+  <<: *secretlint
+  variables:
+    TYPE: "Lint"
+    NAME: "debian-markdownlint"
+  needs:
+    - "hadolint_alpine_markdownlint"
+
+secretlint_alpine_git:
+  <<: *secretlint
+  variables:
+    TYPE: "Publish"
+    NAME: "alpine-git"
+  needs:
+    - "hadolint_alpine_git"
+
+secretlint_alpine_releasecli:
+  <<: *secretlint
+  variables:
+    TYPE: "Publish"
+    NAME: "alpine-releasecli"
+  needs:
+    - "hadolint_alpine_releasecli"
 
 ############################################
 #### sonarqube
@@ -251,6 +405,12 @@ testbuild_alpine_jinjalint:
   variables:
     TYPE: "Lint"
     NAME: "alpine-jinjalint"
+
+testbuild_alpine_secretlint:
+  <<: *testbuild
+  variables:
+    TYPE: "Lint"
+    NAME: "alpine-secretlint"
 
 testbuild_alpine_sonarcli:
   <<: *testbuild
