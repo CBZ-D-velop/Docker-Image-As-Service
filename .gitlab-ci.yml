@@ -39,7 +39,7 @@ variables:
 
 .secretlint: &secretlint
   stage: lint
-  image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT
+  image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_DOCKER_SECRET_LINT
   script:
     - "detect-secrets -C $(pwd)/$TYPE/$NAME/latest scan > .secrets.baseline"
     - "detect-secrets scan"
