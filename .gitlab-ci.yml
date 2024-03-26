@@ -467,133 +467,133 @@ security_debian_11_ansible:
   variables:
     TYPE: "Ansible"
     NAME: "debian-11-ansible"
-  needs:
-    - "testbuild_debian_11_ansible"
+#  needs:
+#    - "testbuild_debian_11_ansible"
 
 security_debian_12_ansible:
   <<: *security
   variables:
     TYPE: "Ansible"
     NAME: "debian-12-ansible"
-  needs:
-    - "testbuild_debian_12_ansible"
+#  needs:
+#    - "testbuild_debian_12_ansible"
 
 security_docker_dind_ansible:
   <<: *security
   variables:
     TYPE: "Ansible"
     NAME: "docker-dind-ansible"
-  needs:
-    - "testbuild_docker_dind_ansible"
+#  needs:
+#    - "testbuild_docker_dind_ansible"
 
 security_docker_dind_molecule:
   <<: *security
   variables:
     TYPE: "Ansible"
     NAME: "docker-dind-molecule"
-  needs:
-    - "testbuild_docker_dind_molecule"
+#  needs:
+#    - "testbuild_docker_dind_molecule"
 
 security_ubuntu_22_ansible:
   <<: *security
   variables:
     TYPE: "Ansible"
     NAME: "ubuntu-22-ansible"
-  needs:
-    - "testbuild_ubuntu_22_ansible"
+#  needs:
+#    - "testbuild_ubuntu_22_ansible"
 
 security_debian_11_certification:
   <<: *security
   variables:
     TYPE: "Build"
     NAME: "debian-11-certification"
-  needs:
-    - "testbuild_debian_11_certification"
+#  needs:
+#    - "testbuild_debian_11_certification"
 
 security_debian_npmbuild:
   <<: *security
   variables:
     TYPE: "Build"
     NAME: "debian-npmbuild"
-  needs:
-    - "testbuild_debian_npmbuild"
+#  needs:
+#    - "testbuild_debian_npmbuild"
 
 security_docker_dockerfilebuild:
   <<: *security
   variables:
     TYPE: "Build"
     NAME: "docker-dockerfilebuild"
-  needs:
-    - "testbuild_docker_dockerfilebuild"
+#  needs:
+#    - "testbuild_docker_dockerfilebuild"
 
 security_alpine_ansiblelint:
   <<: *security
   variables:
     TYPE: "Lint"
     NAME: "alpine-ansiblelint"
-  needs:
-    - "testbuild_alpine_ansiblelint"
+#  needs:
+#    - "testbuild_alpine_ansiblelint"
 
 security_alpine_dockerfilelint:
   <<: *security
   variables:
     TYPE: "Lint"
     NAME: "alpine-dockerfilelint"
-  needs:
-    - "testbuild_alpine_dockerfilelint"
+#  needs:
+#    - "testbuild_alpine_dockerfilelint"
 
 security_alpine_jinjalint:
   <<: *security
   variables:
     TYPE: "Lint"
     NAME: "alpine-jinjalint"
-  needs:
-    - "testbuild_alpine_jinjalint"
+#  needs:
+#    - "testbuild_alpine_jinjalint"
 
 security_alpine_secretlint:
   <<: *security
   variables:
     TYPE: "Lint"
     NAME: "alpine-secretlint"
-  needs:
-    - "testbuild_alpine_secretlint"
+#  needs:
+#    - "testbuild_alpine_secretlint"
 
 security_alpine_sonarcli:
   <<: *security
   variables:
     TYPE: "Lint"
     NAME: "alpine-sonarcli"
-  needs:
-    - "testbuild_alpine_sonarcli"
+#  needs:
+#    - "testbuild_alpine_sonarcli"
 
 security_alpine_yamllint:
   <<: *security
   variables:
     TYPE: "Lint"
     NAME: "alpine-yamllint"
-  needs:
-    - "testbuild_alpine_yamllint"
+#  needs:
+#    - "testbuild_alpine_yamllint"
 
 security_alpine_markdownlint:
   <<: *security
   variables:
     TYPE: "Lint"
     NAME: "debian-markdownlint"
-  needs:
-    - "testbuild_alpine_markdownlint"
+#  needs:
+#    - "testbuild_alpine_markdownlint"
 
 security_alpine_git:
   <<: *security
   variables:
     TYPE: "Publish"
     NAME: "alpine-git"
-  needs:
-    - "testbuild_alpine_git"
+#  needs:
+#    - "testbuild_alpine_git"
 
 security_alpine_releasecli:
   <<: *security
   variables:
     TYPE: "Publish"
     NAME: "alpine-releasecli"
-  needs:
-    - "testbuild_alpine_releasecli"
+#  needs:
+#    - "testbuild_alpine_releasecli"
