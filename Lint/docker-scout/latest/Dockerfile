@@ -48,10 +48,12 @@ RUN apk add --update --no-cache python3 && \
     python3 --version
 
 # Install Docker scout
-RUN apk add --no-cache --update curl && \
-    set -o pipefail && curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s -- && \
+RUN apk add --no-cache --update curl wget tar && \
+    wget https://github.com/docker/scout-cli/releases/download/v1.6.4/docker-scout_1.6.4_linux_amd64.tar.gz && \
+    mkdir -p ~/.docker/cli-plugins && \
+    tar xvzf *.tar.gz && mv docker-scout ~/.docker/cli-plugins/. && \
+    chmod +x ~/.docker/cli-plugins/docker-scout && \
     docker scout --help
-
 
 # Remove packages cache
 RUN rm -rf /var/cache/apk/* ~/.cache/*
@@ -62,7 +64,6 @@ ENV COMPOSE_HTTP_TIMEOUT=${ENV_DOCKER_TIMEOUT}
 
 RUN export DOCKER_CLIENT_TIMEOUT=${ENV_DOCKER_TIMEOUT} && \
     export COMPOSE_HTTP_TIMEOUT=${ENV_DOCKER_TIMEOUT}
-
 
 # Set CMD
 USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"
