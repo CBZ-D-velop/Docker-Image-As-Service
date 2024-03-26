@@ -72,9 +72,9 @@ include:
   allow_failure: false
 
 include:
-  - "./gitlab-ci-lint.yml"
-  - "./gitlab-ci-security.yml"
-  - "./gitlab-ci-testbuild.yml"
+  - "./.gitlab-ci-lint.yml"
+  - "./.gitlab-ci-security.yml"
+  - "./.gitlab-ci-testbuild.yml"
 
 sonarqube-check:
   stage: sonarqube
