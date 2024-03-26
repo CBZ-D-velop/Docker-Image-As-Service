@@ -67,4 +67,4 @@ RUN export DOCKER_CLIENT_TIMEOUT=${ENV_DOCKER_TIMEOUT} && \
 
 # Set CMD
 USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"
-CMD ["/usr/local/bin/entrypoint.sh"]
+CMD ["docker", "scout", "--help"]
