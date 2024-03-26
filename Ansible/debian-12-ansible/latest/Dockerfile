@@ -48,13 +48,6 @@ RUN apt-get install --no-install-recommends -y \
     iftop htop cron virtualenv nethogs iproute2 \
     git init bzip2 tar unzip locales iptables-persistent
 
-# install Java
-RUN echo "deb http://deb.debian.org/debian/ sid main" > /etc/apt/sources.list.d/java && \
-    apt-get update && \
-    apt-get install -y openjdk-17-jdk && \
-    rm /etc/apt/sources.list.d/java && \
-    apt-get update
-
 # CLear all apt files
 RUN apt-get autoclean -y && apt-get clean -y && apt-get autoremove -y && \
     apt-get autoremove --purge -y && rm -rf /var/lib/apt/lists/*
