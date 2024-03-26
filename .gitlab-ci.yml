@@ -8,6 +8,7 @@
 
 stages:
 - gitlab-test
+- tmp
 - lint
 - secret
 - sonarqube
@@ -25,7 +26,7 @@ variables:
   DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT: "robincbz/alpine-dockerfilelint:latest"
   DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD: "robincbz/docker-dockerfilebuild:latest"
   DOCKER_IMAGE_DOCKER_SECRET_LINT: "robincbz/alpine-secretlint:latest"
-  DOCKER_IMAGE_DOCKER: "robincbz/docker-scout:latest"
+  DOCKER_IMAGE_DOCKER_SCOUT: "robincbz/docker-scout:latest"
 
 ###############################################################################
 #################### EXTENDABLES
@@ -59,7 +60,7 @@ variables:
     - if: '$CI_COMMIT_BRANCH == "main"'
 
 .security: &security
-  stage: security
+  stage: tmp
   image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_DOCKER_SCOUT
   before_script:
     - "docker login -u \"${NEXUS_REPOS_USERNAME}\" -p \"${NEXUS_REPOS_PASSWORD}\" \"${NEXUS_REPOS_DOCKER_REGISTRY}\""
