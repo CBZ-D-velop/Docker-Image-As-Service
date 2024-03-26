@@ -47,11 +47,6 @@ RUN apt-get install --no-install-recommends -y \
     iftop htop cron virtualenv nethogs iproute2 \
     git init bzip2 tar unzip locales iptables-persistent
 
-# install Java
-RUN add-apt-repository ppa:openjdk-r/ppa && \
-    apt-get update && \
-    apt-get install -y openjdk-17-jdk
-
 # CLear all apt files
 RUN apt-get autoclean -y && apt-get clean -y && apt-get autoremove -y && \
     apt-get autoremove --purge -y && rm -rf /var/lib/apt/lists/*
