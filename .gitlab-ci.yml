@@ -18,10 +18,12 @@ variables:
   ANSIBLE_FORCE_COLOR: "true"
   PY_COLORS: "1"
   #
-  DOCKER_IMAGE_SONAR_SCANNER_CLI: "robincbz/alpine-sonarcli:latest"
+  DOCKER_IMAGE_ALPINE_SONAR_SCANNER_CLI: "robincbz/alpine-sonarcli:latest"
   DOCKER_IMAGE_ALPINE_GIT: robincbz/alpine-git:latest
   DOCKER_IMAGE_ALPINE_RELEASE_CLI: "robincbz/alpine-releasecli:latest"
   DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT: "robincbz/alpine-dockerfilelint:latest"
+  DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD: "robincbz/docker-dockerfilebuild:latest"
+
 
 ###############################################################################
 #################### EXTENDABLES
@@ -34,6 +36,16 @@ variables:
   script:
     - "hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 $(pwd)/$TYPE/$NAME/latest/Dockerfile"
   allow_failure: false
+
+.testbuild: &testbuild
+  stage: testbuild
+  image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD
+  script:
+    - "cd ./${TYPE}/${NAME}/latest && bash build --testbuild"
+  allow_failure: false
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
 
 ###############################################################################
 #################### CI JOBS
@@ -161,7 +173,7 @@ hadolint_alpine_releasecli:
 sonarqube-check:
   stage: sonarqube
   image: 
-    name: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_SONAR_SCANNER_CLI
+    name: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_ALPINE_SONAR_SCANNER_CLI
     entrypoint: [""]
   variables:
     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
@@ -172,3 +184,103 @@ sonarqube-check:
       - ".sonar/cache"
   script: 
     - "sonar-scanner"
+
+############################################
+#### testbuild
+############################################
+
+testbuild_debian_11_ansible:
+  <<: *testbuild
+  variables:
+    TYPE: "Ansible"
+    NAME: "debian-11-ansible"
+
+testbuild_debian_12_ansible:
+  <<: *testbuild
+  variables:
+    TYPE: "Ansible"
+    NAME: "debian-12-ansible"
+
+testbuild_docker_dind_ansible:
+  <<: *testbuild
+  variables:
+    TYPE: "Ansible"
+    NAME: "docker-dind-ansible"
+
+testbuild_docker_dind_molecule:
+  <<: *testbuild
+  variables:
+    TYPE: "Ansible"
+    NAME: "docker-dind-molecule"
+
+testbuild_ubuntu_22_ansible:
+  <<: *testbuild
+  variables:
+    TYPE: "Ansible"
+    NAME: "ubuntu-22-ansible"
+
+testbuild_debian_11_certification:
+  <<: *testbuild
+  variables:
+    TYPE: "Build"
+    NAME: "debian-11-certification"
+
+testbuild_debian_npmbuild:
+  <<: *testbuild
+  variables:
+    TYPE: "Build"
+    NAME: "debian-npmbuild"
+
+testbuild_docker_dockerfilebuild:
+  <<: *testbuild
+  variables:
+    TYPE: "Build"
+    NAME: "docker-dockerfilebuild"
+
+testbuild_alpine_ansiblelint:
+  <<: *testbuild
+  variables:
+    TYPE: "Lint"
+    NAME: "alpine-ansiblelint"
+
+testbuild_alpine_dockerfilelint:
+  <<: *testbuild
+  variables:
+    TYPE: "Lint"
+    NAME: "alpine-dockerfilelint"
+
+testbuild_alpine_jinjalint:
+  <<: *testbuild
+  variables:
+    TYPE: "Lint"
+    NAME: "alpine-jinjalint"
+
+testbuild_alpine_sonarcli:
+  <<: *testbuild
+  variables:
+    TYPE: "Lint"
+    NAME: "alpine-sonarcli"
+
+testbuild_alpine_yamllint:
+  <<: *testbuild
+  variables:
+    TYPE: "Lint"
+    NAME: "alpine-yamllint"
+
+testbuild_alpine_markdownlint:
+  <<: *testbuild
+  variables:
+    TYPE: "Lint"
+    NAME: "debian-markdownlint"
+
+testbuild_alpine_git:
+  <<: *testbuild
+  variables:
+    TYPE: "Publish"
+    NAME: "alpine-git"
+
+testbuild_alpine_releasecli:
+  <<: *testbuild
+  variables:
+    TYPE: "Publish"
+    NAME: "alpine-releasecli"
