@@ -1,5 +1,5 @@
-# FROM dind
-FROM docker@sha256:826fc608d01af1f6fba86ee2df8332d10d7c0a3361d95a02dbd20d2c122496c8
+# FROM 1
+FROM docker/scout-cli@sha256:721928ab0564728c971bb5a77d09093f75f1a3818ee0512d8c28e290d21268c0
 
 ARG VERSION=""
 ARG MAINTAINER=""
@@ -22,43 +22,6 @@ LABEL "version"="${ENV_VERSION}"
 LABEL "maintainer"="${ENV_MAINTAINER} <${ENV_MAINTAINER_ADDRESS}>"
 LABEL "maintainer-address"="${ENV_MAINTAINER_ADDRESS}"
 
-# Check if the user exists, and create it if not
-RUN if ! id -u ${ENV_DEFAULT_USER} > /dev/null 2>&1; then \
-        adduser -D ${ENV_DEFAULT_USER}; \
-    fi
-
-# Check if the work directory exists, and create it if not
-RUN mkdir -p ${ENV_DEFAULT_WORKDIR}
-
-# Set the working directory
-WORKDIR ${ENV_DEFAULT_WORKDIR}
-
-# Update installed packages
-# Start and enable docker
-RUN apk update && \
-    apk add --no-cache make openrc docker git tar unzip bzip2 bash curl && \
-    rc-update add docker boot
-
-# Install scout
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s -- && \
-    docker scout --version
-
-# Remove packages cache
-RUN rm -rf /var/cache/apk/* ~/.cache/*
-
-# Increase default docker timeout
-ENV DOCKER_CLIENT_TIMEOUT=${ENV_DOCKER_TIMEOUT}
-ENV COMPOSE_HTTP_TIMEOUT=${ENV_DOCKER_TIMEOUT}
-
-RUN export DOCKER_CLIENT_TIMEOUT=${ENV_DOCKER_TIMEOUT} && \
-    export COMPOSE_HTTP_TIMEOUT=${ENV_DOCKER_TIMEOUT}
-
-RUN echo '#!/bin/sh' > /usr/local/bin/entrypoint.sh && \
-    echo "export DOCKER_CLIENT_TIMEOUT=${ENV_DOCKER_TIMEOUT}" >> /usr/local/bin/entrypoint.sh && \
-    echo "export COMPOSE_HTTP_TIMEOUT=${ENV_DOCKER_TIMEOUT}" >> /usr/local/bin/entrypoint.sh && \
-    chmod +x /usr/local/bin/entrypoint.sh
-
 # Set CMD
-USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"
-CMD ["/usr/local/bin/entrypoint.sh"]
+ENTRYPOINT ["/docker-scout"]
+CMD ["--help"]
