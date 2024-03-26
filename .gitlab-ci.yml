@@ -25,7 +25,7 @@ variables:
   DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT: "robincbz/alpine-dockerfilelint:latest"
   DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD: "robincbz/docker-dockerfilebuild:latest"
   DOCKER_IMAGE_DOCKER_SECRET_LINT: "robincbz/alpine-secretlint:latest"
-  DOCKER_IMAGE_DOCKER_SCOUT: "robincbz/docker-scout:latest"
+  DOCKER_IMAGE_DOCKER_SCOUT: "docker/scout-cli:1"
 
 ###############################################################################
 #################### EXTENDABLES
@@ -181,12 +181,6 @@ hadolint_alpine_markdownlint:
     TYPE: "Lint"
     NAME: "debian-markdownlint"
 
-hadolint_docker_scout:
-  <<: *hadolint
-  variables:
-    TYPE: "Lint"
-    NAME: "docker-scout"
-
 hadolint_alpine_git:
   <<: *hadolint
   variables:
@@ -323,14 +317,6 @@ secretlint_alpine_markdownlint:
   needs:
     - "hadolint_alpine_markdownlint"
 
-secretlint_docker_scout:
-  <<: *secretlint
-  variables:
-    TYPE: "Lint"
-    NAME: "docker-scout"
-  needs:
-    - "hadolint_docker_scout"
-
 secretlint_alpine_git:
   <<: *secretlint
   variables:
@@ -459,12 +445,6 @@ testbuild_alpine_markdownlint:
   variables:
     TYPE: "Lint"
     NAME: "debian-markdownlint"
-
-testbuild_docker_scout:
-  <<: *testbuild
-  variables:
-    TYPE: "Lint"
-    NAME: "docker-scout"
 
 testbuild_alpine_git:
   <<: *testbuild
@@ -601,14 +581,6 @@ security_alpine_markdownlint:
     NAME: "debian-markdownlint"
   needs:
     - "testbuild_alpine_markdownlint"
-
-security_docker-scout:
-  <<: *security
-  variables:
-    TYPE: "Lint"
-    NAME: "docker-scout"
-  needs:
-    - "testbuild_docker_scout"
 
 security_alpine_git:
   <<: *security
