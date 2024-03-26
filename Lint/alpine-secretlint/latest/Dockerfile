@@ -1,5 +1,5 @@
-# FROM 3.71.0
-FROM trufflesecurity/trufflehog@sha256:84045edd95b5651ff1deeeaa7216e95d3e5164cf96f083393c1f2612108a5bbe
+# FROM 3.18
+FROM alpine@sha256:48d9183eb12a05c99bcc0bf44a003607b8e941e1d4f41f9ad12bdcc4b5672f86
 
 ARG VERSION=""
 ARG MAINTAINER=""
@@ -35,10 +35,19 @@ WORKDIR ${ENV_DEFAULT_WORKDIR}
 RUN apk update && \
     apk add --no-cache make bash gnupg
 
+# Install basics requirements
+RUN apk add --no-cache \
+    rsync curl python3 \
+    libffi-dev wget lsb-release \
+    ca-certificates sudo nano \
+    net-tools procps openssl lsof zip \
+    tree iftop htop nethogs iproute2 \
+    git bzip2 tar unzip py3-pip \
+    py3-jmespath py3-lxml py3-pip py3-setuptools
+
 # Install python and pip
 RUN apk add --update --no-cache python3 && \
     ln -sf python3 /usr/bin/python && \
-    mv /usr/lib/python3.11/EXTERNALLY-MANAGED /usr/lib/python3.11/EXTERNALLY-MANAGED.old && \
     python3 -m ensurepip && \
     pip3 install --no-cache-dir --upgrade pip setuptools --break-system-packages
 
