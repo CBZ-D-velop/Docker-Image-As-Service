@@ -43,6 +43,9 @@ variables:
   script:
     - "cd ./${TYPE}/${NAME}/latest && bash build --testbuild"
   allow_failure: false
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
 
 ###############################################################################
 #################### CI JOBS
