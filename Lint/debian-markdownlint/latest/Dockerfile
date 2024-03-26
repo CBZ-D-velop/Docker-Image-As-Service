@@ -38,7 +38,7 @@ RUN echo "debconf debconf/frontend select Noninteractive" | debconf-set-selectio
     apt-get upgrade debian-archive-keyring -y --allow-change-held-packages
 
 # Install markdown lint
-RUN npm install --ignore-scripts -g markdownlint-cli
+RUN npm i --ignore-scripts -g markdownlint-cli
 
 # CLear all apt files
 RUN apt-get autoclean -y && apt-get clean -y && apt-get autoremove -y && \
