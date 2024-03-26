@@ -6,6 +6,8 @@
     - "detect-secrets scan"
     - "detect-secrets audit .secrets.baseline"
   allow_failure: false
+  rules:
+    - when: on_success
 
 ############################################
 #### security
