@@ -40,7 +40,8 @@ RUN apk update && \
     rc-update add docker boot
 
 # Install scout
-RUN set -o pipefail; curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s -- && \
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+RUN curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s -- && \
     docker scout --version
 
 # Remove packages cache
