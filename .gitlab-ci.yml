@@ -147,7 +147,7 @@ hadolint_alpine_secretlint:
     TYPE: "Lint"
     NAME: "alpine-secretlint"
 
-hadolint_alpine_alpine_sonarcli:
+hadolint_alpine_sonarcli:
   <<: *hadolint
   variables:
     TYPE: "Lint"
