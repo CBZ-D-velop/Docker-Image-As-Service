@@ -23,7 +23,7 @@ variables:
   DOCKER_IMAGE_ALPINE_RELEASE_CLI: "robincbz/alpine-releasecli:latest"
   DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT: "robincbz/alpine-dockerfilelint:latest"
   DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD: "robincbz/docker-dockerfilebuild:latest"
-
+  DOCKER_IMAGE_DOCKER_SECRET_LINT: "robincbz/alpine-secretlint:latest"
 
 ###############################################################################
 #################### EXTENDABLES
@@ -35,6 +35,15 @@ variables:
   image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT
   script:
     - "hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 $(pwd)/$TYPE/$NAME/latest/Dockerfile"
+  allow_failure: false
+
+.secretlint: &secretlint
+  stage: lint
+  image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT
+  script:
+    - "detect-secrets -C $(pwd)/$TYPE/$NAME/latest scan > .secrets.baseline"
+    - "detect-secrets scan"
+    - "detect-secrets audit .secrets.baseline"
   allow_failure: false
 
 .testbuild: &testbuild
@@ -62,113 +71,10 @@ include:
 - template: Security/SAST.gitlab-ci.yml
   allow_failure: false
 
-############################################
-#### lint
-############################################
-
-hadolint_debian_11_ansible:
-  <<: *hadolint
-  variables:
-    TYPE: "Ansible"
-    NAME: "debian-11-ansible"
-
-hadolint_debian_12_ansible:
-  <<: *hadolint
-  variables:
-    TYPE: "Ansible"
-    NAME: "debian-12-ansible"
-
-hadolint_docker_dind_ansible:
-  <<: *hadolint
-  variables:
-    TYPE: "Ansible"
-    NAME: "docker-dind-ansible"
-
-hadolint_docker_dind_molecule:
-  <<: *hadolint
-  variables:
-    TYPE: "Ansible"
-    NAME: "docker-dind-molecule"
-
-hadolint_ubuntu_22_ansible:
-  <<: *hadolint
-  variables:
-    TYPE: "Ansible"
-    NAME: "ubuntu-22-ansible"
-
-hadolint_debian_11_certification:
-  <<: *hadolint
-  variables:
-    TYPE: "Build"
-    NAME: "debian-11-certification"
-
-hadolint_debian_npmbuild:
-  <<: *hadolint
-  variables:
-    TYPE: "Build"
-    NAME: "debian-npmbuild"
-
-hadolint_docker_dockerfilebuild:
-  <<: *hadolint
-  variables:
-    TYPE: "Build"
-    NAME: "docker-dockerfilebuild"
-
-hadolint_alpine_ansiblelint:
-  <<: *hadolint
-  variables:
-    TYPE: "Lint"
-    NAME: "alpine-ansiblelint"
-
-hadolint_alpine_dockerfilelint:
-  <<: *hadolint
-  variables:
-    TYPE: "Lint"
-    NAME: "alpine-dockerfilelint"
-
-hadolint_alpine_jinjalint:
-  <<: *hadolint
-  variables:
-    TYPE: "Lint"
-    NAME: "alpine-jinjalint"
-
-hadolint_alpine_alpine_sonarcli:
-  <<: *hadolint
-  variables:
-    TYPE: "Lint"
-    NAME: "alpine-sonarcli"
-
-hadolint_alpine_yamllint:
-  <<: *hadolint
-  variables:
-    TYPE: "Lint"
-    NAME: "alpine-yamllint"
-
-hadolint_alpine_markdownlint:
-  <<: *hadolint
-  variables:
-    TYPE: "Lint"
-    NAME: "debian-markdownlint"
-
-hadolint_alpine_git:
-  <<: *hadolint
-  variables:
-    TYPE: "Publish"
-    NAME: "alpine-git"
-
-hadolint_alpine_releasecli:
-  <<: *hadolint
-  variables:
-    TYPE: "Publish"
-    NAME: "alpine-releasecli"
-
-############################################
-#### lint
-############################################
-
-############################################
-#### sonarqube
-############################################
+include:
+  - "./gitlab-ci-lint.yml"
+  - "./gitlab-ci-security.yml"
+  - "./gitlab-ci-testbuild.yml"
 
 sonarqube-check:
   stage: sonarqube
@@ -184,103 +90,3 @@ sonarqube-check:
       - ".sonar/cache"
   script: 
     - "sonar-scanner"
-
-############################################
-#### testbuild
-############################################
-
-testbuild_debian_11_ansible:
-  <<: *testbuild
-  variables:
-    TYPE: "Ansible"
-    NAME: "debian-11-ansible"
-
-testbuild_debian_12_ansible:
-  <<: *testbuild
-  variables:
-    TYPE: "Ansible"
-    NAME: "debian-12-ansible"
-
-testbuild_docker_dind_ansible:
-  <<: *testbuild
-  variables:
-    TYPE: "Ansible"
-    NAME: "docker-dind-ansible"
-
-testbuild_docker_dind_molecule:
-  <<: *testbuild
-  variables:
-    TYPE: "Ansible"
-    NAME: "docker-dind-molecule"
-
-testbuild_ubuntu_22_ansible:
-  <<: *testbuild
-  variables:
-    TYPE: "Ansible"
-    NAME: "ubuntu-22-ansible"
-
-testbuild_debian_11_certification:
-  <<: *testbuild
-  variables:
-    TYPE: "Build"
-    NAME: "debian-11-certification"
-
-testbuild_debian_npmbuild:
-  <<: *testbuild
-  variables:
-    TYPE: "Build"
-    NAME: "debian-npmbuild"
-
-testbuild_docker_dockerfilebuild:
-  <<: *testbuild
-  variables:
-    TYPE: "Build"
-    NAME: "docker-dockerfilebuild"
-
-testbuild_alpine_ansiblelint:
-  <<: *testbuild
-  variables:
-    TYPE: "Lint"
-    NAME: "alpine-ansiblelint"
-
-testbuild_alpine_dockerfilelint:
-  <<: *testbuild
-  variables:
-    TYPE: "Lint"
-    NAME: "alpine-dockerfilelint"
-
-testbuild_alpine_jinjalint:
-  <<: *testbuild
-  variables:
-    TYPE: "Lint"
-    NAME: "alpine-jinjalint"
-
-testbuild_alpine_sonarcli:
-  <<: *testbuild
-  variables:
-    TYPE: "Lint"
-    NAME: "alpine-sonarcli"
-
-testbuild_alpine_yamllint:
-  <<: *testbuild
-  variables:
-    TYPE: "Lint"
-    NAME: "alpine-yamllint"
-
-testbuild_alpine_markdownlint:
-  <<: *testbuild
-  variables:
-    TYPE: "Lint"
-    NAME: "debian-markdownlint"
-
-testbuild_alpine_git:
-  <<: *testbuild
-  variables:
-    TYPE: "Publish"
-    NAME: "alpine-git"
-
-testbuild_alpine_releasecli:
-  <<: *testbuild
-  variables:
-    TYPE: "Publish"
-    NAME: "alpine-releasecli"

@@ -1,0 +1,105 @@
+############################################
+#### testbuild
+############################################
+
+testbuild_debian_11_ansible:
+  <<: *testbuild
+  variables:
+    TYPE: "Ansible"
+    NAME: "debian-11-ansible"
+
+testbuild_debian_12_ansible:
+  <<: *testbuild
+  variables:
+    TYPE: "Ansible"
+    NAME: "debian-12-ansible"
+
+testbuild_docker_dind_ansible:
+  <<: *testbuild
+  variables:
+    TYPE: "Ansible"
+    NAME: "docker-dind-ansible"
+
+testbuild_docker_dind_molecule:
+  <<: *testbuild
+  variables:
+    TYPE: "Ansible"
+    NAME: "docker-dind-molecule"
+
+testbuild_ubuntu_22_ansible:
+  <<: *testbuild
+  variables:
+    TYPE: "Ansible"
+    NAME: "ubuntu-22-ansible"
+
+testbuild_debian_11_certification:
+  <<: *testbuild
+  variables:
+    TYPE: "Build"
+    NAME: "debian-11-certification"
+
+testbuild_debian_npmbuild:
+  <<: *testbuild
+  variables:
+    TYPE: "Build"
+    NAME: "debian-npmbuild"
+
+testbuild_docker_dockerfilebuild:
+  <<: *testbuild
+  variables:
+    TYPE: "Build"
+    NAME: "docker-dockerfilebuild"
+
+testbuild_alpine_ansiblelint:
+  <<: *testbuild
+  variables:
+    TYPE: "Lint"
+    NAME: "alpine-ansiblelint"
+
+testbuild_alpine_dockerfilelint:
+  <<: *testbuild
+  variables:
+    TYPE: "Lint"
+    NAME: "alpine-dockerfilelint"
+
+testbuild_alpine_jinjalint:
+  <<: *testbuild
+  variables:
+    TYPE: "Lint"
+    NAME: "alpine-jinjalint"
+
+testbuild_alpine_secretlint:
+  <<: *testbuild
+  variables:
+    TYPE: "Lint"
+    NAME: "alpine-secretlint"
+
+testbuild_alpine_sonarcli:
+  <<: *testbuild
+  variables:
+    TYPE: "Lint"
+    NAME: "alpine-sonarcli"
+
+testbuild_alpine_yamllint:
+  <<: *testbuild
+  variables:
+    TYPE: "Lint"
+    NAME: "alpine-yamllint"
+
+testbuild_alpine_markdownlint:
+  <<: *testbuild
+  variables:
+    TYPE: "Lint"
+    NAME: "debian-markdownlint"
+
+testbuild_alpine_git:
+  <<: *testbuild
+  variables:
+    TYPE: "Publish"
+    NAME: "alpine-git"
+
+testbuild_alpine_releasecli:
+  <<: *testbuild
+  variables:
+    TYPE: "Publish"
+    NAME: "alpine-releasecli"
