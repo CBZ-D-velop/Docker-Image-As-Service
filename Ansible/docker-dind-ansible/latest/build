@@ -19,6 +19,9 @@ else
     elif [ "$1" == "--testbuild" ]; then
         echo "=== TEST BUILD ==="
         VERSION="testbuild-${MAJOR_TAG}.${MINOR_TAG}"
+    elif [ "$1" == "--dockerscout" ]; then
+        echo "=== DOKCER SCOUT BUILD ==="
+        NAMESPACE="local-docker-scout"
     # If the --cicdbuild argument is passed, no touch to any value of version
     elif [ "$1" == "--cicdbuild" ]; then
         echo "=== CICD BUILD ==="
@@ -48,7 +51,9 @@ fi
 
 if [ "$1" == "--testbuild" ]; then
 
-    echo "=== TEST BUILD COMPLETE ==="
+elif [ "$1" == "--dockerscout" ]; then
+
+    echo "=== DOKCER SCOUT BUILD COMPLETE==="
 elif [ "$1" == "--cicdbuild" ]; then
 
     docker push ${NAMESPACE}/${IMAGE_NAME}:${VERSION}

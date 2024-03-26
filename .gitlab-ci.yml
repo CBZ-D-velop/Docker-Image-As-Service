@@ -64,9 +64,9 @@ variables:
   image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_DOCKER_SCOUT
   before_script:
     - "docker login -u \"${NEXUS_REPOS_USERNAME}\" -p \"${NEXUS_REPOS_PASSWORD}\" \"${NEXUS_REPOS_DOCKER_REGISTRY}\""
-    - "cd $(pwd)/${TYPE}/${NAME}/latest && bash build --testbuild"
+    - "cd $(pwd)/${TYPE}/${NAME}/latest && bash build --dockerscout"
   script:
-    - "docker scout cves ${NEXUS_REPOS_DOCKER_REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:latest"
+    - "docker scout cves ${NEXUS_REPOS_DOCKER_REGISTRY}/local-docker-scout/${NAME}:latest"
   allow_failure: false
   rules:
     - if: '$CI_COMMIT_BRANCH == "develop"'
