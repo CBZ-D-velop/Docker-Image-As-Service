@@ -35,10 +35,10 @@ WORKDIR ${ENV_DEFAULT_WORKDIR}
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN echo "debconf debconf/frontend select Noninteractive" | debconf-set-selections && \
     apt-mark hold debian-archive-keyring && apt-get update && apt-get upgrade -y && \
-    apt-get upgrade debian-archive-keyring -y --allow-change-held-packages
+    apt-get --no-install-recommends upgrade debian-archive-keyring -y --allow-change-held-packages
 
 # Install Git tools
-RUN apt-get install -y git curl wget openssl zip unzip tar gzip
+RUN apt-get --no-install-recommends install -y git curl wget openssl zip unzip tar gzip
 
 # CLear all apt files
 RUN apt-get autoclean -y && apt-get clean -y && apt-get autoremove -y && \
