@@ -1,3 +1,12 @@
+.secretlint: &secretlint
+  stage: lint
+  image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT
+  script:
+    - "detect-secrets -C $(pwd)/$TYPE/$NAME/latest scan > .secrets.baseline"
+    - "detect-secrets scan"
+    - "detect-secrets audit .secrets.baseline"
+  allow_failure: false
+
 ############################################
 #### security
 ############################################
