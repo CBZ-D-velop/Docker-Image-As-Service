@@ -50,7 +50,7 @@ RUN apt-get install --no-install-recommends -y \
 
 # CLear all apt files
 RUN apt-get autoclean -y && apt-get clean -y && apt-get autoremove -y && \
-    apt-get autoremove --purge -y && rm -rf /var/lib/apt/lists/*
+    apt-get autoremove --purge -y && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
 
 RUN python3 -m pip install --no-cache-dir requests passlib
 

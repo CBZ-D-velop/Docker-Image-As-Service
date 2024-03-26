@@ -48,7 +48,7 @@ RUN apk add --update --no-cache python3 && \
     python3 --version
 
 # Install Docker scout
-RUN apk add --update curl && \
+RUN apk add --no-cache --update curl && \
     set -o pipefail && curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s -- && \
     docker scout --help
 
