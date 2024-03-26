@@ -36,12 +36,11 @@ WORKDIR ${ENV_DEFAULT_WORKDIR}
 # Update installed packages
 # Start and enable docker
 RUN apk update && \
-    apk add --no-cache make openrc docker git tar unzip bzip2 bash && \
+    apk add --no-cache make openrc docker git tar unzip bzip2 bash curl && \
     rc-update add docker boot
 
 # Install scout
-RUN apk add --update curl && \
-    curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s -- && \
+RUN set -o pipefail; curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s -- && \
     docker scout --version
 
 # Remove packages cache
