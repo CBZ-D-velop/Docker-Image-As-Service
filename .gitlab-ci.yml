@@ -90,7 +90,7 @@ include:
 ############################################
 
 hadolint:
-  stage: tmp
+  stage: lint
   image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT
   script:
     - "hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 $(pwd)/*/*/latest/Dockerfile"
@@ -101,7 +101,7 @@ hadolint:
 ############################################
 
 secretlint:
-  stage: tmp
+  stage: secret
   image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_DOCKER_SECRET_LINT
   script:
     #- "detect-secrets -C $(pwd) scan > .secrets.baseline"
