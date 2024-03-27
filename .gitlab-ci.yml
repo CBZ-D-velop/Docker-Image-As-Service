@@ -48,16 +48,16 @@ variables:
     - "docker login -u \"${DOCKER_HUB_REPOS_USERNAME}\" -p \"${DOCKER_HUB_REPOS_PASSWORD}\""
     - "cd $(pwd)/${TYPE}/${NAME}/latest && bash build --dockerscout"
   script:
-    - "docker scout cves local://local/${NAME}:docker-scout > ${TYPE}-${NAME}-cves-report.log"
-    - "docker scout recommendations local://local/${NAME}:docker-scout > ${TYPE}-${NAME}-recommendations-report.log"
+    - "docker scout cves --format markdown --output /tmp/${TYPE}-${NAME}-cves-report.log local://local/${NAME}:docker-scout"
+    - "docker scout recommendations --format markdown --output /tmp/${TYPE}-${NAME}-recommendations-report.log local://local/${NAME}:docker-scout"
   allow_failure: false
   rules:
     - if: '$CI_COMMIT_BRANCH == "develop"'
     - if: '$CI_COMMIT_BRANCH == "main"'
   artifacts:
     paths:
-      - "${TYPE}-${NAME}-cves-report.log"
-      - "${TYPE}-${NAME}-recommendations-report.log"
+      - "/tmp/*cves-report.log"
+      - "/tmp/*recommendations-report.log"
 
 .publish: &publish
   stage: publish
