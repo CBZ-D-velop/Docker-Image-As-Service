@@ -8,6 +8,7 @@
 
 stages:
 - gitlab-test
+- tmp
 - lint
 - secret
 - sonarqube
@@ -89,6 +90,23 @@ include:
 ############################################
 #### lint
 ############################################
+
+# To start, we need to lint Dockerfile with hadolint
+hadolint:
+  stage: tmp
+  image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT
+  script:
+    - "hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 $(pwd)/*/*/latest/Dockerfile"
+  allow_failure: false
+
+secretlint:
+  stage: tmp
+  image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_DOCKER_SECRET_LINT
+  script:
+    - "detect-secrets -C $(pwd) scan > .secrets.baseline"
+    - "detect-secrets scan"
+    - "detect-secrets audit .secrets.baseline"
+  allow_failure: false
 
 hadolint_debian_11_ansible:
   <<: *hadolint
