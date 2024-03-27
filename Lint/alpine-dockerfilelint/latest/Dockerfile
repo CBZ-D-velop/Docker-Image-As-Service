@@ -43,7 +43,7 @@ RUN apk update && \
 RUN apk add --update --no-cache git shellcheck
 
 # Install hadolint
-RUN wget -q https://github.com/hadolint/hadolint/releases/download/v${ENV_HADOLINT_VERSION}/hadolint-Linux-x86_64 && \
+RUN wget -q https://github.com/hadolint/hadolint/releases/download/v$ENV_HADOLINT_VERSION/hadolint-Linux-x86_64 && \
     mv hadolint-Linux-x86_64 /usr/local/bin/hadolint && \
     chmod +x /usr/local/bin/hadolint && \
     hadolint --help
