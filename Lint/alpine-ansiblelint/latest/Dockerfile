@@ -33,7 +33,7 @@ WORKDIR ${ENV_DEFAULT_WORKDIR}
 
 # Update installed packages
 RUN apk update && \
-    apk add --no-cache make bash
+    apk add --no-cache make bash gnupg
 
 # Install python and pip
 RUN apk add --update --no-cache python3 && \
@@ -44,6 +44,23 @@ RUN apk add --update --no-cache python3 && \
 # Install ansible-lint
 RUN apk add --update --no-cache ansible-lint && \
     ansible-lint --version
+
+# Install basics requirements for Ansible (vault)
+RUN apk add --no-cache \
+    rsync curl python3 \
+    libffi-dev wget lsb-release \
+    ca-certificates sudo nano \
+    net-tools procps openssl lsof zip \
+    tree iftop htop nethogs iproute2 \
+    git bzip2 tar unzip py3-pip \
+    py3-jmespath py3-lxml py3-pip py3-setuptools
+
+# Isntall Ansible
+COPY --chown="${DEFAULT_USER}:${DEFAULT_GROUP}" ./requirements.txt ./requirements.txt
+RUN python3 -m pip install --no-cache-dir -r ./requirements.txt --break-system-packages && \
+    ansible-galaxy collection install community.general && \
+    ansible-galaxy collection install community.docker && \
+    ansible --version
 
 # Remove packages cache
 RUN apk del build-dependencies; \

@@ -48,17 +48,15 @@ RUN apt-get install --no-install-recommends -y \
 
 # CLear all apt files
 RUN apt-get autoclean -y && apt-get clean -y && apt-get autoremove -y && \
-    apt-get autoremove --purge -y && rm -rf /var/lib/apt/lists/*
+    apt-get autoremove --purge -y && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
 
 # Install python and pip
-RUN python3 -m pip install --no-cache-dir requests && \
-    python3 -m pip install --no-cache-dir --upgrade pip && \
+RUN python3 -m pip install --no-cache-dir --upgrade pip && \
     python3 --version
 
 # Install comunity additions
 COPY --chown="${DEFAULT_USER}:${DEFAULT_GROUP}" ./requirements.txt ./requirements.txt
-RUN python3 -m pip install --no-cache-dir -r ./requirements.txt && \
-    python3 -m pip install --no-cache-dir requests && \
+RUN python3 -m pip install --no-cache-dir -r ./requirements.txt --break-system-packages && \
     ansible --version
 
 # Set CMD
