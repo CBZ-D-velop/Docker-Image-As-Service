@@ -103,7 +103,7 @@ secretlint:
   stage: tmp
   image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_DOCKER_SECRET_LINT
   script:
-    - "detect-secrets -C $(pwd) scan > .secrets.baseline"
+    #- "detect-secrets -C $(pwd) scan > .secrets.baseline"
     - "detect-secrets scan"
     - "detect-secrets audit .secrets.baseline"
   allow_failure: false
