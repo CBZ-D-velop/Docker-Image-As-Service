@@ -134,7 +134,7 @@ Here you can put your change to keep a trace of your work and decisions.
 * Added Sonarqube, for global quality
 * Added Hadolint, specialized support
 * Added detect-secrets for secret detection in images
-* Added Docker Scout as layer analysis.
+* Added Docker Scout as layer analysis
 
 ## Authors
 
