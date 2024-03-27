@@ -49,7 +49,7 @@ variables:
     - "cd $(pwd)/${TYPE}/${NAME}/latest && bash build --dockerscout"
   script:
     - "docker scout cves --format markdown --output /tmp/${TYPE}-${NAME}-cves-report.log local://local/${NAME}:docker-scout"
-    - "docker scout recommendations --format markdown --output /tmp/${TYPE}-${NAME}-recommendations-report.log local://local/${NAME}:docker-scout"
+    - "docker scout recommendations local://local/${NAME}:docker-scout"
   allow_failure: false
   rules:
     - if: '$CI_COMMIT_BRANCH == "develop"'
