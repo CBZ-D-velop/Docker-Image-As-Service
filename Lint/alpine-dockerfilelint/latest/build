@@ -48,6 +48,7 @@ docker build \
     --build-arg DEFAULT_USER=${DEFAULT_USER} \
     --build-arg DEFAULT_GROUP=${DEFAULT_GROUP} \
     --build-arg DEFAULT_WORKDIR=${DEFAULT_WORKDIR} \
+    --build-arg HADOLINT_VERSION=${HADOLINT_VERSION} \
     -t ${NAMESPACE}/${IMAGE_NAME}:${VERSION} .
 
 BUILD_EXIT_CODE=$?
