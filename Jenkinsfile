@@ -31,9 +31,9 @@ pipeline {
             }
 
             steps {
-                sh "cd ${TYPE}/${NAME}/latest"
-                sh "ls -all"
-                sh "hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 Dockerfile"
+                dir("${TYPE}/${NAME}/latest") {
+                    sh "hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 Dockerfile"
+                }
             }
         }
 
@@ -47,9 +47,10 @@ pipeline {
             }
 
             steps {
-                sh "cd ${TYPE}/${NAME}/latest"
-                sh "detect-secrets scan"
-                sh "detect-secrets audit .secrets.baseline"
+                dir("${TYPE}/${NAME}/latest") {
+                    sh "detect-secrets scan"
+                    sh "detect-secrets audit .secrets.baseline"
+                }
             }
         }
 
@@ -63,8 +64,9 @@ pipeline {
             }
 
             steps {
-                sh "cd ${TYPE}/${NAME}/latest"
-                sh "sonar-scanner"
+                dir("${TYPE}/${NAME}/latest") {
+                    sh "sonar-scanner"
+                }
             }
         }
 
@@ -78,8 +80,9 @@ pipeline {
             }
 
             steps {
-                sh "cd ${TYPE}/${NAME}/latest"
-                sh "bash build --testbuild"
+                dir("${TYPE}/${NAME}/latest") {
+                    sh "bash build --testbuild"
+                }
             }
         }
     }
