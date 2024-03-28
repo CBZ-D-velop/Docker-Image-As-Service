@@ -1,5 +1,5 @@
 pipeline {
-    agent none
+    agent any
 
     environment { 
         DOCKER_HUB_REPOS_PASSWORD = credentials("DOCKER_HUB_REPOS_PASSWORD")
@@ -105,8 +105,6 @@ pipeline {
     }
 
     post {
-        agent any
-
         always {
             deleteDir()
         }
