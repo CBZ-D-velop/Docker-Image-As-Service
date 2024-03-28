@@ -82,5 +82,34 @@ pipeline {
                 }
             }
         }
+
+        stage("security") {
+            agent { 
+                docker {
+                    image "${DOCKER_IMAGE_DOCKER_SCOUT}"
+                    registryUrl "https://${NEXUS_REPOS_DOCKER_REGISTRY}"
+                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
+                    args "-v /var/run/docker.sock:/var/run/docker.sock"
+                }
+            }
+
+            steps {
+                dir("${TYPE}/${NAME}/latest") {
+                    sh "docker login -u \"${DOCKER_HUB_REPOS_USERNAME}\" -p \"${DOCKER_HUB_REPOS_PASSWORD}\""
+                    sh "bash build --dockerscout"
+                    sh "docker scout cves --format markdown --output ./cves-report.md local://local/${NAME}:docker-scout"
+                    sh "docker scout recommendations local://local/${NAME}:docker-scout"
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            deleteDir()
+        }
+        success  {
+            archiveArtifacts artifacts:"./cves-report.md", fingerprint: true
+        }
     }
 }
