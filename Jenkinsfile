@@ -27,7 +27,7 @@ pipeline {
                 docker {
                     image "${DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT}"
                     registryUrl "${NEXUS_REPOS_DOCKER_REGISTRY}"
-                    registryCredentialsId "${NEXUS_JENKINS_LOGIN_PASSWORD}"
+                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
                 }
             }
 
