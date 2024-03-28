@@ -47,11 +47,8 @@ pipeline {
             }
 
             steps {
-                dir("${TYPE}/${NAME}/latest") {
-                    sh "cp ../../../.secrets.baseline ."
-                    sh "detect-secrets scan"
-                    sh "detect-secrets audit .secrets.baseline"
-                }
+                sh "detect-secrets scan"
+                sh "detect-secrets audit .secrets.baseline"
             }
         }
 
@@ -65,9 +62,7 @@ pipeline {
             }
 
             steps {
-                dir("${TYPE}/${NAME}/latest") {
-                    sh "sonar-scanner"
-                }
+                sh "sonar-scanner"
             }
         }
 
