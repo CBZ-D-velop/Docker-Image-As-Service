@@ -97,7 +97,7 @@ pipeline {
                 dir("${TYPE}/${NAME}/latest") {
                     sh "docker login -u \"${DOCKER_HUB_REPOS_USERNAME}\" -p \"${DOCKER_HUB_REPOS_PASSWORD}\""
                     sh "bash build --dockerscout"
-                    sh "docker scout cves --format markdown --output ./cves-report.md local://local/${NAME}:docker-scout"
+                    sh "docker scout cves --output ./cves-report.md local://local/${NAME}:docker-scout"
                     sh "docker scout recommendations local://local/${NAME}:docker-scout"
                 }
             }
@@ -105,6 +105,8 @@ pipeline {
     }
 
     post {
+        agent any
+
         always {
             deleteDir()
         }
