@@ -9,7 +9,7 @@ pipeline {
         NEXUS_REPOS_PASSWORD = credentials('NEXUS_REPOS_PASSWORD')
         NEXUS_REPOS_USERNAME = credentials('NEXUS_REPOS_USERNAME')
         SONAR_HOST_URL = credentials('SONAR_HOST_URL')
-        SONAR_TOKEN = credentials('SONAR_TOKEN')
+        SONAR_TOKEN = '${SONAR_TOKEN}'
 
         DOCKER_IMAGE_ALPINE_SONAR_SCANNER_CLI = "robincbz/alpine-sonarcli:latest"
         DOCKER_IMAGE_ALPINE_GIT = "robincbz/alpine-git:latest"
