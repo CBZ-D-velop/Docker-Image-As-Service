@@ -72,6 +72,7 @@ pipeline {
                     image "${DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD}"
                     registryUrl "https://${NEXUS_REPOS_DOCKER_REGISTRY}"
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
+                    args "-v /var/run/docker.sock:/var/run/docker.sock"
                 }
             }
 
