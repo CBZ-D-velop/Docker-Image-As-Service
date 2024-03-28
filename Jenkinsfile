@@ -20,13 +20,12 @@ pipeline {
         DOCKER_IMAGE_DOCKER_SCOUT = "robincbz/docker-scout:latest"
     }        
 
-
     stages {
         stage("lint") {
             agent { 
                 docker {
                     image "${DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT}"
-                    registryUrl "${NEXUS_REPOS_DOCKER_REGISTRY}"
+                    registryUrl "https://${NEXUS_REPOS_DOCKER_REGISTRY}"
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
                 }
             }
