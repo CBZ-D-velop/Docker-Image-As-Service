@@ -83,10 +83,10 @@ pipeline {
             }
         }
 
-        stage("security") {
+        stage("publish") {
             agent { 
                 docker {
-                    image "${DOCKER_IMAGE_DOCKER_SCOUT}"
+                    image "${DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD}"
                     registryUrl "https://${NEXUS_REPOS_DOCKER_REGISTRY}"
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
                     args "-v /var/run/docker.sock:/var/run/docker.sock"
@@ -96,9 +96,7 @@ pipeline {
             steps {
                 dir("${TYPE}/${NAME}/latest") {
                     sh "docker login -u \"${DOCKER_HUB_REPOS_USERNAME}\" -p \"${DOCKER_HUB_REPOS_PASSWORD}\""
-                    sh "bash build --dockerscout"
-                    sh "docker scout cves --output ./cves-report.md local://local/${NAME}:docker-scout"
-                    sh "docker scout recommendations local://local/${NAME}:docker-scout"
+                    sh "bash build --cicdbuild"
                 }
             }
         }
@@ -107,9 +105,6 @@ pipeline {
     post {
         always {
             deleteDir()
-        }
-        success  {
-            archiveArtifacts artifacts:"./cves-report.md", fingerprint: true
         }
     }
 }
