@@ -31,8 +31,54 @@ pipeline {
             }
 
             steps {
-                sh "ls -all"
-                sh "hadolint --help"
+                sh "cd ${TYPE}/${NAME}/latest"
+                sh "hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 ./Dockerfile"
+            }
+        }
+
+        stage("secret") {
+            agent { 
+                docker {
+                    image "${DOCKER_IMAGE_DOCKER_SECRET_LINT}"
+                    registryUrl "https://${NEXUS_REPOS_DOCKER_REGISTRY}"
+                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
+                }
+            }
+
+            steps {
+                sh "cd ${TYPE}/${NAME}/latest"
+                sh "detect-secrets scan"
+                sh "detect-secrets audit .secrets.baseline"
+            }
+        }
+
+        stage("sonarqube") {
+            agent { 
+                docker {
+                    image "${DOCKER_IMAGE_ALPINE_SONAR_SCANNER_CLI}"
+                    registryUrl "https://${NEXUS_REPOS_DOCKER_REGISTRY}"
+                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
+                }
+            }
+
+            steps {
+                sh "cd ${TYPE}/${NAME}/latest"
+                sh "sonar-scanner"
+            }
+        }
+
+        stage("testbuild") {
+            agent { 
+                docker {
+                    image "${DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD}"
+                    registryUrl "https://${NEXUS_REPOS_DOCKER_REGISTRY}"
+                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
+                }
+            }
+
+            steps {
+                sh "cd ${TYPE}/${NAME}/latest"
+                sh "bash build --testbuild"
             }
         }
     }
