@@ -11,13 +11,13 @@ pipeline {
         SONAR_HOST_URL = credentials('SONAR_HOST_URL')
         SONAR_TOKEN = credentials('SONAR_TOKEN')
 
-        DOCKER_IMAGE_ALPINE_SONAR_SCANNER_CLI: "robincbz/alpine-sonarcli:latest"
-        DOCKER_IMAGE_ALPINE_GIT: "robincbz/alpine-git:latest"
-        DOCKER_IMAGE_ALPINE_RELEASE_CLI: "robincbz/alpine-releasecli:latest"
-        DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT: "robincbz/alpine-dockerfilelint:latest"
-        DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD: "robincbz/docker-dockerfilebuild:latest"
-        DOCKER_IMAGE_DOCKER_SECRET_LINT: "robincbz/alpine-secretlint:latest"
-        DOCKER_IMAGE_DOCKER_SCOUT: "robincbz/docker-scout:latest"
+        DOCKER_IMAGE_ALPINE_SONAR_SCANNER_CLI = "robincbz/alpine-sonarcli:latest"
+        DOCKER_IMAGE_ALPINE_GIT = "robincbz/alpine-git:latest"
+        DOCKER_IMAGE_ALPINE_RELEASE_CLI = "robincbz/alpine-releasecli:latest"
+        DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT = "robincbz/alpine-dockerfilelint:latest"
+        DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD = "robincbz/docker-dockerfilebuild:latest"
+        DOCKER_IMAGE_DOCKER_SECRET_LINT = "robincbz/alpine-secretlint:latest"
+        DOCKER_IMAGE_DOCKER_SCOUT = "robincbz/docker-scout:latest"
     }        
 
 
