@@ -32,7 +32,8 @@ pipeline {
 
             steps {
                 sh "cd ${TYPE}/${NAME}/latest"
-                sh "hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 ./Dockerfile"
+                sh "ls -all"
+                sh "hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 Dockerfile"
             }
         }
 
