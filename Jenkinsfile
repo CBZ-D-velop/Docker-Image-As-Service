@@ -32,7 +32,7 @@ pipeline {
     }
 
     stages {
-        stage("lint") {
+        stage("lint') {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT"
@@ -43,7 +43,7 @@ pipeline {
 
             steps {
                 dir("$TYPE/$NAME/latest") {
-                    sh("hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 Dockerfile")
+                    sh('hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 Dockerfile')
                 }
             }
         }
@@ -58,8 +58,8 @@ pipeline {
             }
 
             steps {
-                sh("detect-secrets scan")
-                sh("detect-secrets audit .secrets.baseline")
+                sh('detect-secrets scan')
+                sh('detect-secrets audit .secrets.baseline')
             }
         }
 
@@ -73,7 +73,7 @@ pipeline {
             }
 
             steps {
-                sh("sonar-scanner")
+                sh('sonar-scanner')
             }
         }
 
@@ -89,7 +89,7 @@ pipeline {
 
             steps {
                 dir("$TYPE/$NAME/latest") {
-                    sh("bash build --test-build")
+                    sh('bash build --test-build')
                 }
             }
         }
@@ -106,8 +106,8 @@ pipeline {
 
             steps {
                 dir("$TYPE/$NAME/latest") {
-                    sh("docker login -u \"$DOCKER_HUB_REPOS_USERNAME\" -p \"$DOCKER_HUB_REPOS_PASSWORD\"")
-                    sh("bash build --jenkins-ci")
+                    sh('docker login -u \"$DOCKER_HUB_REPOS_USERNAME\" -p \"$DOCKER_HUB_REPOS_PASSWORD\"')
+                    sh('bash build --jenkins-ci')
                 }
             }
         }
@@ -124,8 +124,8 @@ pipeline {
 
             steps {
                 dir("$TYPE/$NAME/latest") {
-                    sh("docker login -u \"$DOCKER_HUB_REPOS_USERNAME\" -p \"$DOCKER_HUB_REPOS_PASSWORD\"")
-                    sh("bash build --dayli-build")
+                    sh('docker login -u \"$DOCKER_HUB_REPOS_USERNAME\" -p \"$DOCKER_HUB_REPOS_PASSWORD\"')
+                    sh('bash build --dayli-build')
                 }
             }
         }
