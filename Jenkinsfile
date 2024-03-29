@@ -32,7 +32,7 @@ pipeline {
     }
 
     stages {
-        stage("lint') {
+        stage("lint") {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT"
