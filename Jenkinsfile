@@ -36,14 +36,14 @@ pipeline {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT"
-                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
+                    registryUrl 'https://%NEXUS_REPOS_DOCKER_REGISTRY%'
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
                 }
             }
 
             steps {
-                dir("$TYPE/$NAME/latest") {
-                    sh "hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 Dockerfile"
+                dir('%TYPE%/%NAME%/latest') {
+                    sh 'hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 Dockerfile'
                 }
             }
         }
@@ -52,7 +52,7 @@ pipeline {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_DOCKER_SECRET_LINT"
-                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
+                    registryUrl 'https://$NEXUS_REPOS_DOCKER_REGISTRY'
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
                 }
             }
@@ -67,7 +67,7 @@ pipeline {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_ALPINE_SONAR_SCANNER_CLI"
-                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
+                    registryUrl 'https://%NEXUS_REPOS_DOCKER_REGISTRY%'
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
                 }
             }
@@ -81,14 +81,14 @@ pipeline {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
-                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
+                    registryUrl 'https://%NEXUS_REPOS_DOCKER_REGISTRY%'
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
                     args "-v /var/run/docker.sock:/var/run/docker.sock"
                 }
             }
 
             steps {
-                dir("$TYPE/$NAME/latest") {
+                dir('%TYPE%/%NAM%/latest') {
                     sh "bash build --test-build"
                 }
             }
@@ -98,16 +98,16 @@ pipeline {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
-                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
+                    registryUrl 'https://%NEXUS_REPOS_DOCKER_REGISTRY%'
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
                     args "-v /var/run/docker.sock:/var/run/docker.sock"
                 }
             }
 
             steps {
-                dir("$TYPE/$NAME/latest") {
-                    sh "docker login -u \"$DOCKER_HUB_REPOS_USERNAME\" -p \"$DOCKER_HUB_REPOS_PASSWORD\""
-                    sh "bash build --jenkins-ci"
+                dir('%TYPE%/%NAM%/latest') {
+                    sh 'docker login -u "%DOCKER_HUB_REPOS_USERNAME%" -p "%DOCKER_HUB_REPOS_PASSWORD%"'
+                    sh 'bash build --jenkins-ci'
                 }
             }
         }
@@ -116,16 +116,16 @@ pipeline {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
-                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
+                    registryUrl 'https://%NEXUS_REPOS_DOCKER_REGISTRY%'
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
                     args "-v /var/run/docker.sock:/var/run/docker.sock"
                 }
             }
 
             steps {
-                dir("$TYPE/$NAME/latest") {
-                    sh "docker login -u \"$DOCKER_HUB_REPOS_USERNAME\" -p \"$DOCKER_HUB_REPOS_PASSWORD\""
-                    sh "bash build --dayli-build"
+                dir('%TYPE%/%NAM%/latest') {
+                    sh 'docker login -u "%DOCKER_HUB_REPOS_USERNAME%" -p "%DOCKER_HUB_REPOS_PASSWORD%"'
+                    sh 'bash build --dayli-build'
                 }
             }
         }
