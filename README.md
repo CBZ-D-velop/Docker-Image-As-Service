@@ -28,9 +28,9 @@ After that, the script can take two arguments or none:
 
 * ./build --major: This command creates a new major version tag. If the current version is 0.12, the next major version will be 1.0. The resulting image will be pushed to the repository, a new folder will be created, and all the contents of the latest folder will be copied (excluding the build script or the .tag file).
 
-* ./build --testbuild: This command will only build the Dockerfile without incrementing the current version or pushing it to the repository. The created image will be tagged as "testbuild-version". This command is intended for testing the Dockerfile. Layers are not deleted, image just builded to, so next build will be more fast.
+* ./build --test-build: This command will only build the Dockerfile without incrementing the current version or pushing it to the repository. The created image will be tagged as "test-build-version". This command is intended for testing the Dockerfile. Layers are not deleted, image just builded to, so next build will be more fast.
 
-* ./build --cicdbuild: This command is used inside the CI/CD pipeline. Any run will build the image as "cicd-current_latest_version" and push into the Docker repository. So 1 tag is created or updated and the latest tag is to. The goal of this option if to automated the process of image building, as service.
+* ./build --gitlab-ci: This command is used inside the CI/CD pipeline. Any run will build the image as "cicd-current_latest_version" and push into the Docker repository. So 1 tag is created or updated and the latest tag is to. The goal of this option if to automated the process of image building, as service.
 
 ```SHELL
 # Build the latest image, from Ansible/debian-11-ansible/latest
@@ -82,7 +82,7 @@ drwxr-xr-x 2 xxxx xxxx 4096  5 oct.  15:07 0.1
 drwxr-xr-x 2 xxxx xxxx 4096  5 oct.  15:12 1.0
 drwxr-xr-x 2 xxxx xxxx 4096  5 oct.  11:45 latest
 cd latest
-./build --testbuild
+./build --test-build
 ls ../ -all
 drwxr-xr-x 5 xxxx xxxx 4096  5 oct.  15:12 .
 drwxr-xr-x 4 xxxx xxxx 4096  5 oct.  15:04 ..
@@ -108,7 +108,7 @@ Here you can put your change to keep a trace of your work and decisions.
 ### 2023-10-06: Test / Lint pipeline
 
 * This repository have a CI/CD to lint Dockerfiles (setted to lates)
-* This repository have a CI/CD to build Dockerfiles in --testbuild mode (setted to lates)
+* This repository have a CI/CD to build Dockerfiles in --test-build mode (setted to lates)
 * This repository can be forked and modified to lint, build, analyse and push image from Dockerfile
 
 ### 2023-11-02: Docker Image As Service

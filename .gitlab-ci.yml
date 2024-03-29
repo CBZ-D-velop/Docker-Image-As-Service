@@ -11,7 +11,7 @@ stages:
 - lint
 - secret
 - sonarqube
-- testbuild
+- test-build
 - security
 - publish
 
@@ -32,10 +32,10 @@ variables:
 ###############################################################################
 
 .testbuild: &testbuild
-  stage: testbuild
+  stage: test-build
   image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD
   script:
-    - "cd $(pwd)/${TYPE}/${NAME}/latest && bash build --testbuild"
+    - "cd $(pwd)/${TYPE}/${NAME}/latest && bash build --test-build"
   allow_failure: false
   rules:
     - if: '$CI_COMMIT_BRANCH == "develop"'
@@ -47,7 +47,7 @@ variables:
   before_script:
     - "docker login -u \"${DOCKER_HUB_REPOS_USERNAME}\" -p \"${DOCKER_HUB_REPOS_PASSWORD}\""
     - "cd $(pwd)/${TYPE}/${NAME}/latest"
-    - "bash build --dockerscout"
+    - "bash build --docker-scout"
     - "cd ../../../ && pwd"
   script:
     - "docker scout cves --exit-code --only-severity critical,high --format markdown --output ./cves-report.md local://local/${NAME}:docker-scout"
@@ -67,7 +67,7 @@ variables:
   before_script:
     - "docker login -u \"${DOCKER_HUB_REPOS_USERNAME}\" -p \"${DOCKER_HUB_REPOS_PASSWORD}\""
   script:
-    - "cd $(pwd)/${TYPE}/${NAME}/latest && bash build --cicdbuild"
+    - "cd $(pwd)/${TYPE}/${NAME}/latest && bash build --gitlab-ci"
   allow_failure: false
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
@@ -246,7 +246,7 @@ security_debian_11_ansible:
     TYPE: "Ansible"
     NAME: "debian-11-ansible"
   needs:
-    - "testbuild_debian_11_ansible"
+    - "test-build_debian_11_ansible"
 
 security_debian_12_ansible:
   <<: *security
@@ -254,7 +254,7 @@ security_debian_12_ansible:
     TYPE: "Ansible"
     NAME: "debian-12-ansible"
   needs:
-    - "testbuild_debian_12_ansible"
+    - "test-build_debian_12_ansible"
 
 security_docker_dind_ansible:
   <<: *security
@@ -262,7 +262,7 @@ security_docker_dind_ansible:
     TYPE: "Ansible"
     NAME: "docker-dind-ansible"
   needs:
-    - "testbuild_docker_dind_ansible"
+    - "test-build_docker_dind_ansible"
 
 security_docker_dind_molecule:
   <<: *security
@@ -270,7 +270,7 @@ security_docker_dind_molecule:
     TYPE: "Ansible"
     NAME: "docker-dind-molecule"
   needs:
-    - "testbuild_docker_dind_molecule"
+    - "test-build_docker_dind_molecule"
 
 security_ubuntu_22_ansible:
   <<: *security
@@ -278,7 +278,7 @@ security_ubuntu_22_ansible:
     TYPE: "Ansible"
     NAME: "ubuntu-22-ansible"
   needs:
-    - "testbuild_ubuntu_22_ansible"
+    - "test-build_ubuntu_22_ansible"
 
 security_debian_11_certification:
   <<: *security
@@ -286,7 +286,7 @@ security_debian_11_certification:
     TYPE: "Build"
     NAME: "debian-11-certification"
   needs:
-    - "testbuild_debian_11_certification"
+    - "test-build_debian_11_certification"
 
 security_debian_npmbuild:
   <<: *security
@@ -294,7 +294,7 @@ security_debian_npmbuild:
     TYPE: "Build"
     NAME: "debian-npmbuild"
   needs:
-    - "testbuild_debian_npmbuild"
+    - "test-build_debian_npmbuild"
 
 security_docker_dockerfilebuild:
   <<: *security
@@ -302,7 +302,7 @@ security_docker_dockerfilebuild:
     TYPE: "Build"
     NAME: "docker-dockerfilebuild"
   needs:
-    - "testbuild_docker_dockerfilebuild"
+    - "test-build_docker_dockerfilebuild"
 
 security_alpine_ansiblelint:
   <<: *security
@@ -310,7 +310,7 @@ security_alpine_ansiblelint:
     TYPE: "Lint"
     NAME: "alpine-ansiblelint"
   needs:
-    - "testbuild_alpine_ansiblelint"
+    - "test-build_alpine_ansiblelint"
 
 security_alpine_dockerfilelint:
   <<: *security
@@ -318,7 +318,7 @@ security_alpine_dockerfilelint:
     TYPE: "Lint"
     NAME: "alpine-dockerfilelint"
   needs:
-    - "testbuild_alpine_dockerfilelint"
+    - "test-build_alpine_dockerfilelint"
 
 security_alpine_jinjalint:
   <<: *security
@@ -326,7 +326,7 @@ security_alpine_jinjalint:
     TYPE: "Lint"
     NAME: "alpine-jinjalint"
   needs:
-    - "testbuild_alpine_jinjalint"
+    - "test-build_alpine_jinjalint"
 
 security_alpine_secretlint:
   <<: *security
@@ -334,7 +334,7 @@ security_alpine_secretlint:
     TYPE: "Lint"
     NAME: "alpine-secretlint"
   needs:
-    - "testbuild_alpine_secretlint"
+    - "test-build_alpine_secretlint"
 
 security_alpine_sonarcli:
   <<: *security
@@ -342,7 +342,7 @@ security_alpine_sonarcli:
     TYPE: "Lint"
     NAME: "alpine-sonarcli"
   needs:
-    - "testbuild_alpine_sonarcli"
+    - "test-build_alpine_sonarcli"
 
 security_alpine_yamllint:
   <<: *security
@@ -350,7 +350,7 @@ security_alpine_yamllint:
     TYPE: "Lint"
     NAME: "alpine-yamllint"
   needs:
-    - "testbuild_alpine_yamllint"
+    - "test-build_alpine_yamllint"
 
 security_alpine_markdownlint:
   <<: *security
@@ -358,7 +358,7 @@ security_alpine_markdownlint:
     TYPE: "Lint"
     NAME: "debian-markdownlint"
   needs:
-    - "testbuild_alpine_markdownlint"
+    - "test-build_alpine_markdownlint"
 
 security_alpine_git:
   <<: *security
@@ -366,7 +366,7 @@ security_alpine_git:
     TYPE: "Publish"
     NAME: "alpine-git"
   needs:
-    - "testbuild_alpine_git"
+    - "test-build_alpine_git"
 
 security_alpine_releasecli:
   <<: *security
@@ -374,7 +374,7 @@ security_alpine_releasecli:
     TYPE: "Publish"
     NAME: "alpine-releasecli"
   needs:
-    - "testbuild_alpine_releasecli"
+    - "test-build_alpine_releasecli"
 
 ############################################
 #### publish
