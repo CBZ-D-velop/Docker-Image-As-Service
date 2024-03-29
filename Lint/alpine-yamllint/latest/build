@@ -20,6 +20,7 @@ else
 
     elif [ "$1" == "--dayli-build" ]; then
         echo "=== DAYLI BUILD ==="
+        DATE=$(date +'%m-%d-%Y')
         VERSION="dayli-build-${DATE}-${MAJOR_TAG}.${MINOR_TAG}"
 
     # If the --test-build argument is passed, no touch to any value of version

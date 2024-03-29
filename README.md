@@ -20,76 +20,22 @@ By utilizing this Git repository, you can take full advantage of Docker's flexib
 
 ## Build a new image
 
-You can build an image from a Dockerfile using the ./build script. This script allows you to build your image while loading variables from the .env file (don't forget to edit the script if you add any variables).
+You can build an image from a Dockerfile using the `./$TYPE/$NAME/latest/build` script. This script allows you to build your image while loading variables from the .env file (don't forget to edit the script if you add any variables).
 
-After that, the script can take two arguments or none:
+This bash script automates the building and tagging of Docker images based on specified criteria and arguments. It also handles versioning and tagging of the images. To use this script, follow these steps:
 
-* ./build: This command simply builds the Dockerfile, loads variables, adds 0.1 to the current version or tag, and initializes the project if it hasn't been previously built. The resulting image will be pushed to the repository, a new folder will be created, and all the contents of the latest folder will be copied (excluding the build script or the .tag file).
+1. Create a `.env` file with environment variables such as `MAINTAINER`, `MAINTAINER_ADDRESS`, `DEFAULT_USER`, `DEFAULT_GROUP`, and `DEFAULT_WORKDIR`.
+2. Optionally, create a `.tag` file to maintain versioning information.
+3. Execute the script with appropriate arguments.
 
-* ./build --major: This command creates a new major version tag. If the current version is 0.12, the next major version will be 1.0. The resulting image will be pushed to the repository, a new folder will be created, and all the contents of the latest folder will be copied (excluding the build script or the .tag file).
+The script supports the following arguments:
 
-* ./build --test-build: This command will only build the Dockerfile without incrementing the current version or pushing it to the repository. The created image will be tagged as "test-build-version". This command is intended for testing the Dockerfile. Layers are not deleted, image just builded to, so next build will be more fast.
-
-* ./build --gitlab-ci: This command is used inside the CI/CD pipeline. Any run will build the image as "cicd-current_latest_version" and push into the Docker repository. So 1 tag is created or updated and the latest tag is to. The goal of this option if to automated the process of image building, as service.
-
-```SHELL
-# Build the latest image, from Ansible/debian-11-ansible/latest
-cd ./Ansible/debian-11-ansible
-ls -all
-drwxr-xr-x 5 xxxx xxxx 4096  5 oct.  15:12 .
-drwxr-xr-x 4 xxxx xxxx 4096  5 oct.  15:04 ..
-drwxr-xr-x 2 xxxx xxxx 4096  5 oct.  15:07 0.1
-drwxr-xr-x 2 xxxx xxxx 4096  5 oct.  15:12 1.0
-drwxr-xr-x 2 xxxx xxxx 4096  5 oct.  11:45 latest
-cd latest
-./build
-ls ../ -all
-drwxr-xr-x 5 xxxx xxxx 4096  5 oct.  15:12 .
-drwxr-xr-x 4 xxxx xxxx 4096  5 oct.  15:04 ..
-drwxr-xr-x 2 xxxx xxxx 4096  5 oct.  15:07 0.1
-drwxr-xr-x 2 xxxx xxxx 4096  5 oct.  15:12 1.0
-drwxr-xr-x 2 xxxx xxxx 4096  5 oct.  15:12 1.1 # NEW VERSION HERE
-drwxr-xr-x 2 xxxx xxxx 4096  5 oct.  11:45 latest
-```
-
-```SHELL
-# Build the latest image, from Ansible/debian-11-ansible/latest, but pass in another major version
-cd ./Ansible/debian-11-ansible
-ls -all
-drwxr-xr-x 5 xxxx xxxx 4096  5 oct.  15:12 .
-drwxr-xr-x 4 xxxx xxxx 4096  5 oct.  15:04 ..
-drwxr-xr-x 2 xxxx xxxx 4096  5 oct.  15:07 0.1
-drwxr-xr-x 2 xxxx xxxx 4096  5 oct.  15:12 1.0
-drwxr-xr-x 2 xxxx xxxx 4096  5 oct.  11:45 latest
-cd latest
-./build --major
-ls ../ -all
-drwxr-xr-x 5 xxxx xxxx 4096  5 oct.  15:12 .
-drwxr-xr-x 4 xxxx xxxx 4096  5 oct.  15:04 ..
-drwxr-xr-x 2 xxxx xxxx 4096  5 oct.  15:07 0.1
-drwxr-xr-x 2 xxxx xxxx 4096  5 oct.  15:12 1.0
-drwxr-xr-x 2 xxxx xxxx 4096  5 oct.  15:12 2.0 # NEW MAJOR VERSION HERE
-drwxr-xr-x 2 xxxx xxxx 4096  5 oct.  11:45 latest
-```
-
-```SHELL
-# Build the latest image, from Ansible/debian-11-ansible/latest, but it just a build test
-cd ./Ansible/debian-11-ansible
-ls -all
-drwxr-xr-x 5 xxxx xxxx 4096  5 oct.  15:12 .
-drwxr-xr-x 4 xxxx xxxx 4096  5 oct.  15:04 ..
-drwxr-xr-x 2 xxxx xxxx 4096  5 oct.  15:07 0.1
-drwxr-xr-x 2 xxxx xxxx 4096  5 oct.  15:12 1.0
-drwxr-xr-x 2 xxxx xxxx 4096  5 oct.  11:45 latest
-cd latest
-./build --test-build
-ls ../ -all
-drwxr-xr-x 5 xxxx xxxx 4096  5 oct.  15:12 .
-drwxr-xr-x 4 xxxx xxxx 4096  5 oct.  15:04 ..
-drwxr-xr-x 2 xxxx xxxx 4096  5 oct.  15:07 0.1
-drwxr-xr-x 2 xxxx xxxx 4096  5 oct.  15:12 1.0
-drwxr-xr-x 2 xxxx xxxx 4096  5 oct.  11:45 latest # NOTHING NEW HERE
-```
+- `--major`: Increment the major version number by 1 and reset the minor version to 0, publish the builded image with `tag` and `latest`.
+- `--dayli-build`: Generate a version with the current date and publish the builded image with `tag` and `latest`.
+- `--test-build`: Generate a test build with the current version.
+- `--docker-scout`: Build Docker image for scouting purposes, as `--test-build` but without any date informations.
+- `--gitlab-ci`: Build Docker image for GitLab CI pipeline.
+- `--jenkins-ci`: Build Docker image for Jenkins CI pipeline.
 
 ## Architectural Decisions Records
 
@@ -127,7 +73,7 @@ Here you can put your change to keep a trace of your work and decisions.
 * Added passlib python lib for password hash
 * Added Alpine Git, to publish
 
-### 2024-03-26/25 New CICD
+### 2024-03-26/25: New CICD
 
 * Images follow a new CICD besed on DevSecOps and AS SERVICE
 * Each image / Dockerfile is analysed separatly
@@ -135,6 +81,11 @@ Here you can put your change to keep a trace of your work and decisions.
 * Added Hadolint, specialized support
 * Added detect-secrets for secret detection in images
 * Added Docker Scout as layer analysis
+
+### 2024-03-29: Jenkins CI
+
+* Added a Jenkins CI to dayli build images based on cron
+* Reworks on build script, added/updated options
 
 ## Authors
 
