@@ -246,7 +246,7 @@ security_debian_11_ansible:
     TYPE: "Ansible"
     NAME: "debian-11-ansible"
   needs:
-    - "test-build_debian_11_ansible"
+    - "testbuild_debian_11_ansible"
 
 security_debian_12_ansible:
   <<: *security
@@ -254,7 +254,7 @@ security_debian_12_ansible:
     TYPE: "Ansible"
     NAME: "debian-12-ansible"
   needs:
-    - "test-build_debian_12_ansible"
+    - "testbuild_debian_12_ansible"
 
 security_docker_dind_ansible:
   <<: *security
@@ -262,7 +262,7 @@ security_docker_dind_ansible:
     TYPE: "Ansible"
     NAME: "docker-dind-ansible"
   needs:
-    - "test-build_docker_dind_ansible"
+    - "testbuild_docker_dind_ansible"
 
 security_docker_dind_molecule:
   <<: *security
@@ -270,7 +270,7 @@ security_docker_dind_molecule:
     TYPE: "Ansible"
     NAME: "docker-dind-molecule"
   needs:
-    - "test-build_docker_dind_molecule"
+    - "testbuild_docker_dind_molecule"
 
 security_ubuntu_22_ansible:
   <<: *security
@@ -278,7 +278,7 @@ security_ubuntu_22_ansible:
     TYPE: "Ansible"
     NAME: "ubuntu-22-ansible"
   needs:
-    - "test-build_ubuntu_22_ansible"
+    - "testbuild_ubuntu_22_ansible"
 
 security_debian_11_certification:
   <<: *security
@@ -286,7 +286,7 @@ security_debian_11_certification:
     TYPE: "Build"
     NAME: "debian-11-certification"
   needs:
-    - "test-build_debian_11_certification"
+    - "testbuild_debian_11_certification"
 
 security_debian_npmbuild:
   <<: *security
@@ -294,7 +294,7 @@ security_debian_npmbuild:
     TYPE: "Build"
     NAME: "debian-npmbuild"
   needs:
-    - "test-build_debian_npmbuild"
+    - "testbuild_debian_npmbuild"
 
 security_docker_dockerfilebuild:
   <<: *security
@@ -302,7 +302,7 @@ security_docker_dockerfilebuild:
     TYPE: "Build"
     NAME: "docker-dockerfilebuild"
   needs:
-    - "test-build_docker_dockerfilebuild"
+    - "testbuild_docker_dockerfilebuild"
 
 security_alpine_ansiblelint:
   <<: *security
@@ -310,7 +310,7 @@ security_alpine_ansiblelint:
     TYPE: "Lint"
     NAME: "alpine-ansiblelint"
   needs:
-    - "test-build_alpine_ansiblelint"
+    - "testbuild_alpine_ansiblelint"
 
 security_alpine_dockerfilelint:
   <<: *security
@@ -318,7 +318,7 @@ security_alpine_dockerfilelint:
     TYPE: "Lint"
     NAME: "alpine-dockerfilelint"
   needs:
-    - "test-build_alpine_dockerfilelint"
+    - "testbuild_alpine_dockerfilelint"
 
 security_alpine_jinjalint:
   <<: *security
@@ -326,7 +326,7 @@ security_alpine_jinjalint:
     TYPE: "Lint"
     NAME: "alpine-jinjalint"
   needs:
-    - "test-build_alpine_jinjalint"
+    - "testbuild_alpine_jinjalint"
 
 security_alpine_secretlint:
   <<: *security
@@ -334,7 +334,7 @@ security_alpine_secretlint:
     TYPE: "Lint"
     NAME: "alpine-secretlint"
   needs:
-    - "test-build_alpine_secretlint"
+    - "testbuild_alpine_secretlint"
 
 security_alpine_sonarcli:
   <<: *security
@@ -342,7 +342,7 @@ security_alpine_sonarcli:
     TYPE: "Lint"
     NAME: "alpine-sonarcli"
   needs:
-    - "test-build_alpine_sonarcli"
+    - "testbuild_alpine_sonarcli"
 
 security_alpine_yamllint:
   <<: *security
@@ -350,7 +350,7 @@ security_alpine_yamllint:
     TYPE: "Lint"
     NAME: "alpine-yamllint"
   needs:
-    - "test-build_alpine_yamllint"
+    - "testbuild_alpine_yamllint"
 
 security_alpine_markdownlint:
   <<: *security
@@ -358,7 +358,7 @@ security_alpine_markdownlint:
     TYPE: "Lint"
     NAME: "debian-markdownlint"
   needs:
-    - "test-build_alpine_markdownlint"
+    - "testbuild_alpine_markdownlint"
 
 security_alpine_git:
   <<: *security
@@ -366,7 +366,7 @@ security_alpine_git:
     TYPE: "Publish"
     NAME: "alpine-git"
   needs:
-    - "test-build_alpine_git"
+    - "testbuild_alpine_git"
 
 security_alpine_releasecli:
   <<: *security
@@ -374,7 +374,7 @@ security_alpine_releasecli:
     TYPE: "Publish"
     NAME: "alpine-releasecli"
   needs:
-    - "test-build_alpine_releasecli"
+    - "testbuild_alpine_releasecli"
 
 ############################################
 #### publish
