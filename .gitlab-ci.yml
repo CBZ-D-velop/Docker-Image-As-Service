@@ -37,12 +37,6 @@ variables:
   script:
     - "cd $(pwd)/${TYPE}/${NAME}/latest && bash build --test-build"
   allow_failure: false
-  rules:
-    - if: '$CI_COMMIT_BRANCH'
-      changes:
-        compare_to: 'refs/heads/main'
-        paths:
-          - '$(pwd)/${TYPE}/${NAME}/latest/Dockerfile'
 
 .security: &security
   stage: security
@@ -60,12 +54,6 @@ variables:
     expire_in: "1 month"
     paths:
       - "cves-report.md"
-  rules:
-    - if: '$CI_COMMIT_BRANCH'
-      changes:
-        compare_to: 'refs/heads/main'
-        paths:
-          - '$(pwd)/${TYPE}/${NAME}/latest/Dockerfile'
 
 .publish: &publish
   stage: publish
@@ -77,10 +65,6 @@ variables:
   allow_failure: false
   rules:
     - if: '$CI_COMMIT_BRANCH == "main'
-      changes:
-        compare_to: 'refs/heads/main'
-        paths:
-          - '$(pwd)/${TYPE}/${NAME}/latest/Dockerfile'
 
 ###############################################################################
 #################### CI JOBS
