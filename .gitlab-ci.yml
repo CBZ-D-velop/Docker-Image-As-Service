@@ -38,8 +38,11 @@ variables:
     - "cd $(pwd)/${TYPE}/${NAME}/latest && bash build --test-build"
   allow_failure: false
   rules:
-    - if: '$CI_COMMIT_BRANCH == "develop"'
-    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH'
+      changes:
+        compare_to: 'refs/heads/main'
+        paths:
+          - '$(pwd)/${TYPE}/${NAME}/latest/Dockerfile'
 
 .security: &security
   stage: security
@@ -53,13 +56,16 @@ variables:
     - "docker scout cves --exit-code --only-severity critical,high --format markdown --output ./cves-report.md local://local/${NAME}:docker-scout"
     - "docker scout recommendations local://local/${NAME}:docker-scout"
   allow_failure: false
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "develop"'
-    - if: '$CI_COMMIT_BRANCH == "main"'
   artifacts:
     expire_in: "1 month"
     paths:
       - "cves-report.md"
+  rules:
+    - if: '$CI_COMMIT_BRANCH'
+      changes:
+        compare_to: 'refs/heads/main'
+        paths:
+          - '$(pwd)/${TYPE}/${NAME}/latest/Dockerfile'
 
 .publish: &publish
   stage: publish
@@ -70,7 +76,11 @@ variables:
     - "cd $(pwd)/${TYPE}/${NAME}/latest && bash build --gitlab-ci"
   allow_failure: false
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "main'
+      changes:
+        compare_to: 'refs/heads/main'
+        paths:
+          - '$(pwd)/${TYPE}/${NAME}/latest/Dockerfile'
 
 ###############################################################################
 #################### CI JOBS
@@ -106,7 +116,6 @@ secretlint:
   stage: secret
   image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_DOCKER_SECRET_LINT
   script:
-    #- "detect-secrets -C $(pwd) scan > .secrets.baseline"
     - "detect-secrets scan"
     - "detect-secrets audit .secrets.baseline"
   allow_failure: false
