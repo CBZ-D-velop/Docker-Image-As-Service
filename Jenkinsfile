@@ -36,7 +36,7 @@ pipeline {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT"
-                    registryUrl 'https://$NEXUS_REPOS_DOCKER_REGISTRY'
+                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
                 }
             }
@@ -52,7 +52,7 @@ pipeline {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_DOCKER_SECRET_LINT"
-                    registryUrl 'https://$NEXUS_REPOS_DOCKER_REGISTRY'
+                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
                 }
             }
@@ -67,7 +67,7 @@ pipeline {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_ALPINE_SONAR_SCANNER_CL"
-                    registryUrl 'https://$NEXUS_REPOS_DOCKER_REGISTRY'
+                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
                 }
             }
@@ -81,7 +81,7 @@ pipeline {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
-                    registryUrl 'https://$NEXUS_REPOS_DOCKER_REGISTRY'
+                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
                     args '-v /var/run/docker.sock:/var/run/docker.sock'
                 }
@@ -98,7 +98,7 @@ pipeline {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
-                    registryUrl 'https://$NEXUS_REPOS_DOCKER_REGISTRY'
+                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
                     args '-v /var/run/docker.sock:/var/run/docker.sock'
                 }
@@ -116,7 +116,7 @@ pipeline {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
-                    registryUrl 'https://$NEXUS_REPOS_DOCKER_REGISTRY'
+                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
                     args '-v /var/run/docker.sock:/var/run/docker.sock'
                 }
