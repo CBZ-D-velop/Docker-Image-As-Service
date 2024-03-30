@@ -66,7 +66,7 @@ pipeline {
         stage("sonarqube") {
             agent { 
                 docker {
-                    image "$DOCKER_IMAGE_ALPINE_SONAR_SCANNER_CL"
+                    image "$DOCKER_IMAGE_ALPINE_SONAR_SCANNER_CLI"
                     registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
                 }
