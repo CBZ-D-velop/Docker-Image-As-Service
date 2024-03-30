@@ -35,9 +35,9 @@ pipeline {
         stage("lint") {
             agent { 
                 docker {
-                    image '$DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT'
+                    image "$DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT"
                     registryUrl 'https://$NEXUS_REPOS_DOCKER_REGISTRY'
-                    registryCredentialsId 'NEXUS_JENKINS_LOGIN_PASSWORD'
+                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
                 }
             }
 
@@ -51,9 +51,9 @@ pipeline {
         stage("secret") {
             agent { 
                 docker {
-                    image '$DOCKER_IMAGE_DOCKER_SECRET_LINT'
+                    image "$DOCKER_IMAGE_DOCKER_SECRET_LINT"
                     registryUrl 'https://$NEXUS_REPOS_DOCKER_REGISTRY'
-                    registryCredentialsId 'NEXUS_JENKINS_LOGIN_PASSWORD'
+                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
                 }
             }
 
@@ -66,9 +66,9 @@ pipeline {
         stage("sonarqube") {
             agent { 
                 docker {
-                    image '$DOCKER_IMAGE_ALPINE_SONAR_SCANNER_CL'
+                    image "$DOCKER_IMAGE_ALPINE_SONAR_SCANNER_CL"
                     registryUrl 'https://$NEXUS_REPOS_DOCKER_REGISTRY'
-                    registryCredentialsId 'NEXUS_JENKINS_LOGIN_PASSWORD'
+                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
                 }
             }
 
@@ -80,9 +80,9 @@ pipeline {
         stage("test-build") {
             agent { 
                 docker {
-                    image '$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD'
+                    image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
                     registryUrl 'https://$NEXUS_REPOS_DOCKER_REGISTRY'
-                    registryCredentialsId 'NEXUS_JENKINS_LOGIN_PASSWORD'
+                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
                     args '-v /var/run/docker.sock:/var/run/docker.sock'
                 }
             }
@@ -97,9 +97,9 @@ pipeline {
         stage("publish") {
             agent { 
                 docker {
-                    image '$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD'
+                    image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
                     registryUrl 'https://$NEXUS_REPOS_DOCKER_REGISTRY'
-                    registryCredentialsId 'NEXUS_JENKINS_LOGIN_PASSWORD'
+                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
                     args '-v /var/run/docker.sock:/var/run/docker.sock'
                 }
             }
@@ -115,9 +115,9 @@ pipeline {
         stage("dayli-build") {
             agent { 
                 docker {
-                    image '$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD'
+                    image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
                     registryUrl 'https://$NEXUS_REPOS_DOCKER_REGISTRY'
-                    registryCredentialsId 'NEXUS_JENKINS_LOGIN_PASSWORD'
+                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
                     args '-v /var/run/docker.sock:/var/run/docker.sock'
                 }
             }
