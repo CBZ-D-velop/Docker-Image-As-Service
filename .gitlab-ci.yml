@@ -235,6 +235,12 @@ testbuild_alpine_releasecli:
     TYPE: "Publish"
     NAME: "alpine-releasecli"
 
+testbuild_debian_nginx:
+  <<: *testbuild
+  variables:
+    TYPE: "Hosting"
+    NAME: "debian-nginx"
+
 ############################################
 #### security
 ############################################
@@ -375,6 +381,14 @@ security_alpine_releasecli:
   needs:
     - "testbuild_alpine_releasecli"
 
+security_debian_nginx:
+  <<: *security
+  variables:
+    TYPE: "Hosting"
+    NAME: "debian-nginx"
+  needs:
+    - "testbuild_debian_nginx"
+
 ############################################
 #### publish
 ############################################
@@ -514,3 +528,11 @@ publish_alpine_releasecli:
     NAME: "alpine-releasecli"
   needs:
     - "security_alpine_releasecli"
+
+publish_debian_nginx:
+  <<: *publish
+  variables:
+    TYPE: "Hosting"
+    NAME: "debian-nginx"
+  needs:
+    - "security_debian_nginx"
