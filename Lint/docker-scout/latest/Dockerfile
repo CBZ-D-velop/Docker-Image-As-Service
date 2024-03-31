@@ -51,7 +51,7 @@ RUN apk add --update --no-cache python3 && \
 
 # Install Docker scout
 RUN apk add --no-cache --update curl wget tar && \
-    wget "https://github.com/docker/scout-cli/releases/download/v${ENV_DOCKER_SCOUT_VERION}/docker-scout_${ENV_DOCKER_SCOUT_VERION}_linux_amd64.tar.gz" --secure-protocol=TLSv1_2 --max-redirect=1 && \
+    wget "https://github.com/docker/scout-cli/releases/download/v${ENV_DOCKER_SCOUT_VERION}/docker-scout_${ENV_DOCKER_SCOUT_VERION}_linux_amd64.tar.gz" --secure-protocol=TLSv1_2 --max-redirect=1 -q && \
     mkdir -p ~/.docker/cli-plugins && \
     tar xvzf ./*.tar.gz && mv docker-scout ~/.docker/cli-plugins/. && \
     chmod +x ~/.docker/cli-plugins/docker-scout && \

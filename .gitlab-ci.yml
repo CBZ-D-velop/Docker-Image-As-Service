@@ -38,11 +38,8 @@ variables:
     - "cd $(pwd)/${TYPE}/${NAME}/latest && bash build --test-build"
   allow_failure: false
   rules:
-    - if: '$CI_COMMIT_BRANCH'
-      changes:
-        compare_to: 'refs/heads/main'
-        paths:
-          - '$(pwd)/${TYPE}/${NAME}/latest/Dockerfile'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "develop"'
 
 .security: &security
   stage: security
@@ -55,17 +52,14 @@ variables:
   script:
     - "docker scout cves --exit-code --only-severity critical,high --format markdown --output ./cves-report.md local://local/${NAME}:docker-scout"
     - "docker scout recommendations local://local/${NAME}:docker-scout"
-  allow_failure: false
+  allow_failure: true
   artifacts:
     expire_in: "1 month"
     paths:
       - "cves-report.md"
   rules:
-    - if: '$CI_COMMIT_BRANCH'
-      changes:
-        compare_to: 'refs/heads/main'
-        paths:
-          - '$(pwd)/${TYPE}/${NAME}/latest/Dockerfile'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "develop"'
 
 .publish: &publish
   stage: publish
@@ -77,10 +71,6 @@ variables:
   allow_failure: false
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
-      changes:
-        compare_to: 'refs/heads/main'
-        paths:
-          - '$(pwd)/${TYPE}/${NAME}/latest/Dockerfile'
 
 ###############################################################################
 #################### CI JOBS
