@@ -102,7 +102,3 @@ else
     docker push ${NAMESPACE}/${IMAGE_NAME}:latest
 
 fi
-    elif [ "$1" == "--dayli-build" ]; then
-        echo "=== DAYLI BUILD ==="
-        DATE=$(date +'%m-%d-%Y')
-        VERSION="dayli-build-${DATE}-${MAJOR_TAG}.${MINOR_TAG}"
