@@ -1,0 +1,108 @@
+#!/bin/bash
+
+TAG_FILE=".tag"
+ENV_FILE=".env"
+
+source ./$ENV_FILE
+source ./${TAG_FILE}
+
+# Check if the tag file exists; if not, create it with the initial value of 0.1
+if [ ! -e "${TAG_FILE}" ]; then
+    MAJOR_TAG="0"
+    MINOR_TAG="1"
+
+else
+    # If the --major argument is passed, round up to the next integer and add .0
+    if [ "$1" == "--major" ]; then
+        MAJOR_TAG=$((${MAJOR_TAG} + 1))
+        MINOR_TAG="0"
+        VERSION="${MAJOR_TAG}.${MINOR_TAG}"
+
+    elif [ "$1" == "--dayli-build" ]; then
+        echo "=== DAYLI BUILD ==="
+        DATE=$(date +'%m-%d-%Y')
+        VERSION="dayli-build-${DATE}-${MAJOR_TAG}.${MINOR_TAG}"
+
+    # If the --test-build argument is passed, no touch to any value of version
+    elif [ "$1" == "--test-build" ]; then
+        echo "=== TEST BUILD ==="
+        VERSION="test-build-${MAJOR_TAG}.${MINOR_TAG}"
+
+    elif [ "$1" == "--docker-scout" ]; then
+        echo "=== DOKCER SCOUT BUILD ==="
+        NAMESPACE="local"
+        VERSION="docker-scout"
+
+    # If the --gitlab-ci argument is passed, no touch to any value of version
+    elif [ "$1" == "--gitlab-ci" ]; then
+        echo "=== GITLAB CI BUILD ==="
+        DATE=$(date +'%m-%d-%Y')
+        VERSION="gitlab-ci-${DATE}-${MAJOR_TAG}.${MINOR_TAG}"
+
+    # If the --jenkins-ci argument is passed, no touch to any value of version
+    elif [ "$1" == "--jenkins-ci" ]; then
+        echo "=== JENKINS CI BUILD ==="
+        DATE=$(date +'%m-%d-%Y')
+        VERSION="jenkins-ci-${DATE}-${MAJOR_TAG}.${MINOR_TAG}"
+
+    else
+        MINOR_TAG=$((${MINOR_TAG} + 1))
+        VERSION="${MAJOR_TAG}.${MINOR_TAG}"
+
+    fi
+fi
+
+docker build \
+    --build-arg MAINTAINER="${MAINTAINER}" \
+    --build-arg MAINTAINER_ADDRESS="${MAINTAINER_ADDRESS}" \
+    --build-arg DEFAULT_USER="${DEFAULT_USER}" \
+    --build-arg DEFAULT_GROUP="${DEFAULT_GROUP}" \
+    --build-arg DEFAULT_WORKDIR="${DEFAULT_WORKDIR}" \
+    --build-arg PROJECT_WEB_ADDRESS="${PROJECT_WEB_ADDRESS}" \
+    --build-arg PROJECT_WEB_CERTIFICATE_C="${PROJECT_WEB_CERTIFICATE_C}" \
+    --build-arg PROJECT_WEB_CERTIFICATE_ST="${PROJECT_WEB_CERTIFICATE_ST}" \
+    --build-arg PROJECT_WEB_CERTIFICATE_L="${PROJECT_WEB_CERTIFICATE_L}" \
+    --build-arg PROJECT_WEB_CERTIFICATE_O="${PROJECT_WEB_CERTIFICATE_O}" \
+    --build-arg PROJECT_WEB_CERTIFICATE_OU="${PROJECT_WEB_CERTIFICATE_OU}" \
+    --build-arg PROJECT_WEB_CERTIFICATE_EMAIL_ADDRESS="${PROJECT_WEB_CERTIFICATE_EMAIL_ADDRESS}" \
+    -t ${NAMESPACE}/${IMAGE_NAME}:${VERSION} .
+
+BUILD_EXIT_CODE=$?
+if [ ${BUILD_EXIT_CODE} -ne 0 ]; then
+    echo "Build failed with exit code ${BUILD_EXIT_CODE}"
+    exit 1
+
+fi
+
+if [ "$1" == "--test-build" ]; then
+    echo "=== TEST BUILD COMPLETE==="
+
+elif [ "$1" == "--docker-scout" ]; then
+    echo "=== DOKCER SCOUT BUILD COMPLETE==="
+
+elif [ "$1" == "--gitlab-ci" ]; then
+    docker push ${NAMESPACE}/${IMAGE_NAME}:${VERSION}
+
+    echo "=== GITLAB CI BUILD COMPLETE ==="
+
+elif [ "$1" == "--jenkins-ci" ]; then
+    docker push ${NAMESPACE}/${IMAGE_NAME}:${VERSION}
+
+    echo "=== JENKINS CI BUILD COMPLETE ==="
+
+elif [ "$1" == "--dayli-build" ]; then
+    docker push ${NAMESPACE}/${IMAGE_NAME}:${VERSION}
+    docker tag ${NAMESPACE}/${IMAGE_NAME}:${VERSION} ${NAMESPACE}/${IMAGE_NAME}:latest
+    docker push ${NAMESPACE}/${IMAGE_NAME}:latest
+
+    echo "=== DAYLI BUILD COMPLETE ==="
+
+else
+    echo "MAJOR_TAG=${MAJOR_TAG}" > "${TAG_FILE}"
+    echo "MINOR_TAG=${MINOR_TAG}" >> "${TAG_FILE}"
+
+    docker push ${NAMESPACE}/${IMAGE_NAME}:${VERSION}
+    docker tag ${NAMESPACE}/${IMAGE_NAME}:${VERSION} ${NAMESPACE}/${IMAGE_NAME}:latest
+    docker push ${NAMESPACE}/${IMAGE_NAME}:latest
+
+fi
