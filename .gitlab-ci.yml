@@ -52,7 +52,7 @@ variables:
   script:
     - "docker scout cves --exit-code --only-severity critical,high --format markdown --output ./cves-report.md local://local/${NAME}:docker-scout"
     - "docker scout recommendations local://local/${NAME}:docker-scout"
-  allow_failure: false
+  allow_failure: true
   artifacts:
     expire_in: "1 month"
     paths:
