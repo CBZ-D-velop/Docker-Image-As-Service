@@ -59,6 +59,8 @@ docker build \
     --build-arg DEFAULT_USER=${DEFAULT_USER} \
     --build-arg DEFAULT_GROUP=${DEFAULT_GROUP} \
     --build-arg DEFAULT_WORKDIR=${DEFAULT_WORKDIR} \
+    --build-arg DEFAULT_NPM_VERSION=${DEFAULT_NPM_VERSION} \
+    --build-arg DEFAULT_NODEJS_VERSION=${DEFAULT_NODEJS_VERSION} \
     -t ${NAMESPACE}/${IMAGE_NAME}:${VERSION} .
 
 BUILD_EXIT_CODE=$?

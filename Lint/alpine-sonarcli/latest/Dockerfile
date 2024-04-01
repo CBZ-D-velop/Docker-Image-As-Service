@@ -8,6 +8,9 @@ ARG DEFAULT_USER=""
 ARG DEFAULT_GROUP=""
 ARG DEFAULT_WORKDIR=""
 
+ARG DEFAULT_NPM_VERSION=""
+ARG DEFAULT_NODEJS_VERSION=""
+
 ENV ENV_MAINTAINER="${MAINTAINER}"
 ENV ENV_MAINTAINER_ADDRESS="${MAINTAINER_ADDRESS}"
 
@@ -15,6 +18,9 @@ ENV ENV_DEFAULT_USER="${DEFAULT_USER}"
 ENV ENV_DEFAULT_GROUP="${DEFAULT_GROUP}"
 ENV ENV_DEFAULT_WORKDIR="${DEFAULT_WORKDIR}"
 ENV ENV_VERSION="${VERSION}"
+
+ENV ENV_DEFAULT_NPM_VERSION="${DEFAULT_NPM_VERSION}"
+ENV ENV_DEFAULT_NODEJS_VERSION="${DEFAULT_NODEJS_VERSION}"
 
 LABEL "version"="${ENV_VERSION}"
 LABEL "maintainer"="${ENV_MAINTAINER} <${ENV_MAINTAINER_ADDRESS}>"
@@ -55,6 +61,11 @@ RUN python3 -m pip install --no-cache-dir -r ./requirements.txt --break-system-p
     ansible-galaxy collection install community.general && \
     ansible-galaxy collection install community.docker && \
     ansible --version
+
+# Install npm / nodejs
+RUN apk add --no-cache --update npm nodejs &&\
+    node -v && \
+    npm -v
 
 # Remove packages cache
 RUN apk del build-dependencies; \

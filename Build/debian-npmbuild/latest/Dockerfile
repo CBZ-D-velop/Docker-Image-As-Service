@@ -38,7 +38,7 @@ RUN echo "debconf debconf/frontend select Noninteractive" | debconf-set-selectio
     apt-get --no-install-recommends upgrade debian-archive-keyring -y --allow-change-held-packages
 
 # Install Git tools
-RUN apt-get --no-install-recommends install -y git curl wget openssl zip unzip tar gzip
+RUN apt-get --no-install-recommends install -y git curl wget openssl ssh curl zip unzip tar gzip
 
 # CLear all apt files
 RUN apt-get autoclean -y && apt-get clean -y && apt-get autoremove -y && \
