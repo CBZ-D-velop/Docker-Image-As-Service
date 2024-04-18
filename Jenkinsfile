@@ -48,7 +48,7 @@ pipeline {
             }
         }
 
-        stage("secret") {
+        stage("secret lint") {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_DOCKER_SECRET_LINT"
