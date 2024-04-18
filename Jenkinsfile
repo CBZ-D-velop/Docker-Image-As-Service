@@ -63,7 +63,7 @@ pipeline {
             }
         }
 
-        stage("sonarqube") {
+        stage("sonarqube-check") {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_ALPINE_SONAR_SCANNER_CLI"
