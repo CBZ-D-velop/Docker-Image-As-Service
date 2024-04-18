@@ -37,8 +37,27 @@ WORKDIR ${ENV_DEFAULT_WORKDIR}
 # Start and enable docker
 RUN apk update && \
     apk add --no-cache make openrc docker git tar unzip bzip2 bash && \
-    rc-update add docker boot && \
-    usermod -aG docker ${ENV_DEFAULT_USER}
+    rc-update add docker boot
+
+# Install python and pip
+RUN apk add --update --no-cache python3 && \
+    ln -sf python3 /usr/bin/python && \
+    mv /usr/lib/python3.11/EXTERNALLY-MANAGED /usr/lib/python3.11/EXTERNALLY-MANAGED.old && \
+    python3 -m ensurepip && \
+    python3 -m pip install --no-cache-dir --break-system-packages --upgrade pip setuptools && \
+    python3 --version
+
+# Isntall molecule
+# Install comunity additions
+COPY --chown="${DEFAULT_USER}:${DEFAULT_GROUP}" ./requirements.txt ./requirements.txt
+RUN python3 -m pip install --no-cache-dir -r ./requirements.txt --break-system-packages && \
+    ansible-galaxy collection install community.general && \
+    ansible-galaxy collection install community.docker && \
+    ansible --version && \
+    molecule --version
+
+# Remove packages cache
+RUN rm -rf /var/cache/apk/* ~/.cache/*
 
 # Increase default docker timeout
 ENV DOCKER_CLIENT_TIMEOUT=${ENV_DOCKER_TIMEOUT}
@@ -51,27 +70,6 @@ RUN echo '#!/bin/sh' > /usr/local/bin/entrypoint.sh && \
     echo "export DOCKER_CLIENT_TIMEOUT=${ENV_DOCKER_TIMEOUT}" >> /usr/local/bin/entrypoint.sh && \
     echo "export COMPOSE_HTTP_TIMEOUT=${ENV_DOCKER_TIMEOUT}" >> /usr/local/bin/entrypoint.sh && \
     chmod +x /usr/local/bin/entrypoint.sh
-
-# Install python and pip
-RUN apk add --update --no-cache python3 && \
-    ln -sf python3 /usr/bin/python && \
-    mv /usr/lib/python3.11/EXTERNALLY-MANAGED /usr/lib/python3.11/EXTERNALLY-MANAGED.old
-
-# Remove packages cache
-RUN rm -rf /var/cache/apk/* ~/.cache/*
-
-# Isntall molecule
-# Install comunity additions
-COPY --chown="${DEFAULT_USER}:${DEFAULT_GROUP}" ./requirements.txt ./home/${DEFAULT_USER}/requirements.txt
-USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"
-RUN python3 -m ensurepip && \
-    python3 -m pip install --no-cache-dir --break-system-packages --upgrade pip setuptools && \
-    python3 --version && \
-    python3 -m pip install --no-cache-dir -r ./requirements.txt --break-system-packages && \
-    ansible-galaxy collection install community.general && \
-    ansible-galaxy collection install community.docker && \
-    ansible --version && \
-    molecule --version
 
 # Set CMD
 USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"

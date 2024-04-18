@@ -39,8 +39,7 @@ WORKDIR ${ENV_DEFAULT_WORKDIR}
 # Start and enable docker
 RUN apk update && \
     apk add --no-cache make openrc docker git tar unzip bzip2 bash && \
-    rc-update add docker boot && \
-    usermod -aG docker ${ENV_DEFAULT_USER}
+    rc-update add docker boot
 
 # Install python and pip
 RUN apk add --update --no-cache python3 && \
@@ -50,8 +49,13 @@ RUN apk add --update --no-cache python3 && \
     python3 -m pip install --no-cache-dir --break-system-packages --upgrade pip setuptools && \
     python3 --version
 
-# Install Docker scout requirements
-RUN apk add --no-cache --update curl wget tar
+# Install Docker scout
+RUN apk add --no-cache --update curl wget tar && \
+    wget "https://github.com/docker/scout-cli/releases/download/v${ENV_DOCKER_SCOUT_VERION}/docker-scout_${ENV_DOCKER_SCOUT_VERION}_linux_amd64.tar.gz" --secure-protocol=TLSv1_2 --max-redirect=1 -q && \
+    mkdir -p ~/.docker/cli-plugins && \
+    tar xvzf ./*.tar.gz && mv docker-scout ~/.docker/cli-plugins/. && \
+    chmod +x ~/.docker/cli-plugins/docker-scout && \
+    docker scout --help
 
 # Remove packages cache
 RUN rm -rf /var/cache/apk/* ~/.cache/*
@@ -62,14 +66,6 @@ ENV COMPOSE_HTTP_TIMEOUT=${ENV_DOCKER_TIMEOUT}
 
 RUN export DOCKER_CLIENT_TIMEOUT=${ENV_DOCKER_TIMEOUT} && \
     export COMPOSE_HTTP_TIMEOUT=${ENV_DOCKER_TIMEOUT}
-
-# Install Docker scout
-USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"
-RUN  wget "https://github.com/docker/scout-cli/releases/download/v${ENV_DOCKER_SCOUT_VERION}/docker-scout_${ENV_DOCKER_SCOUT_VERION}_linux_amd64.tar.gz" --secure-protocol=TLSv1_2 --max-redirect=1 -q && \
-    mkdir -p ~/.docker/cli-plugins && \
-    tar xvzf ./*.tar.gz && mv docker-scout ~/.docker/cli-plugins/. && \
-    chmod +x ~/.docker/cli-plugins/docker-scout && \
-    docker scout --help
 
 # Set CMD
 USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"

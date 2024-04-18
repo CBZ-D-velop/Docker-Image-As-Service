@@ -18,9 +18,6 @@ pipeline {
         DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD = 'robincbz/docker-dockerfilebuild:latest'
         DOCKER_IMAGE_DOCKER_SECRET_LINT = 'robincbz/alpine-secretlint:latest'
         DOCKER_IMAGE_DOCKER_SCOUT = 'robincbz/docker-scout:latest'
-
-        DOCKER_JENKINS_USER = "jenkins-ci"
-        DOCKER_JENKINS_GROUP = "jenkins-ci"
     }        
 
     options {
@@ -35,13 +32,12 @@ pipeline {
     }
 
     stages {
-        stage("hadolint") {
+        stage("lint") {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT"
                     registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
-                    args "-u $DOCKER_JENKINS_USER:$DOCKER_JENKINS_GROUP"
                 }
             }
 
@@ -52,13 +48,12 @@ pipeline {
             }
         }
 
-        stage("detect secrets") {
+        stage("secret") {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_DOCKER_SECRET_LINT"
                     registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
-                    args "-u $DOCKER_JENKINS_USER:$DOCKER_JENKINS_GROUP"
                 }
             }
 
@@ -74,7 +69,6 @@ pipeline {
                     image "$DOCKER_IMAGE_ALPINE_SONAR_SCANNER_CLI"
                     registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
-                    args "-u $DOCKER_JENKINS_USER:$DOCKER_JENKINS_GROUP"
                 }
             }
 
@@ -83,32 +77,48 @@ pipeline {
             }
         }
 
-        stage("docker scout") {
-            agent { 
-                docker {
-                    image "$DOCKER_IMAGE_DOCKER_SCOUT"
-                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
-                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
-                    args "-u $DOCKER_JENKINS_USER:$DOCKER_JENKINS_GROUP -v /var/run/docker.sock:/var/run/docker.sock"
-                }
-            }
-
-            steps {
-                dir("$TYPE/$NAME/latest") {
-                    sh('bash build --docker-scout')
-                    sh('docker scout cves --exit-code --only-severity critical,high --format markdown --output ./cves-report.md local://local/${NAME}:docker-scout || true')
-                    sh('docker scout recommendations local://local/${NAME}:docker-scout || true')
-                }
-            }
-        }
-
-        stage("dayli publish") {
+        stage("test-build") {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
                     registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
-                    args "-u $DOCKER_JENKINS_USER:$DOCKER_JENKINS_GROUP -v /var/run/docker.sock:/var/run/docker.sock"
+                    args '-u root:root -v /var/run/docker.sock:/var/run/docker.sock'
+                }
+            }
+
+            steps {
+                dir("$TYPE/$NAME/latest") {
+                    sh('bash build --test-build')
+                }
+            }
+        }
+
+        stage("publish") {
+            agent { 
+                docker {
+                    image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
+                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
+                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
+                    args '-u root:root -v /var/run/docker.sock:/var/run/docker.sock'
+                }
+            }
+
+            steps {
+                dir("$TYPE/$NAME/latest") {
+                    sh('docker login -u \"$DOCKER_HUB_REPOS_USERNAME\" -p \"$DOCKER_HUB_REPOS_PASSWORD\"')
+                    sh('bash build --jenkins-ci')
+                }
+            }
+        }
+
+        stage("dayli-build") {
+            agent { 
+                docker {
+                    image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
+                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
+                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
+                    args '-u root:root -v /var/run/docker.sock:/var/run/docker.sock'
                 }
             }
 

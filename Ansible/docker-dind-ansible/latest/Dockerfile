@@ -35,8 +35,7 @@ WORKDIR ${ENV_DEFAULT_WORKDIR}
 # Start and enable docker
 RUN apk update && \
     apk add --no-cache make openrc docker git bash && \
-    rc-update add docker boot && \
-    usermod -aG docker ${ENV_DEFAULT_USER}
+    rc-update add docker boot
 
 # Install basics requirements
 RUN apk add --no-cache \
