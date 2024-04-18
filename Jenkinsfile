@@ -32,7 +32,7 @@ pipeline {
     }
 
     stages {
-        stage("lint") {
+        stage("hadolint") {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT"
@@ -77,7 +77,7 @@ pipeline {
             }
         }
 
-        stage("test-build") {
+        stage("docker scout") {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
@@ -89,30 +89,14 @@ pipeline {
 
             steps {
                 dir("$TYPE/$NAME/latest") {
-                    sh('bash build --test-build')
+                    sh('bash build --docker-scout')
+                    sh('docker scout cves --exit-code --only-severity critical,high --format markdown --output ./cves-report.md local://local/${NAME}:docker-scout || true')
+                    sh('docker scout recommendations local://local/${NAME}:docker-scout || true')
                 }
             }
         }
 
-        stage("publish") {
-            agent { 
-                docker {
-                    image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
-                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
-                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
-                    args '-u root:root -v /var/run/docker.sock:/var/run/docker.sock'
-                }
-            }
-
-            steps {
-                dir("$TYPE/$NAME/latest") {
-                    sh('docker login -u \"$DOCKER_HUB_REPOS_USERNAME\" -p \"$DOCKER_HUB_REPOS_PASSWORD\"')
-                    sh('bash build --jenkins-ci')
-                }
-            }
-        }
-
-        stage("dayli-build") {
+        stage("dayli build") {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
@@ -129,7 +113,6 @@ pipeline {
                 }
             }
         }
-    }
 
     post {
         always {
