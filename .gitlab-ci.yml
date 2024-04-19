@@ -84,7 +84,7 @@ variables:
 sast:
   stage: gitlab-test
 include:
-- template: security/SAST.gitlab-ci.yml
+- template: Security/SAST.gitlab-ci.yml
   allow_failure: false
 
 ############################################

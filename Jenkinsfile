@@ -166,7 +166,6 @@ pipeline {
 
     post {
         always {
-            archiveArtifacts artifacts: './cves-report.md', fingerprint: true
             deleteDir()
         }
     }
