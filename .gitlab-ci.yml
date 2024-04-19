@@ -13,7 +13,7 @@ stages:
 - sonarqube-check
 - test-build
 - scout-build
-- publishbuild-build
+- publish-build
 
 variables:
   ANSIBLE_FORCE_COLOR: "true"
@@ -61,8 +61,8 @@ variables:
     - if: '$CI_COMMIT_BRANCH == "main"'
     - if: '$CI_COMMIT_BRANCH == "develop"'
 
-.publishbuildbuild: &publishbuildbuild
-  stage: publishbuild-build
+.publishbuild: &publishbuild
+  stage: publish-build
   image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD
   before_script:
     - "docker login -u \"${DOCKER_HUB_REPOS_USERNAME}\" -p \"${DOCKER_HUB_REPOS_PASSWORD}\""
