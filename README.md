@@ -87,6 +87,12 @@ Here you can put your change to keep a trace of your work and decisions.
 * Added a Jenkins CI to dayli build images based on cron
 * Reworks on build script, added/updated options
 
+### 2024-05-19: GitLab / Jenkins CI
+
+* Rework on CI names
+* Will not edit containers because not mandatory
+* Added artefact analysis upload
+
 ## Authors
 
 * Lord Robin Crombez

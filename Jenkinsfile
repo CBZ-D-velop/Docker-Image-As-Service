@@ -32,12 +32,14 @@ pipeline {
     }
 
     stages {
-        stage("hadolint") {
+        stage("dockerfile-lint") {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT"
                     registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
+                    alwaysPull true
+                    reuseNode true
                 }
             }
 
@@ -48,12 +50,14 @@ pipeline {
             }
         }
 
-        stage("secret lint") {
+        stage("secret-lint") {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_DOCKER_SECRET_LINT"
                     registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
+                    alwaysPull true
+                    reuseNode true
                 }
             }
 
@@ -69,6 +73,8 @@ pipeline {
                     image "$DOCKER_IMAGE_ALPINE_SONAR_SCANNER_CLI"
                     registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
+                    alwaysPull true
+                    reuseNode true
                 }
             }
 
@@ -77,12 +83,34 @@ pipeline {
             }
         }
 
-        stage("docker scout") {
+        stage("test-build") {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
                     registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
+                    alwaysPull true
+                    reuseNode true
+                    args '-u root:root -v /var/run/docker.sock:/var/run/docker.sock'
+                }
+            }
+
+            steps {
+                dir("$TYPE/$NAME/latest") {
+                    sh('docker login -u \"$DOCKER_HUB_REPOS_USERNAME\" -p \"$DOCKER_HUB_REPOS_PASSWORD\"')
+                    sh('bash build --test-build')
+                }
+            }
+        }
+
+        stage("scout-build") {
+            agent { 
+                docker {
+                    image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
+                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
+                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
+                    alwaysPull true
+                    reuseNode true
                     args '-u root:root -v /var/run/docker.sock:/var/run/docker.sock'
                 }
             }
@@ -96,12 +124,34 @@ pipeline {
             }
         }
 
-        stage("dayli build") {
+        stage("publish-build") {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
                     registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
+                    alwaysPull true
+                    reuseNode true
+                    args '-u root:root -v /var/run/docker.sock:/var/run/docker.sock'
+                }
+            }
+
+            steps {
+                dir("$TYPE/$NAME/latest") {
+                    sh('docker login -u \"$DOCKER_HUB_REPOS_USERNAME\" -p \"$DOCKER_HUB_REPOS_PASSWORD\"')
+                    sh('bash build --jenkins-ci')
+                }
+            }
+        }
+
+        stage("dayli-build") {
+            agent { 
+                docker {
+                    image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
+                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
+                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
+                    alwaysPull true
+                    reuseNode true
                     args '-u root:root -v /var/run/docker.sock:/var/run/docker.sock'
                 }
             }
@@ -116,6 +166,7 @@ pipeline {
 
     post {
         always {
+            archiveArtifacts artifacts: './cves-report.md', fingerprint: true
             deleteDir()
         }
     }
