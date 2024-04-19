@@ -91,7 +91,7 @@ include:
 #### lint
 ############################################
 
-hadolint:
+dockerfile-lint:
   stage: dockerfile-lint
   image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT
   script:
@@ -102,7 +102,7 @@ hadolint:
 #### secret
 ############################################
 
-secretlint:
+secret-lint:
   stage: secret-lint
   image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_DOCKER_SECRET_LINT
   script:
