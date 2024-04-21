@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent none
 
     environment { 
         DOCKER_HUB_REPOS_PASSWORD = credentials('DOCKER_HUB_REPOS_PASSWORD')
