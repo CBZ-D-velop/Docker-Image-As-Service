@@ -106,7 +106,7 @@ pipeline {
         stage("scout-build") {
             agent { 
                 docker {
-                    image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
+                    image "$DOCKER_IMAGE_DOCKER_SCOUT"
                     registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
                     alwaysPull true
