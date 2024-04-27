@@ -45,7 +45,7 @@ pipeline {
 
             steps {
                 dir("$TYPE/$NAME/latest") {
-                    sh('hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 Dockerfile')
+                    sh('hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 Dockerfile > ./hadolint.md')
                 }
             }
         }
@@ -62,8 +62,8 @@ pipeline {
             }
 
             steps {
-                sh('detect-secrets scan')
-                sh('detect-secrets audit .secrets.baseline')
+                sh('detect-secrets scan > ./detect-secrets-scan.md')
+                sh('detect-secrets audit .secrets.baseline > ./detect-secrets-audit.md')
             }
         }
 
@@ -119,7 +119,7 @@ pipeline {
                 dir("$TYPE/$NAME/latest") {
                     sh('bash build --docker-scout')
                     sh('docker scout cves --exit-code --only-severity critical,high --format markdown --output ./cves-report.md local://local/${NAME}:docker-scout || true')
-                    sh('docker scout recommendations local://local/${NAME}:docker-scout || true')
+                    sh('$(docker scout recommendations local://local/${NAME}:docker-scout > ./cves-recommendations.md) || true')
                 }
             }
         }
