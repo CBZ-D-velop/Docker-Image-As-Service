@@ -166,9 +166,24 @@ pipeline {
     }
 
     post {
-        always {
-            archiveArtifacts artifacts: './cves-report.md', fingerprint: true
-            deleteDir()
+        success {
+            archiveArtifacts "$TYPE/$NAME/latest/*.md"
+            cleanWs(
+                    cleanWhenNotBuilt: true,
+                    deleteDirs: true,
+                    disableDeferredWipeout: true,
+                    notFailBuild: true
+            )
         }
-    }
+
+        failure {
+            cleanWs(
+                    cleanWhenNotBuilt: true,
+                    deleteDirs: true,
+                    disableDeferredWipeout: true,
+                    notFailBuild: true
+            )
+        }
+        }
+
 }
