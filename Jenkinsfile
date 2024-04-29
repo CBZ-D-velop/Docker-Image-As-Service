@@ -118,8 +118,8 @@ pipeline {
             steps {
                 dir("$TYPE/$NAME/latest") {
                     sh("bash build --docker-scout")
-                    sh("$(docker scout cves --exit-code --only-severity critical,high --format markdown local://local/${NAME}:docker-scout > ./cves-report.md )|| true")
-                    sh("$(docker scout recommendations local://local/${NAME}:docker-scout > ./cves-recommendations.md) || true")
+                    sh("docker scout cves --exit-code --only-severity critical,high --format markdown local://local/${NAME}:docker-scout > ./cves-report.md || true")
+                    sh("docker scout recommendations local://local/${NAME}:docker-scout > ./cves-recommendations.md || true")
                 }
             }
         }
