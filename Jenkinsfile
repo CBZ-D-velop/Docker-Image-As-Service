@@ -47,6 +47,7 @@ pipeline {
             steps {
                 dir("$TYPE/$NAME/latest") {
                     sh("#!/bin/bash\n bash build --docker-scout")
+                    sh("#!/bin/bash\n docker login -u \"$DOCKER_HUB_REPOS_USERNAME\" -p \"$DOCKER_HUB_REPOS_PASSWORD\"")
                     sh("#!/bin/bash\n ~/.docker/cli-plugins/docker-scout cves --exit-code --only-severity critical,high --format markdown local://local/${NAME}:docker-scout > ./cves-report.md || true")
                     sh("#!/bin/bash\n ~/.docker/cli-plugins/docker-scout recommendations local://local/${NAME}:docker-scout > ./cves-recommendations.md || true")
                 }
