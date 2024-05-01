@@ -12,7 +12,7 @@ stages:
 - secret-lint
 - sonarqube-check
 - test-build
-- scout-build
+- scout-cve
 - publish-build
 
 variables:
@@ -41,8 +41,8 @@ variables:
     - if: '$CI_COMMIT_BRANCH == "main"'
     - if: '$CI_COMMIT_BRANCH == "develop"'
 
-.scout-build: &scout-build
-  stage: scout-build
+.scout-cve: &scout-cve
+  stage: scout-cve
   image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_DOCKER_SCOUT
   before_script:
     - "docker login -u \"${DOCKER_HUB_REPOS_USERNAME}\" -p \"${DOCKER_HUB_REPOS_PASSWORD}\""
@@ -242,147 +242,147 @@ test-build_debian_nginx:
     NAME: "debian-nginx"
 
 ############################################
-#### scout-build
+#### scout-cve
 ############################################
 
-scout-build_debian_11_ansible:
-  <<: *scout-build
+scout-cve_debian_11_ansible:
+  <<: *scout-cve
   variables:
     TYPE: "Ansible"
     NAME: "debian-11-ansible"
   needs:
     - "test-build_debian_11_ansible"
 
-scout-build_debian_12_ansible:
-  <<: *scout-build
+scout-cve_debian_12_ansible:
+  <<: *scout-cve
   variables:
     TYPE: "Ansible"
     NAME: "debian-12-ansible"
   needs:
     - "test-build_debian_12_ansible"
 
-scout-build_docker_dind_ansible:
-  <<: *scout-build
+scout-cve_docker_dind_ansible:
+  <<: *scout-cve
   variables:
     TYPE: "Ansible"
     NAME: "docker-dind-ansible"
   needs:
     - "test-build_docker_dind_ansible"
 
-scout-build_docker_dind_molecule:
-  <<: *scout-build
+scout-cve_docker_dind_molecule:
+  <<: *scout-cve
   variables:
     TYPE: "Ansible"
     NAME: "docker-dind-molecule"
   needs:
     - "test-build_docker_dind_molecule"
 
-scout-build_ubuntu_22_ansible:
-  <<: *scout-build
+scout-cve_ubuntu_22_ansible:
+  <<: *scout-cve
   variables:
     TYPE: "Ansible"
     NAME: "ubuntu-22-ansible"
   needs:
     - "test-build_ubuntu_22_ansible"
 
-scout-build_debian_11_certification:
-  <<: *scout-build
+scout-cve_debian_11_certification:
+  <<: *scout-cve
   variables:
     TYPE: "Build"
     NAME: "debian-11-certification"
   needs:
     - "test-build_debian_11_certification"
 
-scout-build_debian_npmbuild:
-  <<: *scout-build
+scout-cve_debian_npmbuild:
+  <<: *scout-cve
   variables:
     TYPE: "Build"
     NAME: "debian-npmbuild"
   needs:
     - "test-build_debian_npmbuild"
 
-scout-build_docker_dockerfilebuild:
-  <<: *scout-build
+scout-cve_docker_dockerfilebuild:
+  <<: *scout-cve
   variables:
     TYPE: "Build"
     NAME: "docker-dockerfilebuild"
   needs:
     - "test-build_docker_dockerfilebuild"
 
-scout-build_alpine_ansiblelint:
-  <<: *scout-build
+scout-cve_alpine_ansiblelint:
+  <<: *scout-cve
   variables:
     TYPE: "Lint"
     NAME: "alpine-ansiblelint"
   needs:
     - "test-build_alpine_ansiblelint"
 
-scout-build_alpine_dockerfilelint:
-  <<: *scout-build
+scout-cve_alpine_dockerfilelint:
+  <<: *scout-cve
   variables:
     TYPE: "Lint"
     NAME: "alpine-dockerfilelint"
   needs:
     - "test-build_alpine_dockerfilelint"
 
-scout-build_alpine_jinjalint:
-  <<: *scout-build
+scout-cve_alpine_jinjalint:
+  <<: *scout-cve
   variables:
     TYPE: "Lint"
     NAME: "alpine-jinjalint"
   needs:
     - "test-build_alpine_jinjalint"
 
-scout-build_alpine_secretlint:
-  <<: *scout-build
+scout-cve_alpine_secretlint:
+  <<: *scout-cve
   variables:
     TYPE: "Lint"
     NAME: "alpine-secretlint"
   needs:
     - "test-build_alpine_secretlint"
 
-scout-build_alpine_sonarcli:
-  <<: *scout-build
+scout-cve_alpine_sonarcli:
+  <<: *scout-cve
   variables:
     TYPE: "Lint"
     NAME: "alpine-sonarcli"
   needs:
     - "test-build_alpine_sonarcli"
 
-scout-build_alpine_yamllint:
-  <<: *scout-build
+scout-cve_alpine_yamllint:
+  <<: *scout-cve
   variables:
     TYPE: "Lint"
     NAME: "alpine-yamllint"
   needs:
     - "test-build_alpine_yamllint"
 
-scout-build_alpine_markdownlint:
-  <<: *scout-build
+scout-cve_alpine_markdownlint:
+  <<: *scout-cve
   variables:
     TYPE: "Lint"
     NAME: "debian-markdownlint"
   needs:
     - "test-build_alpine_markdownlint"
 
-scout-build_alpine_git:
-  <<: *scout-build
+scout-cve_alpine_git:
+  <<: *scout-cve
   variables:
     TYPE: "Publish"
     NAME: "alpine-git"
   needs:
     - "test-build_alpine_git"
 
-scout-build_alpine_releasecli:
-  <<: *scout-build
+scout-cve_alpine_releasecli:
+  <<: *scout-cve
   variables:
     TYPE: "Publish"
     NAME: "alpine-releasecli"
   needs:
     - "test-build_alpine_releasecli"
 
-scout-build_debian_nginx:
-  <<: *scout-build
+scout-cve_debian_nginx:
+  <<: *scout-cve
   variables:
     TYPE: "Hosting"
     NAME: "debian-nginx"
@@ -399,7 +399,7 @@ publish-build_debian_11_ansible:
     TYPE: "Ansible"
     NAME: "debian-11-ansible"
   needs:
-    - "scout-build_debian_11_ansible"
+    - "scout-cve_debian_11_ansible"
 
 publish-build_debian_12_ansible:
   <<: *publish-build
@@ -407,7 +407,7 @@ publish-build_debian_12_ansible:
     TYPE: "Ansible"
     NAME: "debian-12-ansible"
   needs:
-    - "scout-build_debian_12_ansible"
+    - "scout-cve_debian_12_ansible"
 
 publish-build_docker_dind_ansible:
   <<: *publish-build
@@ -415,7 +415,7 @@ publish-build_docker_dind_ansible:
     TYPE: "Ansible"
     NAME: "docker-dind-ansible"
   needs:
-    - "scout-build_docker_dind_ansible"
+    - "scout-cve_docker_dind_ansible"
 
 publish-build_docker_dind_molecule:
   <<: *publish-build
@@ -423,7 +423,7 @@ publish-build_docker_dind_molecule:
     TYPE: "Ansible"
     NAME: "docker-dind-molecule"
   needs:
-    - "scout-build_docker_dind_molecule"
+    - "scout-cve_docker_dind_molecule"
 
 publish-build_ubuntu_22_ansible:
   <<: *publish-build
@@ -431,7 +431,7 @@ publish-build_ubuntu_22_ansible:
     TYPE: "Ansible"
     NAME: "ubuntu-22-ansible"
   needs:
-    - "scout-build_ubuntu_22_ansible"
+    - "scout-cve_ubuntu_22_ansible"
 
 publish-build_debian_11_certification:
   <<: *publish-build
@@ -439,7 +439,7 @@ publish-build_debian_11_certification:
     TYPE: "Build"
     NAME: "debian-11-certification"
   needs:
-    - "scout-build_debian_11_certification"
+    - "scout-cve_debian_11_certification"
 
 publish-build_debian_npmbuild:
   <<: *publish-build
@@ -447,7 +447,7 @@ publish-build_debian_npmbuild:
     TYPE: "Build"
     NAME: "debian-npmbuild"
   needs:
-    - "scout-build_debian_npmbuild"
+    - "scout-cve_debian_npmbuild"
 
 publish-build_docker_dockerfilebuild:
   <<: *publish-build
@@ -455,7 +455,7 @@ publish-build_docker_dockerfilebuild:
     TYPE: "Build"
     NAME: "docker-dockerfilebuild"
   needs:
-    - "scout-build_docker_dockerfilebuild"
+    - "scout-cve_docker_dockerfilebuild"
 
 publish-build_alpine_ansiblelint:
   <<: *publish-build
@@ -463,7 +463,7 @@ publish-build_alpine_ansiblelint:
     TYPE: "Lint"
     NAME: "alpine-ansiblelint"
   needs:
-    - "scout-build_alpine_ansiblelint"
+    - "scout-cve_alpine_ansiblelint"
 
 publish-build_alpine_dockerfilelint:
   <<: *publish-build
@@ -471,7 +471,7 @@ publish-build_alpine_dockerfilelint:
     TYPE: "Lint"
     NAME: "alpine-dockerfilelint"
   needs:
-    - "scout-build_alpine_dockerfilelint"
+    - "scout-cve_alpine_dockerfilelint"
 
 publish-build_alpine_jinjalint:
   <<: *publish-build
@@ -479,7 +479,7 @@ publish-build_alpine_jinjalint:
     TYPE: "Lint"
     NAME: "alpine-jinjalint"
   needs:
-    - "scout-build_alpine_jinjalint"
+    - "scout-cve_alpine_jinjalint"
 
 publish-build_alpine_secretlint:
   <<: *publish-build
@@ -487,7 +487,7 @@ publish-build_alpine_secretlint:
     TYPE: "Lint"
     NAME: "alpine-secretlint"
   needs:
-    - "scout-build_alpine_secretlint"
+    - "scout-cve_alpine_secretlint"
 
 publish-build_alpine_sonarcli:
   <<: *publish-build
@@ -495,7 +495,7 @@ publish-build_alpine_sonarcli:
     TYPE: "Lint"
     NAME: "alpine-sonarcli"
   needs:
-    - "scout-build_alpine_sonarcli"
+    - "scout-cve_alpine_sonarcli"
 
 publish-build_alpine_yamllint:
   <<: *publish-build
@@ -503,7 +503,7 @@ publish-build_alpine_yamllint:
     TYPE: "Lint"
     NAME: "alpine-yamllint"
   needs:
-    - "scout-build_alpine_yamllint"
+    - "scout-cve_alpine_yamllint"
 
 publish-build_alpine_markdownlint:
   <<: *publish-build
@@ -511,7 +511,7 @@ publish-build_alpine_markdownlint:
     TYPE: "Lint"
     NAME: "debian-markdownlint"
   needs:
-    - "scout-build_alpine_markdownlint"
+    - "scout-cve_alpine_markdownlint"
 
 publish-build_alpine_git:
   <<: *publish-build
@@ -519,7 +519,7 @@ publish-build_alpine_git:
     TYPE: "Publish"
     NAME: "alpine-git"
   needs:
-    - "scout-build_alpine_git"
+    - "scout-cve_alpine_git"
 
 publish-build_alpine_releasecli:
   <<: *publish-build
@@ -527,7 +527,7 @@ publish-build_alpine_releasecli:
     TYPE: "Publish"
     NAME: "alpine-releasecli"
   needs:
-    - "scout-build_alpine_releasecli"
+    - "scout-cve_alpine_releasecli"
 
 publish-build_debian_nginx:
   <<: *publish-build
@@ -535,4 +535,4 @@ publish-build_debian_nginx:
     TYPE: "Hosting"
     NAME: "debian-nginx"
   needs:
-    - "scout-build_debian_nginx"
+    - "scout-cve_debian_nginx"

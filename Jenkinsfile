@@ -45,7 +45,7 @@ pipeline {
 
             steps {
                 dir("$TYPE/$NAME/latest") {
-                    sh("hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 Dockerfile > ./hadolint.md")
+                    sh("#!/bin/bash\n hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 Dockerfile > ./hadolint.md")
                 }
             }
         }
@@ -62,8 +62,8 @@ pipeline {
             }
 
             steps {
-                sh("detect-secrets scan > ./$TYPE/$NAME/latest/detect-secrets-scan.md")
-                sh("detect-secrets audit .secrets.baseline > ./$TYPE/$NAME/latest/detect-secrets-audit.md")
+                sh("#!/bin/bash\n detect-secrets scan > ./$TYPE/$NAME/latest/detect-secrets-scan.md")
+                sh("#!/bin/bash\n detect-secrets audit .secrets.baseline > ./$TYPE/$NAME/latest/detect-secrets-audit.md")
             }
         }
 
@@ -79,7 +79,7 @@ pipeline {
             }
 
             steps {
-                sh("sonar-scanner")
+                sh("#!/bin/bash\n sonar-scanner")
             }
         }
 
@@ -97,13 +97,13 @@ pipeline {
 
             steps {
                 dir("$TYPE/$NAME/latest") {
-                    sh("docker login -u \"$DOCKER_HUB_REPOS_USERNAME\" -p \"$DOCKER_HUB_REPOS_PASSWORD\"")
-                    sh("bash build --test-build")
+                    sh("#!/bin/bash\n docker login -u \"$DOCKER_HUB_REPOS_USERNAME\" -p \"$DOCKER_HUB_REPOS_PASSWORD\"")
+                    sh("#!/bin/bash\n bash build --test-build")
                 }
             }
         }
 
-        stage("scout-build") {
+        stage("scout-cve") {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_DOCKER_SCOUT"
@@ -117,9 +117,9 @@ pipeline {
 
             steps {
                 dir("$TYPE/$NAME/latest") {
-                    sh("bash build --docker-scout")
-                    sh("docker scout cves --exit-code --only-severity critical,high --format markdown local://local/${NAME}:docker-scout > ./cves-report.md || true")
-                    sh("docker scout recommendations local://local/${NAME}:docker-scout > ./cves-recommendations.md || true")
+                    sh("#!/bin/bash\n bash build --docker-scout")
+                    sh("#!/bin/bash\n docker scout cves --exit-code --only-severity critical,high --format markdown local://local/${NAME}:docker-scout > ./cves-report.md || true")
+                    sh("#!/bin/bash\n docker scout recommendations local://local/${NAME}:docker-scout > ./cves-recommendations.md || true")
                 }
             }
         }
@@ -138,8 +138,8 @@ pipeline {
 
             steps {
                 dir("$TYPE/$NAME/latest") {
-                    sh("docker login -u \"$DOCKER_HUB_REPOS_USERNAME\" -p \"$DOCKER_HUB_REPOS_PASSWORD\"")
-                    sh("bash build --jenkins-ci")
+                    sh("#!/bin/bash\n docker login -u \"$DOCKER_HUB_REPOS_USERNAME\" -p \"$DOCKER_HUB_REPOS_PASSWORD\"")
+                    sh("#!/bin/bash\n bash build --jenkins-ci")
                 }
             }
         }
@@ -158,8 +158,8 @@ pipeline {
 
             steps {
                 dir("$TYPE/$NAME/latest") {
-                    sh("docker login -u \"$DOCKER_HUB_REPOS_USERNAME\" -p \"$DOCKER_HUB_REPOS_PASSWORD\"")
-                    sh("bash build --dayli-build")
+                    sh("#!/bin/bash\n docker login -u \"$DOCKER_HUB_REPOS_USERNAME\" -p \"$DOCKER_HUB_REPOS_PASSWORD\"")
+                    sh("#!/bin/bash\n bash build --dayli-build")
                 }
             }
         }
