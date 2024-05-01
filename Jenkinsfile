@@ -46,10 +46,9 @@ pipeline {
 
             steps {
                 dir("$TYPE/$NAME/latest") {
-                    sh("#!/bin/bash\n ~/.docker/cli-plugins/docker-scout --help")
                     sh("#!/bin/bash\n bash build --docker-scout")
-                    sh("#!/bin/bash\n docker scout cves --exit-code --only-severity critical,high --format markdown local://local/${NAME}:docker-scout > ./cves-report.md || true")
-                    sh("#!/bin/bash\n docker scout recommendations local://local/${NAME}:docker-scout > ./cves-recommendations.md || true")
+                    sh("#!/bin/bash\n ~/.docker/cli-plugins/docker-scout cves --exit-code --only-severity critical,high --format markdown local://local/${NAME}:docker-scout > ./cves-report.md || true")
+                    sh("#!/bin/bash\n ~/.docker/cli-plugins/docker-scout recommendations local://local/${NAME}:docker-scout > ./cves-recommendations.md || true")
                 }
             }
         }
