@@ -27,12 +27,12 @@ LABEL "maintainer"="${ENV_MAINTAINER} <${ENV_MAINTAINER_ADDRESS}>"
 LABEL "maintainer-address"="${ENV_MAINTAINER_ADDRESS}"
 
 # Check if the user exists, and create it if not, add workdir
-RUN if ! id -u "${ENV_DEFAULT_GROUP}" > /dev/null 2>&1; then \  
-        addgroup -g "${ENV_DEFAULT_USER_GID}" "${ENV_DEFAULT_GROUP};" \  
+RUN if ! id -u "${ENV_DEFAULT_GROUP}" > /dev/null 2>&1; then \
+        addgroup -g "${ENV_DEFAULT_USER_GID}" "${ENV_DEFAULT_GROUP}"; \
     fi && \
-    if ! id -u "${ENV_DEFAULT_USER}" > /dev/null 2>&1; then \  
-        adduser -u "${ENV_DEFAULT_USER_ID}" -G "${ENV_DEFAULT_GROUP}" -D \  
-        -h "${ENV_DEFAULT_WORKDIR}" "${ENV_DEFAULT_USER}" -s /bin/bash; \  
+    if ! id -u "${ENV_DEFAULT_USER}" > /dev/null 2>&1; then \
+        adduser -u "${ENV_DEFAULT_USER_ID}" -G "${ENV_DEFAULT_GROUP}" -D \
+        -h "${ENV_DEFAULT_WORKDIR}" "${ENV_DEFAULT_USER}" -s /bin/bash; \
     fi
 
 # Update installed packages
