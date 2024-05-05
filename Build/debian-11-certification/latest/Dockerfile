@@ -51,6 +51,7 @@ RUN python3 -m pip install --no-cache-dir --upgrade pip && \
     python3 --version
 
 # Install comunity additions
+WORKDIR "${ENV_DEFAULT_WORKDIR}"
 COPY --chown="${ENV_DEFAULT_USER}:${ENV_DEFAULT_GROUP}" ./requirements.txt ./requirements.txt
 RUN python3 -m pip install --no-cache-dir -r ./requirements.txt --break-system-packages && \
     ansible --version
