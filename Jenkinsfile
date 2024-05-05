@@ -18,6 +18,7 @@ pipeline {
         DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD = 'robincbz/docker-dockerfilebuild:latest'
         DOCKER_IMAGE_DOCKER_SECRET_LINT = 'robincbz/alpine-secretlint:latest'
         DOCKER_IMAGE_DOCKER_SCOUT = 'robincbz/docker-scout:latest'
+        DOCKER_IMAGE_MARKDOWN_LINT: "robincbz/debian-markdownlint:latest"
     }        
 
     options {
@@ -65,6 +66,24 @@ pipeline {
             steps {
                 sh("#!/bin/bash\n detect-secrets scan > ./$TYPE/$NAME/latest/detect-secrets-scan.md")
                 sh("#!/bin/bash\n detect-secrets audit .secrets.baseline > ./$TYPE/$NAME/latest/detect-secrets-audit.md")
+            }
+        }
+
+        stage("markdown-lint") {
+            agent { 
+                docker {
+                    image "$DOCKER_IMAGE_MARKDOWN_LINT"
+                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
+                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
+                    alwaysPull true
+                    reuseNode true
+                }
+            }
+
+            steps {
+                dir("$TYPE/$NAME/latest") {
+                    sh("#!/bin/bash\n markdownlint './README.md' > ./hadolint.md")
+                }
             }
         }
 

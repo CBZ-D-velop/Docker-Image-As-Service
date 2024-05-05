@@ -8,28 +8,24 @@ ARG DEFAULT_USER=""
 ARG DEFAULT_GROUP=""
 ARG DEFAULT_WORKDIR=""
 
-ENV ENV_MAINTAINER="${MAINTAINER}"
-ENV ENV_MAINTAINER_ADDRESS="${MAINTAINER_ADDRESS}"
+ENV ENV_MAINTAINER="${MAINTAINER}" \
+    ENV_MAINTAINER_ADDRESS="${MAINTAINER_ADDRESS}" \
+    ENV_DEFAULT_USER="${DEFAULT_USER}" \
+    ENV_DEFAULT_GROUP="${DEFAULT_GROUP}" \
+    ENV_DEFAULT_WORKDIR="${DEFAULT_WORKDIR}" \
+    ENV_VERSION="${VERSION}"
 
-ENV ENV_DEFAULT_USER="${DEFAULT_USER}"
-ENV ENV_DEFAULT_GROUP="${DEFAULT_GROUP}"
-ENV ENV_DEFAULT_WORKDIR="${DEFAULT_WORKDIR}"
-ENV ENV_VERSION="${VERSION}"
+LABEL   "version"="${ENV_VERSION}"  \
+        "maintainer"="${ENV_MAINTAINER} <${ENV_MAINTAINER_ADDRESS}>"
 
-LABEL "version"="${ENV_VERSION}"
-LABEL "maintainer"="${ENV_MAINTAINER} <${ENV_MAINTAINER_ADDRESS}>"
-LABEL "maintainer-address"="${ENV_MAINTAINER_ADDRESS}"
-
-# Check if the user exists, and create it if not
-RUN if ! id -u ${ENV_DEFAULT_USER} > /dev/null 2>&1; then \
-        useradd -m ${ENV_DEFAULT_USER}; \
+# Check if the user exists, and create it if not, add workdir
+RUN if ! id -u "${ENV_DEFAULT_GROUP}" > /dev/null 2>&1; then \  
+        addgroup -g "${ENV_DEFAULT_USER_GID}" "${ENV_DEFAULT_GROUP};" \  
+    fi && \
+    if ! id -u "${ENV_DEFAULT_USER}" > /dev/null 2>&1; then \  
+        adduser -u "${ENV_DEFAULT_USER_ID}" -G "${ENV_DEFAULT_GROUP}" -D \  
+        -h "${ENV_DEFAULT_WORKDIR}" "${ENV_DEFAULT_USER}" -s /bin/bash; \  
     fi
-
-# Check if the work directory exists, and create it if not
-RUN mkdir -p ${ENV_DEFAULT_WORKDIR}
-
-# Set the working directory
-WORKDIR ${ENV_DEFAULT_WORKDIR}
 
 # Update the host, fix upgrade
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -54,5 +50,6 @@ RUN apt-get autoclean -y && apt-get clean -y && apt-get autoremove -y && \
 RUN python3 -m pip install --no-cache-dir requests passlib
 
 # Set CMD
-USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"
+USER "${ENV_DEFAULT_USER}":"${ENV_DEFAULT_GROUP}"
+WORKDIR "${ENV_DEFAULT_WORKDIR}"
 CMD ["sbin/init"]

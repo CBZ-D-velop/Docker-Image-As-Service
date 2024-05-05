@@ -8,8 +8,7 @@
 
 stages:
 - gitlab-test
-- dockerfile-lint
-- secret-lint
+- lint
 - sonarqube-check
 - test-build
 - scout-cve
@@ -23,6 +22,7 @@ variables:
   DOCKER_IMAGE_ALPINE_GIT: robincbz/alpine-git:latest
   DOCKER_IMAGE_ALPINE_RELEASE_CLI: "robincbz/alpine-releasecli:latest"
   DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT: "robincbz/alpine-dockerfilelint:latest"
+  DOCKER_IMAGE_MARKDOWN_LINT: "robincbz/debian-markdownlint:latest"
   DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD: "robincbz/docker-dockerfilebuild:latest"
   DOCKER_IMAGE_DOCKER_SECRET_LINT: "robincbz/alpine-secretlint:latest"
   DOCKER_IMAGE_DOCKER_SCOUT: "robincbz/docker-scout:latest"
@@ -92,18 +92,22 @@ include:
 ############################################
 
 dockerfile-lint:
-  stage: dockerfile-lint
+  stage: lint
   image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT
   script:
     - "hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 $(pwd)/*/*/latest/Dockerfile"
   allow_failure: false
 
-############################################
-#### secret
-############################################
+markdown-lint:
+  stage: lint
+  image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_MARKDOWN_LINT
+  script:
+    - markdownlint './README.md'
+    - markdownlint './*/*/latest/README.md'
+  allow_failure: false
 
 secret-lint:
-  stage: secret-lint
+  stage: lint
   image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_DOCKER_SECRET_LINT
   script:
     - "detect-secrets scan"
@@ -239,7 +243,7 @@ test-build_debian_nginx:
   <<: *test-build
   variables:
     TYPE: "Hosting"
-    NAME: "debian-nginx"
+    NAME: "alpine-nginx"
 
 ############################################
 #### scout-cve
@@ -385,7 +389,7 @@ scout-cve_debian_nginx:
   <<: *scout-cve
   variables:
     TYPE: "Hosting"
-    NAME: "debian-nginx"
+    NAME: "alpine-nginx"
   needs:
     - "test-build_debian_nginx"
 
@@ -533,6 +537,6 @@ publish-build_debian_nginx:
   <<: *publish-build
   variables:
     TYPE: "Hosting"
-    NAME: "debian-nginx"
+    NAME: "alpine-nginx"
   needs:
     - "scout-cve_debian_nginx"
