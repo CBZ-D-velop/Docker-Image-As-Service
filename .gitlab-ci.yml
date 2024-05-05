@@ -102,6 +102,7 @@ markdown-lint:
   stage: lint
   image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_MARKDOWN_LINT
   script:
+    - markdownlint --help
     - markdownlint './README.md' --ignore MD013
     - markdownlint './*/*/latest/README.md' --ignore MD013
   allow_failure: false

@@ -43,64 +43,64 @@ Here you can put your change to keep a trace of your work and decisions.
 
 ### 2023-10-03: First Init
 
-* First init of this project by Lord Robin Crombez
+- First init of this project by Lord Robin Crombez
 
 ### 2023-10-05: Added script for build
 
-* Build script available to load vars, build, push, tag
-* Argument --major available for Major versionning
-* Added some Dockerfile
+- Build script available to load vars, build, push, tag
+- Argument --major available for Major versionning
+- Added some Dockerfile
 
 ### 2023-10-06: Test / Lint pipeline
 
-* This repository have a CI/CD to lint Dockerfiles (setted to lates)
-* This repository have a CI/CD to build Dockerfiles in --test-build mode (setted to lates)
-* This repository can be forked and modified to lint, build, analyse and push image from Dockerfile
+- This repository have a CI/CD to lint Dockerfiles (setted to lates)
+- This repository have a CI/CD to build Dockerfiles in --test-build mode (setted to lates)
+- This repository can be forked and modified to lint, build, analyse and push image from Dockerfile
 
 ### 2023-11-02: Docker Image As Service
 
-* All images are now builded and updated by the CICD pipeline
-* New tag for the build with the current version / latest
+- All images are now builded and updated by the CICD pipeline
+- New tag for the build with the current version / latest
 
 ### 2024-02-19: Updates majors
 
-* New CICD for image building
-* Added Docker Dind for Ansible dev
-* Added Debian 12 for Ansible dev
-* Added Ubuntu 22 for Ansible dev
-* Fix all images build
-* Added for major versions
-* Added passlib python lib for password hash
-* Added Alpine Git, to publish
+- New CICD for image building
+- Added Docker Dind for Ansible dev
+- Added Debian 12 for Ansible dev
+- Added Ubuntu 22 for Ansible dev
+- Fix all images build
+- Added for major versions
+- Added passlib python lib for password hash
+- Added Alpine Git, to publish
 
 ### 2024-03-26/25: New CICD
 
-* Images follow a new CICD besed on DevSecOps and AS SERVICE
-* Each image / Dockerfile is analysed separatly
-* Added Sonarqube, for global quality
-* Added Hadolint, specialized support
-* Added detect-secrets for secret detection in images
-* Added Docker Scout as layer analysis
+- Images follow a new CICD besed on DevSecOps and AS SERVICE
+- Each image / Dockerfile is analysed separatly
+- Added Sonarqube, for global quality
+- Added Hadolint, specialized support
+- Added detect-secrets for secret detection in images
+- Added Docker Scout as layer analysis
 
 ### 2024-03-29: Jenkins CI
 
-* Added a Jenkins CI to dayli build images based on cron
-* Reworks on build script, added/updated options
+- Added a Jenkins CI to dayli build images based on cron
+- Reworks on build script, added/updated options
 
 ### 2024-05-19: GitLab / Jenkins CI
 
-* Rework on CI names
-* Will not edit containers because not mandatory
-* Added artefact analysis upload
+- Rework on CI names
+- Will not edit containers because not mandatory
+- Added artefact analysis upload
 
 ## Authors
 
-* Lord Robin Crombez
+- Lord Robin Crombez
 
 ## Sources
 
-* [husiang/yamllint](https://hub.docker.com/r/chusiang/yamllint/dockerfile)
-* [Installing Python in Alpine Linux](https://www.askpython.com/python/examples/python-alpine-linux)
-* [Install Python on Alpine Linux](https://devcoops.com/install-python-on-alpine-linux/)
-* [alpine:3.18](https://hub.docker.com/layers/library/alpine/3.18/images/sha256-48d9183eb12a05c99bcc0bf44a003607b8e941e1d4f41f9ad12bdcc4b5672f86?context=explore)
-* [j2lint](https://github.com/aristanetworks/j2lint)
+- [husiang/yamllint](https://hub.docker.com/r/chusiang/yamllint/dockerfile)
+- [Installing Python in Alpine Linux](https://www.askpython.com/python/examples/python-alpine-linux)
+- [Install Python on Alpine Linux](https://devcoops.com/install-python-on-alpine-linux/)
+- [alpine:3.18](https://hub.docker.com/layers/library/alpine/3.18/images/sha256-48d9183eb12a05c99bcc0bf44a003607b8e941e1d4f41f9ad12bdcc4b5672f86?context=explore)
+- [j2lint](https://github.com/aristanetworks/j2lint)
