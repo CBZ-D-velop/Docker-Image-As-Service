@@ -239,7 +239,7 @@ test-build_alpine_releasecli:
     TYPE: "Publish"
     NAME: "alpine-releasecli"
 
-test-build_debian_nginx:
+test-build_alpine_nginx:
   <<: *test-build
   variables:
     TYPE: "Hosting"
@@ -385,13 +385,13 @@ scout-cve_alpine_releasecli:
   needs:
     - "test-build_alpine_releasecli"
 
-scout-cve_debian_nginx:
+scout-cve_alpine_nginx:
   <<: *scout-cve
   variables:
     TYPE: "Hosting"
     NAME: "alpine-nginx"
   needs:
-    - "test-build_debian_nginx"
+    - "test-build_alpine_nginx"
 
 ############################################
 #### publish-build
@@ -533,10 +533,10 @@ publish-build_alpine_releasecli:
   needs:
     - "scout-cve_alpine_releasecli"
 
-publish-build_debian_nginx:
+publish-build_alpine_nginx:
   <<: *publish-build
   variables:
     TYPE: "Hosting"
     NAME: "alpine-nginx"
   needs:
-    - "scout-cve_debian_nginx"
+    - "scout-cve_alpine_nginx"
