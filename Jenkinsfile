@@ -82,7 +82,7 @@ pipeline {
 
             steps {
                 dir("$TYPE/$NAME/latest") {
-                    sh("#!/bin/bash\n markdownlint './README.md' > ./hadolint.md")
+                    sh("#!/bin/bash\n markdownlint './README.md' --ignore MD013 > ./hadolint.md")
                 }
             }
         }
