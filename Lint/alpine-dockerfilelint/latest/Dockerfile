@@ -24,16 +24,14 @@ LABEL "maintainer-address"="${ENV_MAINTAINER_ADDRESS}"
 
 LABEL "hadolint-version"="${ENV_HADOLINT_VERSION}"
 
-# Check if the user exists, and create it if not
-RUN if ! id -u ${ENV_DEFAULT_USER} > /dev/null 2>&1; then \
-        adduser -D ${ENV_DEFAULT_USER}; \
+# Check if the user exists, and create it if not, add workdir
+RUN if ! id -u "${ENV_DEFAULT_GROUP}" > /dev/null 2>&1; then \
+        addgroup -g "${ENV_DEFAULT_USER_GID}" "${ENV_DEFAULT_GROUP}"; \
+    fi && \
+    if ! id -u "${ENV_DEFAULT_USER}" > /dev/null 2>&1; then \
+        adduser -u "${ENV_DEFAULT_USER_ID}" -G "${ENV_DEFAULT_GROUP}" -D \
+        -h "${ENV_DEFAULT_WORKDIR}" "${ENV_DEFAULT_USER}" -s /bin/bash; \
     fi
-
-# Check if the work directory exists, and create it if not
-RUN mkdir -p ${ENV_DEFAULT_WORKDIR}
-
-# Set the working directory
-WORKDIR ${ENV_DEFAULT_WORKDIR}
 
 # Update installed packages
 RUN apk update && \
@@ -54,5 +52,6 @@ RUN apk del build-dependencies; \
     rm -rf ~/.cache/*
 
 # Set CMD
-USER "${DEFAULT_USER}":"${DEFAULT_GROUP}"
+USER "${ENV_DEFAULT_USER}":"${ENV_DEFAULT_GROUP}"
+WORKDIR "${ENV_DEFAULT_WORKDIR}"
 CMD ["hadolint", "--help"]

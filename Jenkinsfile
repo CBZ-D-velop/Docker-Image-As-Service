@@ -18,6 +18,7 @@ pipeline {
         DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD = 'robincbz/docker-dockerfilebuild:latest'
         DOCKER_IMAGE_DOCKER_SECRET_LINT = 'robincbz/alpine-secretlint:latest'
         DOCKER_IMAGE_DOCKER_SCOUT = 'robincbz/docker-scout:latest'
+        DOCKER_IMAGE_MARKDOWN_LINT: "robincbz/debian-markdownlint:latest"
     }        
 
     options {
@@ -32,34 +33,57 @@ pipeline {
     }
 
     stages {
-        stage("hadolint") {
+
+        stage("dockerfile-lint") {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT"
                     registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
+                    alwaysPull true
+                    reuseNode true
                 }
             }
 
             steps {
                 dir("$TYPE/$NAME/latest") {
-                    sh('hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 Dockerfile')
+                    sh("#!/bin/bash\n hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 Dockerfile > ./hadolint.md")
                 }
             }
         }
 
-        stage("secret lint") {
+        stage("secret-lint") {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_DOCKER_SECRET_LINT"
                     registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
+                    alwaysPull true
+                    reuseNode true
                 }
             }
 
             steps {
-                sh('detect-secrets scan')
-                sh('detect-secrets audit .secrets.baseline')
+                sh("#!/bin/bash\n detect-secrets scan > ./$TYPE/$NAME/latest/detect-secrets-scan.md")
+                sh("#!/bin/bash\n detect-secrets audit .secrets.baseline > ./$TYPE/$NAME/latest/detect-secrets-audit.md")
+            }
+        }
+
+        stage("markdown-lint") {
+            agent { 
+                docker {
+                    image "$DOCKER_IMAGE_MARKDOWN_LINT"
+                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
+                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
+                    alwaysPull true
+                    reuseNode true
+                }
+            }
+
+            steps {
+                dir("$TYPE/$NAME/latest") {
+                    sh("#!/bin/bash\n markdownlint './README.md' --disable MD013 > ./hadolint.md")
+                }
             }
         }
 
@@ -69,54 +93,118 @@ pipeline {
                     image "$DOCKER_IMAGE_ALPINE_SONAR_SCANNER_CLI"
                     registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
+                    alwaysPull true
+                    reuseNode true
                 }
             }
 
             steps {
-                sh('sonar-scanner')
+                sh("#!/bin/bash\n sonar-scanner")
             }
         }
 
-        stage("docker scout") {
+        stage("test-build") {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
                     registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
+                    alwaysPull true
+                    reuseNode true
                     args '-u root:root -v /var/run/docker.sock:/var/run/docker.sock'
                 }
             }
 
             steps {
                 dir("$TYPE/$NAME/latest") {
-                    sh('bash build --docker-scout')
-                    sh('docker scout cves --exit-code --only-severity critical,high --format markdown --output ./cves-report.md local://local/${NAME}:docker-scout || true')
-                    sh('docker scout recommendations local://local/${NAME}:docker-scout || true')
+                    sh("#!/bin/bash\n docker login -u \"$DOCKER_HUB_REPOS_USERNAME\" -p \"$DOCKER_HUB_REPOS_PASSWORD\"")
+                    sh("#!/bin/bash\n bash build --test-build")
                 }
             }
         }
 
-        stage("dayli build") {
+        stage("scout-cve") {
             agent { 
                 docker {
-                    image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
+                    image "$DOCKER_IMAGE_DOCKER_SCOUT"
                     registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
                     registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
+                    alwaysPull true
+                    reuseNode true
                     args '-u root:root -v /var/run/docker.sock:/var/run/docker.sock'
                 }
             }
 
             steps {
                 dir("$TYPE/$NAME/latest") {
-                    sh('docker login -u \"$DOCKER_HUB_REPOS_USERNAME\" -p \"$DOCKER_HUB_REPOS_PASSWORD\"')
-                    sh('bash build --dayli-build')
+                    sh("#!/bin/bash\n bash build --docker-scout")
+                    sh("#!/bin/bash\n docker login -u \"$DOCKER_HUB_REPOS_USERNAME\" -p \"$DOCKER_HUB_REPOS_PASSWORD\"")
+                    sh("#!/bin/bash\n ~/.docker/cli-plugins/docker-scout cves --exit-code --only-severity critical,high --format markdown local://local/${NAME}:docker-scout > ./cves-report.md || true")
+                    sh("#!/bin/bash\n ~/.docker/cli-plugins/docker-scout recommendations local://local/${NAME}:docker-scout > ./cves-recommendations.md || true")
                 }
             }
         }
 
-    post {
-        always {
-            deleteDir()
+        stage("publish-build") {
+            agent { 
+                docker {
+                    image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
+                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
+                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
+                    alwaysPull true
+                    reuseNode true
+                    args '-u root:root -v /var/run/docker.sock:/var/run/docker.sock'
+                }
+            }
+
+            steps {
+                dir("$TYPE/$NAME/latest") {
+                    sh("#!/bin/bash\n docker login -u \"$DOCKER_HUB_REPOS_USERNAME\" -p \"$DOCKER_HUB_REPOS_PASSWORD\"")
+                    sh("#!/bin/bash\n bash build --jenkins-ci")
+                }
+            }
+        }
+
+        stage("dayli-build") {
+            agent { 
+                docker {
+                    image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
+                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
+                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
+                    alwaysPull true
+                    reuseNode true
+                    args '-u root:root -v /var/run/docker.sock:/var/run/docker.sock'
+                }
+            }
+
+            steps {
+                dir("$TYPE/$NAME/latest") {
+                    sh("#!/bin/bash\n docker login -u \"$DOCKER_HUB_REPOS_USERNAME\" -p \"$DOCKER_HUB_REPOS_PASSWORD\"")
+                    sh("#!/bin/bash\n bash build --dayli-build")
+                }
+            }
         }
     }
+
+    post {
+        success {
+            archiveArtifacts "$TYPE/$NAME/latest/*.md"
+            cleanWs(
+                    cleanWhenNotBuilt: true,
+                    deleteDirs: true,
+                    disableDeferredWipeout: true,
+                    notFailBuild: true
+            )
+        }
+
+        failure {
+            cleanWs(
+                    cleanWhenNotBuilt: true,
+                    deleteDirs: true,
+                    disableDeferredWipeout: true,
+                    notFailBuild: true
+            )
+        }
+        }
+
 }
