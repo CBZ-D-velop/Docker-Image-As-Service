@@ -18,7 +18,7 @@ pipeline {
         DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD = 'robincbz/docker-dockerfilebuild:latest'
         DOCKER_IMAGE_DOCKER_SECRET_LINT = 'robincbz/alpine-secretlint:latest'
         DOCKER_IMAGE_DOCKER_SCOUT = 'robincbz/docker-scout:latest'
-        DOCKER_IMAGE_MARKDOWN_LINT: "robincbz/debian-markdownlint:latest"
+        DOCKER_IMAGE_MARKDOWN_LINT = 'robincbz/debian-markdownlint:latest'
     }        
 
     options {
