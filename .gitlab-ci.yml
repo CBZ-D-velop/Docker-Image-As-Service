@@ -131,7 +131,7 @@ sonarqube-check:
     paths:
       - ".sonar/cache"
   script: 
-    - "sonar-scanner"
+    - "sonar-scanner -X"
 
 ############################################
 #### test-build
