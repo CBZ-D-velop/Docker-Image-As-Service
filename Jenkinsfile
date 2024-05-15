@@ -103,7 +103,7 @@ pipeline {
             }
         }
 
-        stage("test-build") {
+        stage("test") {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
@@ -118,12 +118,12 @@ pipeline {
             steps {
                 dir("$TYPE/$NAME/latest") {
                     sh("#!/bin/bash\n docker login -u \"$DOCKER_HUB_REPOS_USERNAME\" -p \"$DOCKER_HUB_REPOS_PASSWORD\"")
-                    sh("#!/bin/bash\n bash build --test-build")
+                    sh("#!/bin/bash\n bash build --test")
                 }
             }
         }
 
-        stage("scout-cve") {
+        stage("scout") {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_DOCKER_SCOUT"
@@ -137,15 +137,15 @@ pipeline {
 
             steps {
                 dir("$TYPE/$NAME/latest") {
-                    sh("#!/bin/bash\n bash build --docker-scout")
+                    sh("#!/bin/bash\n bash build --scout")
                     sh("#!/bin/bash\n docker login -u \"$DOCKER_HUB_REPOS_USERNAME\" -p \"$DOCKER_HUB_REPOS_PASSWORD\"")
-                    sh("#!/bin/bash\n ~/.docker/cli-plugins/docker-scout cves --exit-code --only-severity critical,high --format markdown local://local/${NAME}:docker-scout > ./cves-report.md || true")
-                    sh("#!/bin/bash\n ~/.docker/cli-plugins/docker-scout recommendations local://local/${NAME}:docker-scout > ./cves-recommendations.md || true")
+                    sh("#!/bin/bash\n ~/.docker/cli-plugins/docker-scout cves --exit-code --only-severity critical,high --format markdown local://local/${NAME}:latest-scout > ./cves-report.md || true")
+                    sh("#!/bin/bash\n ~/.docker/cli-plugins/docker-scout recommendations local://local/${NAME}:latest-scout > ./cves-recommendations.md || true")
                 }
             }
         }
 
-        stage("publish-build") {
+        stage("publish") {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
@@ -158,9 +158,14 @@ pipeline {
             }
 
             steps {
-                dir("$TYPE/$NAME/latest") {
-                    sh("#!/bin/bash\n docker login -u \"$DOCKER_HUB_REPOS_USERNAME\" -p \"$DOCKER_HUB_REPOS_PASSWORD\"")
-                    sh("#!/bin/bash\n bash build --jenkins-ci")
+                withCredentials([
+                    string(credentialsId: 'DOCKER_HUB_REPOS_USERNAME', variable: 'DOCKER_HUB_REPOS_USERNAME'),
+                    string(credentialsId: 'DOCKER_HUB_REPOS_PASSWORD', variable: 'DOCKER_HUB_REPOS_PASSWORD')
+                ]) {
+                    dir("$TYPE/$NAME/latest") {
+                        sh("#!/bin/bash\n docker login -u \"$DOCKER_HUB_REPOS_USERNAME\" -p \"$DOCKER_HUB_REPOS_PASSWORD\"")
+                        sh("#!/bin/bash\n bash build --cicd")
+                    }
                 }
             }
         }
@@ -205,6 +210,5 @@ pipeline {
                     notFailBuild: true
             )
         }
-        }
-
+    }
 }
