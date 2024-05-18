@@ -146,9 +146,10 @@ generate-pipelines:
     - "chmod +x ./local-generate-pipelines"
   script:
     - "./local-generate-pipelines"
+    - "ls -all ./generated-pipeline.yml"
   artifacts:
     paths:
-      - "generated-pipelines.yml"
+      - "./generated-pipeline.yml"
 
 load-pipelines:
   stage: generate
@@ -156,6 +157,6 @@ load-pipelines:
     - "generate-pipelines"
   trigger:
     include:
-      - artifact: "generated-pipelines.yml"
+      - artifact: "./generated-pipeline.yml"
         job: generate-pipelines
     strategy: depend

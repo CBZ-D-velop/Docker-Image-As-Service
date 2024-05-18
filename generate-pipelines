@@ -37,4 +37,3 @@ for FOLDER in $FOLDERS; do
         generate_pipeline "${FOLDER}"
     fi
 done
-cat ./generated-pipeline.yml
