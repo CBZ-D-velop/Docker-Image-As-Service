@@ -147,7 +147,6 @@ generate-pipelines:
 
 load-pipelines:
   stage: generate
-  image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__RUN_SSH
   needs:
     - "generate-pipelines"
   trigger:
