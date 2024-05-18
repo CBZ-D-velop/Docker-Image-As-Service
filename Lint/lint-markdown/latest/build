@@ -20,7 +20,7 @@ image_build() {
         --build-arg DEFAULT_GROUP_GID="${DEFAULT_GROUP_GID}" \
         --build-arg DEFAULT_USER_HOME="${DEFAULT_USER_HOME}" \
         --build-arg DEFAULT_WORKDIR="${DEFAULT_WORKDIR}" \
-        --build-arg DOCKER_API_TIMEOUT="${DOCKER_API_TIMEOUT}" \
+        --build-arg NODEJS_VERSION="${NODEJS_VERSION}" \
         -t "${NAMESPACE}/${IMAGE_NAME}:${VERSION}" .
 
     # Check the exit code of the previous command

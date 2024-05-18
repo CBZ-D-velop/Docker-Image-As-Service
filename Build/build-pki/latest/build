@@ -20,7 +20,6 @@ image_build() {
         --build-arg DEFAULT_GROUP_GID="${DEFAULT_GROUP_GID}" \
         --build-arg DEFAULT_USER_HOME="${DEFAULT_USER_HOME}" \
         --build-arg DEFAULT_WORKDIR="${DEFAULT_WORKDIR}" \
-        --build-arg DOCKER_API_TIMEOUT="${DOCKER_API_TIMEOUT}" \
         -t "${NAMESPACE}/${IMAGE_NAME}:${VERSION}" .
 
     # Check the exit code of the previous command
@@ -111,8 +110,6 @@ build_default() {
     image_build
     image_push
     echo "============ DEFAULT BUILD DONE ============"
-    echo "MAJOR_TAG=${MAJOR_TAG}" > "${TAG_FILE}"
-    echo "MINOR_TAG=${MINOR_TAG}" >> "${TAG_FILE}"
 }
 
 main() {

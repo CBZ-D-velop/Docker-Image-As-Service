@@ -20,7 +20,14 @@ image_build() {
         --build-arg DEFAULT_GROUP_GID="${DEFAULT_GROUP_GID}" \
         --build-arg DEFAULT_USER_HOME="${DEFAULT_USER_HOME}" \
         --build-arg DEFAULT_WORKDIR="${DEFAULT_WORKDIR}" \
-        --build-arg DOCKER_API_TIMEOUT="${DOCKER_API_TIMEOUT}" \
+        --build-arg NGINX_USER="${NGINX_USER}" \
+        --build-arg NGINX_WORKER_PROCESSES="${NGINX_WORKER_PROCESSES}" \
+        --build-arg NGINX_WORKER_CONNECTIONS="${NGINX_WORKER_CONNECTIONS}" \
+        --build-arg NGINX_SERVER_NAME="${NGINX_SERVER_NAME}" \
+        --build-arg NGINX_ROOT="${NGINX_ROOT}" \
+        --build-arg NGINX_INDEX="${NGINX_INDEX}" \
+        --build-arg NGINX_HOST_TYPE="${NGINX_HOST_TYPE}" \
+        --build-arg NGINX_SERVER_COUNTRY="${NGINX_SERVER_COUNTRY}" \
         -t "${NAMESPACE}/${IMAGE_NAME}:${VERSION}" .
 
     # Check the exit code of the previous command
