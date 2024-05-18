@@ -52,18 +52,6 @@ RUN apk update && apk add --no-cache \
 # Actions as root
 #
 
-# Install docker requirements, start the daemon
-RUN apk add --no-cache make openrc docker bash && \
-    rc-update add docker boot && \
-    rm -rf /var/cache/apk/*
-
-# Increase default docker timeout
-ENV DOCKER_CLIENT_TIMEOUT=${ENV_DOCKER_API_TIMEOUT} \
-    COMPOSE_HTTP_TIMEOUT=${ENV_DOCKER_API_TIMEOUT}
-
-# Add default user to docker group
-RUN addgroup "${ENV_DEFAULT_USER}" docker
-
 # Install python and pip
 RUN apk add --update --no-cache python3 && \
     ln -sf python3 /usr/bin/python && \
@@ -78,8 +66,10 @@ COPY --from=NODEJS_BASE --chown="root:root" --chmod="0755" /usr/local/lib /usr/l
 COPY --from=NODEJS_BASE --chown="root:root" --chmod="0755" /usr/local/include /usr/local/include
 COPY --from=NODEJS_BASE --chown="root:root" --chmod="0755" /usr/local/bin /usr/local/bin
 
-# Copy the load-certificates script
+# Copy the load-certificates script, give permissions
 COPY --chown="root:root" --chmod="0755" ./scripts/load-certificates.sh /usr/local/bin/load-certificates
+RUN echo "${ENV_DEFAULT_USER} ALL=(ALL) NOPASSWD: /usr/sbin/update-ca-certificates" >> /etc/sudoers
+
 #
 # Actions as user
 #
@@ -95,13 +85,10 @@ RUN python3 -m pip install --no-cache-dir -r ./requirements.txt --break-system-p
     ansible-galaxy collection install community.docker
 
 # Increase default docker timeout
-ENV DOCKER_CLIENT_TIMEOUT=${ENV_DOCKER_API_TIMEOUT} \
-    COMPOSE_HTTP_TIMEOUT=${ENV_DOCKER_API_TIMEOUT} \
-    PATH="/$HOME/.local/bin:${PATH}"
+ENV PATH="/$HOME/.local/bin:${PATH}"
 
 # Checks & CMD
-RUN docker -v && \
-    ansible --version && \
+RUN ansible --version && \
     sonar-scanner -v && \
     node -v && \
     npm -v && \

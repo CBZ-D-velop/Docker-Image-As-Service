@@ -2,14 +2,15 @@
 
 # Function to download and install certificates
 download_and_install_certificates() {
-    local WEBSITE_URI="${1^^}"
+    local WEBSITE_URI="${1}"
     
     echo "Downloading certificate for $WEBSITE_URI..."
-    openssl s_client -connect "$WEBSITE_URI" -servername "$WEBSITE_URI" -showcerts -prexit </dev/null 2>/dev/null | openssl x509 -outform PEM | sudo tee "/usr/local/share/ca-certificates/$WEBSITE_URI.crt" >/dev/null
-    
+    mkdir tmp_certs
+    openssl s_client -showcerts -verify 20 -connect $WEBSITE_URI < /dev/null | awk '/BEGIN/,/END/{ if(/BEGIN/){a++}; out="./tmp_certs/${WEBSITE_URI}-cert"a".pem.crt"; print >out}'
+    cp ./tmp_certs/*.pem.crt /usr/local/share/ca-certificates/
     # Update system certificates
     update-ca-certificates
-    
+    rm -rf ./tmp_certs
     echo "Certificate downloaded and added to the system for $WEBSITE_URI."
 }
 
