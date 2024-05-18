@@ -8,7 +8,7 @@ download_and_install_certificates() {
     openssl s_client -connect "$WEBSITE_URI" -servername "$WEBSITE_URI" -showcerts -prexit </dev/null 2>/dev/null | openssl x509 -outform PEM | sudo tee "/usr/local/share/ca-certificates/$WEBSITE_URI.crt" >/dev/null
     
     # Update system certificates
-    sudo update-ca-certificates
+    update-ca-certificates
     
     echo "Certificate downloaded and added to the system for $WEBSITE_URI."
 }

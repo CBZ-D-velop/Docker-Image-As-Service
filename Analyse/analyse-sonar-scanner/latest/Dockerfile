@@ -80,7 +80,6 @@ COPY --from=NODEJS_BASE --chown="root:root" --chmod="0755" /usr/local/bin /usr/l
 
 # Copy the load-certificates script
 COPY --chown="root:root" --chmod="0755" ./scripts/load-certificates.sh /usr/local/bin/load-certificates
-
 #
 # Actions as user
 #
