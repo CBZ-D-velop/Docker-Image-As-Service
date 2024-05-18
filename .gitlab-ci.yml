@@ -7,13 +7,15 @@
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 
 stages:
-- gitlab-test
-- lint
-- sonarqube-check
-- generate
-- build
-- scout-analyse
-- publish
+  - gitlab-test
+  - lint
+  - sonarqube-check
+  - generate
+  - build
+  - scout-analyse
+  - publish
+image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__RUN_SSH
+
 
 variables:
   ANSIBLE_FORCE_COLOR: "true"
