@@ -131,6 +131,7 @@ sonarqube-check:
     paths:
       - ".sonar/cache"
   script: 
+    - "load-certificates --uri $SONAR_HOST_URL"
     - "sonar-scanner -X"
 
 ############################################
