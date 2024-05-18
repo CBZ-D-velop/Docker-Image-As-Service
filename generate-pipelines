@@ -31,9 +31,10 @@ EOF
 }
 
 rm -f ./generated-pipelines.yml
-FOLDERS=$(find . -maxdepth 1 -type d -not -path '*/\.*' -printf '%f\n' | tail -n +2)
+FOLDERS=$(find . -maxdepth 1 -type d -not -path '*/\.*' -exec basename {} \; | tail -n +2)
 for FOLDER in $FOLDERS; do
     if [[ -d $FOLDER ]]; then
         generate_pipeline "${FOLDER}"
     fi
 done
+cat ./generated-pipeline.yml
