@@ -92,5 +92,5 @@ RUN ansible --version && \
     sonar-scanner -v && \
     node -v && \
     npm -v && \
-    python3 -v && \
+    python3 -v
 CMD ["/bin/bash"]
