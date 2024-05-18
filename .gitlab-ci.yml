@@ -142,7 +142,8 @@ generate-pipelines:
   image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__RUN_SSH
   script:
     - "chmod +x ./generate-pipelines"
-    - "./generate-pipelines"
+    - "ls -all"
+    - "bash generate-pipelines"
   artifacts:
     paths:
       - "generated-pipelines.yml"
