@@ -33,47 +33,6 @@ stages:
   - sonarqube-check
 
 ###############################################################################
-#################### EXTENDABLES
-###############################################################################
-
-.build: &build
-  stage: build
-  image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__BUILD_DOCKERFILE
-  script:
-    - "cd $(pwd)/${TYPE}/${NAME}/latest && bash build --test"
-  allow_failure: false
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-    - if: '$CI_COMMIT_BRANCH == "develop"'
-
-.scout-analyse: &scout-analyse
-  stage: scout
-  image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__ANALYSE_DOCKER_IMAGE
-  script:
-    - "cd $(pwd)/${TYPE}/${NAME}/latest"
-    - "bash build --scout"
-    - "cd ../../../ && pwd"
-    - "docker scout cves --exit-code --only-severity critical,high --format markdown --output ./cves-report.md local://local/${NAME}:latest-scout || true"
-    - "docker scout recommendations local://local/${NAME}:latest-scout || true"
-  allow_failure: true
-  artifacts:
-    expire_in: "1 month"
-    paths:
-      - "cves-report.md"
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-    - if: '$CI_COMMIT_BRANCH == "develop"'
-
-.publish: &publish
-  stage: publish
-  image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__BUILD_DOCKERFILE
-  script:
-    - "cd $(pwd)/${TYPE}/${NAME}/latest && bash build --cicd"
-  allow_failure: false
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-
-###############################################################################
 #################### CI JOBS
 ###############################################################################
 
@@ -146,10 +105,10 @@ generate-pipelines:
     - "chmod +x ./local-generate-pipelines"
   script:
     - "./local-generate-pipelines"
-    - "ls -all ./generated-pipeline.yml"
+    - "ls -all ./.gitlab-ci-generated.yml"
   artifacts:
     paths:
-      - "./generated-pipeline.yml"
+      - "./.gitlab-ci-generated.yml"
 
 load-pipelines:
   stage: generate
@@ -157,6 +116,6 @@ load-pipelines:
     - "generate-pipelines"
   trigger:
     include:
-      - artifact: "generated-pipeline.yml"
+      - artifact: ".gitlab-ci-generated.yml"
         job: generate-pipelines
     strategy: depend
