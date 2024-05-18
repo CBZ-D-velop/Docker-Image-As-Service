@@ -140,6 +140,9 @@ sonarqube-check:
 generate-pipelines:
   stage: generate
   image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__RUN_SSH
+  before_script:
+    - "ls -all"
+    - "chmod +x ./generate-pipelines"
   script:
     - "./generate-pipelines"
   artifacts:
