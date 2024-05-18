@@ -3,17 +3,12 @@
 # Function to download and install certificates
 download_and_install_certificates() {
     local WEBSITE_URI="${1}"
-    local COMMAND="/BEGIN/,/END/{ if(/BEGIN/){a++}; out=\"./tmp_certs/${WEBSITE_URI%%:*}-cert\"a\".pem.crt\"; print >out}"
 
     echo "Downloading certificate for $WEBSITE_URI..."
-    mkdir -p ./tmp_certs
-    openssl s_client -showcerts -verify 20 -connect $WEBSITE_URI < /dev/null | awk "$COMMAND"
-    cp ./tmp_certs/*.pem.crt /usr/local/share/ca-certificates/
-    # Update system certificates
-    sudo update-ca-certificates
-    rm -rf ./tmp_certs
-    echo "Checking if the certificate is added to the system..."
-    curl -sI https://$WEBSITE_URI | grep -i "HTTP/1.1 200 OK" > /dev/null
+    openssl s_client -showcerts -verify 20 -connect $WEBSITE_URI < /dev/null | awk '/-----BEGIN CERTIFICATE-----/, /-----END CERTIFICATE-----/' > /usr/local/share/ca-certificates/${WEBSITE_URI%%:*}.pem.crt  && \
+    sudo update-ca-certificates  && \
+    echo "Checking if the certificate is added to the system..."  && \
+    openssl verify "/usr/local/share/ca-certificates/${WEBSITE_URI%%:*}.pem.crt" && \
     echo "Certificate downloaded and added to the system for $WEBSITE_URI."
 }
 

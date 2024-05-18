@@ -13,7 +13,7 @@ variables:
   SONAR_HOST_URL: "$SONARQUBE_ADDRESS"
   SONAR_TOKEN: "$GITLAB_CI_SONARQUBE_USER_TOKEN"
   #
-  DOCKER_IMAGE__ANALYSE_SONAR_SCANNER: "labocbz/analyse-sonar-scanner:0.7"
+  DOCKER_IMAGE__ANALYSE_SONAR_SCANNER: "labocbz/analyse-sonar-scanner:0.8"
   DOCKER_IMAGE__ANALYSE_DOCKER_IMAGE: "labocbz/analyse-docker-image:latest"
   DOCKER_IMAGE__BUILD_DOCKERFILE: "labocbz/build-dockerfile:latest"
   DOCKER_IMAGE__LINT_DOCKERFILE: "labocbz/lint-dockerfile:latest"
