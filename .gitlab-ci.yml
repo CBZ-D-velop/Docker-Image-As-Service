@@ -6,6 +6,23 @@
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 
+variables:
+  ANSIBLE_FORCE_COLOR: "true"
+  PY_COLORS: "1"
+  #
+  SONAR_HOST_URL: "$SONARQUBE_ADDRESS"
+  SONAR_TOKEN: "$GITLAB_CI_SONARQUBE_USER_TOKEN"
+  #
+  DOCKER_IMAGE__ANALYSE_SONAR_SCANNER: "labocbz/analyse-sonar-scanner:0.7"
+  DOCKER_IMAGE__ANALYSE_DOCKER_IMAGE: "labocbz/analyse-docker-image:latest"
+  DOCKER_IMAGE__BUILD_DOCKERFILE: "labocbz/build-dockerfile:latest"
+  DOCKER_IMAGE__LINT_DOCKERFILE: "labocbz/lint-dockerfile:latest"
+  DOCKER_IMAGE__LINT_SECRETS: "labocbz/lint-secrets:latest"
+  DOCKER_IMAGE__LINT_MARKDOWN: "labocbz/lint-markdown:latest"
+  DOCKER_IMAGE__RUN_SSH: "labocbz/run-ssh:latest"
+
+image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__RUN_SSH
+
 stages:
   - gitlab-test
   - lint
@@ -14,23 +31,6 @@ stages:
   - build
   - scout-analyse
   - publish
-image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__RUN_SSH
-
-
-variables:
-  ANSIBLE_FORCE_COLOR: "true"
-  PY_COLORS: "1"
-  #
-  SONAR_HOST_URL: "$SONARQUBE_ADDRESS"
-  SONAR_TOKEN: "$GITLAB_CI_SONARQUBE_USER_TOKEN"
-  #
-  DOCKER_IMAGE__ANALYSE_SONAR_SCANNER: "labocbz/analyse-sonar-scanner:0.6"
-  DOCKER_IMAGE__ANALYSE_DOCKER_IMAGE: "labocbz/analyse-docker-image:latest"
-  DOCKER_IMAGE__BUILD_DOCKERFILE: "labocbz/build-dockerfile:latest"
-  DOCKER_IMAGE__LINT_DOCKERFILE: "labocbz/lint-dockerfile:latest"
-  DOCKER_IMAGE__LINT_SECRETS: "labocbz/lint-secrets:latest"
-  DOCKER_IMAGE__LINT_MARKDOWN: "labocbz/lint-markdown:latest"
-  DOCKER_IMAGE__RUN_SSH: "labocbz/run-ssh:latest"
 
 ###############################################################################
 #################### EXTENDABLES
@@ -131,7 +131,7 @@ sonarqube-check:
     paths:
       - ".sonar/cache"
   script: 
-    - "load-certificates --uri $SONAR_HOST_URL"
+    - "load-certificates --uri ${SONAR_HOST_URL#https://}"
     - "sonar-scanner -X"
 
 ############################################
