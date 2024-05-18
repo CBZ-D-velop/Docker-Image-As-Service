@@ -100,6 +100,7 @@ pipeline {
                     string(credentialsId: "SONARQUBE_ADDRESS", variable: "SONAR_HOST_URL"),
                     string(credentialsId: "JENKINS_CI_SONARQUBE_USER_TOKEN", variable: "SONAR_TOKEN")
                 ]) {
+                    sh("#!/bin/bash\n load-certificates --uri ${SONAR_HOST_URL}")
                     sh("#!/bin/bash\n sonar-scanner")
                 }
             }
