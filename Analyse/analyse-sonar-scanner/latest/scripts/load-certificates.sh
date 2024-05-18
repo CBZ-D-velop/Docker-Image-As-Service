@@ -5,10 +5,16 @@ download_and_install_certificates() {
     local WEBSITE_URI="${1}"
 
     echo "Downloading certificate for $WEBSITE_URI..."
-    openssl s_client -showcerts -verify 20 -connect $WEBSITE_URI < /dev/null | awk '/-----BEGIN CERTIFICATE-----/, /-----END CERTIFICATE-----/' > /usr/local/share/ca-certificates/${WEBSITE_URI%%:*}.pem.crt  && \
+    mkdir -p ./tmp && \
+    local CERT_CHAIN_FILE="./tmp/${WEBSITE_URI%%:*}_chain.pem" && \
+    echo -n | openssl s_client -showcerts -verify 20 -connect $WEBSITE_URI 2>/dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > $CERT_CHAIN_FILE
+    csplit -f "./tmp/cert_" -b "%02d.pem.crt" "$CERT_CHAIN_FILE" '/-BEGIN CERTIFICATE-/' '{*}' && \
+    rm ./tmp/cert_00.pem.crt && \
+    mkdir -p /usr/local/share/ca-certificates/${WEBSITE_URI%%:*} && \
+    cp ./tmp/*.pem.crt /usr/local/share/ca-certificates/${WEBSITE_URI%%:*}/ && \
     sudo update-ca-certificates  && \
     echo "Checking if the certificate is added to the system..."  && \
-    openssl verify "/usr/local/share/ca-certificates/${WEBSITE_URI%%:*}.pem.crt" && \
+    openssl verify $CERT_CHAIN_FILE && \
     echo "Certificate downloaded and added to the system for $WEBSITE_URI."
 }
 
