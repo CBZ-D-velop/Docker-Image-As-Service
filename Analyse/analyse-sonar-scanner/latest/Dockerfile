@@ -45,7 +45,7 @@ RUN if ! id -u "${ENV_DEFAULT_GROUP}" > /dev/null 2>&1; then \
 # Install basics requirements, and other packages
 RUN apk update && apk add --no-cache \
     rsync curl git gnupg \
-    sudo openssl zip bzip2 tar unzip gpg && \
+    sudo openssl zip bzip2 tar unzip gpg coreutils && \
     rm -rf /var/cache/apk/*
 
 #
@@ -94,5 +94,6 @@ RUN ansible --version && \
     node -v && \
     npm -v && \
     python3 -v && \
-    load-certificates --help
+    load-certificates --help && \
+    csplit --help
 CMD ["/bin/bash"]
