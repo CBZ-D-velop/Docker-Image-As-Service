@@ -131,7 +131,6 @@ sonarqube-check:
     paths:
       - ".sonar/cache"
   script: 
-    - "sudo load-certificates --uri ${SONAR_HOST_URL#https://}"
     - "sonar-scanner -X"
 
 ############################################
