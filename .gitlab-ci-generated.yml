@@ -6,31 +6,10 @@
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 
-variables:
-  ANSIBLE_FORCE_COLOR: "true"
-  PY_COLORS: "1"
-  #
-  SONAR_HOST_URL: "$SONARQUBE_ADDRESS"
-  SONAR_TOKEN: "$GITLAB_CI_SONARQUBE_USER_TOKEN"
-  #
-  DOCKER_IMAGE__ANALYSE_SONAR_SCANNER: "labocbz/analyse-sonar-scanner:0.15"
-  DOCKER_IMAGE__ANALYSE_DOCKER_IMAGE: "labocbz/analyse-docker-image:latest"
-  DOCKER_IMAGE__BUILD_DOCKERFILE: "labocbz/build-dockerfile:latest"
-  DOCKER_IMAGE__LINT_DOCKERFILE: "labocbz/lint-dockerfile:latest"
-  DOCKER_IMAGE__LINT_SECRETS: "labocbz/lint-secrets:latest"
-  DOCKER_IMAGE__LINT_MARKDOWN: "labocbz/lint-markdown:latest"
-  DOCKER_IMAGE__RUN_SSH: "labocbz/run-ssh:0.4"
-
-image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__RUN_SSH
-
 stages:
-  - gitlab-test
-  - generate
   - build
   - scout-analyse
   - publish
-  - lint
-  - sonarqube-check
 
 ###############################################################################
 #################### EXTENDABLES
@@ -53,6 +32,7 @@ stages:
     - "cd $(pwd)/${TYPE}/${NAME}/latest"
     - "bash build --scout"
     - "cd ../../../ && pwd"
+    - "docker login -u \"$GITLAB_CI_DOCKER_HUB_CREDENTIALS_USR\" -p \"$GITLAB_CI_DOCKER_HUB_CREDENTIALS_PSW\""
     - "docker scout cves --exit-code --only-severity critical,high --format markdown --output ./cves-report.md local://local/${NAME}:latest-scout || true"
     - "docker scout recommendations local://local/${NAME}:latest-scout || true"
   allow_failure: true
@@ -68,6 +48,7 @@ stages:
   stage: publish
   image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__BUILD_DOCKERFILE
   script:
+    - "docker login -u \"$GITLAB_CI_DOCKER_HUB_CREDENTIALS_USR\" -p \"$GITLAB_CI_DOCKER_HUB_CREDENTIALS_PSW\""
     - "cd $(pwd)/${TYPE}/${NAME}/latest && bash build --cicd"
   allow_failure: false
   rules:
