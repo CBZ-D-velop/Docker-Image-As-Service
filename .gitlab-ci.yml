@@ -19,12 +19,16 @@ variables:
   ANSIBLE_FORCE_COLOR: "true"
   PY_COLORS: "1"
   #
-  DOCKER_IMAGE__ANALYSE_SONAR: "labocbz/analyse-sonar-scanner:latest"
+  SONAR_HOST_URL: "$SONARQUBE_ADDRESS"
+  SONAR_TOKEN: "$GITLAB_CI_SONARQUBE_USER_TOKEN"
+  #
+  DOCKER_IMAGE__ANALYSE_SONAR_SCANNER: "labocbz/analyse-sonar-scanner:latest"
   DOCKER_IMAGE__ANALYSE_DOCKER_IMAGE: "labocbz/analyse-docker-image:latest"
   DOCKER_IMAGE__BUILD_DOCKERFILE: "labocbz/build-dockerfile:latest"
   DOCKER_IMAGE__LINT_DOCKERFILE: "labocbz/lint-dockerfile:latest"
   DOCKER_IMAGE__LINT_SECRETS: "labocbz/lint-secrets:latest"
   DOCKER_IMAGE__LINT_MARKDOWN: "labocbz/lint-markdown:latest"
+  DOCKER_IMAGE__RUN_SSH: "labocbz/run-ssh:latest"
 
 ###############################################################################
 #################### EXTENDABLES
@@ -44,7 +48,7 @@ variables:
   stage: scout
   image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__ANALYSE_DOCKER_IMAGE
   before_script:
-    - "docker login -u \"${DOCKER_HUB_REPOS_USERNAME}\" -p \"${DOCKER_HUB_REPOS_PASSWORD}\""
+    - "docker login -u \"${GITLAB_CI_NEXUS_CREDENTIALS_USR}\" -p \"${GITLAB_CI_NEXUS_CREDENTIALS_PSW}\""
     - "cd $(pwd)/${TYPE}/${NAME}/latest"
     - "bash build --scout"
     - "cd ../../../ && pwd"
@@ -64,7 +68,7 @@ variables:
   stage: publish
   image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__BUILD_DOCKERFILE
   before_script:
-    - "docker login -u \"${DOCKER_HUB_REPOS_USERNAME}\" -p \"${DOCKER_HUB_REPOS_PASSWORD}\""
+    - "docker login -u \"${GITLAB_CI_NEXUS_CREDENTIALS_USR}\" -p \"${GITLAB_CI_NEXUS_CREDENTIALS_PSW}\""
   script:
     - "cd $(pwd)/${TYPE}/${NAME}/latest && bash build --cicd"
   allow_failure: false
@@ -119,7 +123,7 @@ secret-lint:
 sonarqube-check:
   stage: sonarqube-check
   image: 
-    name: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__ANALYSE_SONAR
+    name: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__ANALYSE_SONAR_SCANNER
     entrypoint: [""]
   variables:
     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
@@ -137,6 +141,7 @@ sonarqube-check:
 
 generate-pipelines:
   stage: generate
+  image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__RUN_SSH
   script:
     - "chmod +x ./generate-pipelines"
     - "./generate-pipelines"
@@ -146,6 +151,7 @@ generate-pipelines:
 
 load-pipelines:
   stage: generate
+  image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__RUN_SSH
   needs:
     - "generate-pipelines"
   trigger:
