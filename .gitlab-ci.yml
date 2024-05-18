@@ -47,12 +47,10 @@ variables:
 .scout-analyse: &scout-analyse
   stage: scout
   image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__ANALYSE_DOCKER_IMAGE
-  before_script:
-    - "docker login -u \"${GITLAB_CI_NEXUS_CREDENTIALS_USR}\" -p \"${GITLAB_CI_NEXUS_CREDENTIALS_PSW}\""
+  script:
     - "cd $(pwd)/${TYPE}/${NAME}/latest"
     - "bash build --scout"
     - "cd ../../../ && pwd"
-  script:
     - "docker scout cves --exit-code --only-severity critical,high --format markdown --output ./cves-report.md local://local/${NAME}:latest-scout || true"
     - "docker scout recommendations local://local/${NAME}:latest-scout || true"
   allow_failure: true
@@ -67,8 +65,6 @@ variables:
 .publish: &publish
   stage: publish
   image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__BUILD_DOCKERFILE
-  before_script:
-    - "docker login -u \"${GITLAB_CI_NEXUS_CREDENTIALS_USR}\" -p \"${GITLAB_CI_NEXUS_CREDENTIALS_PSW}\""
   script:
     - "cd $(pwd)/${TYPE}/${NAME}/latest && bash build --cicd"
   allow_failure: false
