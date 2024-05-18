@@ -85,7 +85,7 @@ stages:
 sast:
   stage: gitlab-test
 include:
-- template: Security/SAST.gitlab-ci.yml
+  - template: Security/SAST.gitlab-ci.yml
 
 ############################################
 #### lint
@@ -93,14 +93,20 @@ include:
 
 dockerfile-lint:
   stage: lint
-  image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__LINT_DOCKERFILE
+  image:
+    name: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__LINT_DOCKERFILE
+    docker:
+      user: docker-ci
   script:
     - "hadolint --ignore DL3018 --ignore DL3001 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 $(pwd)/*/*/latest/Dockerfile"
   allow_failure: false
 
 markdown-lint:
   stage: lint
-  image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__LINT_MARKDOWN
+  image:
+    name: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__LINT_MARKDOWN
+    docker:
+      user: docker-ci
   script:
     - markdownlint './README.md' --disable MD013
     - markdownlint './*/*/latest/README.md' --disable MD013
@@ -108,7 +114,10 @@ markdown-lint:
 
 secret-lint:
   stage: lint
-  image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__LINT_SECRETS
+  image:
+    name: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__LINT_SECRETS
+    docker:
+      user: docker-ci
   script:
     - "detect-secrets scan"
     - "detect-secrets audit .secrets.baseline"
@@ -120,9 +129,11 @@ secret-lint:
 
 sonarqube-check:
   stage: sonarqube-check
-  image: 
+  image:
     name: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__ANALYSE_SONAR_SCANNER
     entrypoint: [""]
+    docker:
+      user: docker-ci
   variables:
     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
     GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
@@ -139,7 +150,10 @@ sonarqube-check:
 
 generate-pipelines:
   stage: generate
-  image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__RUN_SSH
+  image:
+    name: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__RUN_SSH
+    docker:
+      user: docker-ci
   before_script:
     - "ls -all"
     - "chmod +x ./generate-pipelines"
