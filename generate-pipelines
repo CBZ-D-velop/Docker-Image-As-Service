@@ -1,0 +1,39 @@
+#!/bin/bash
+
+generate_pipeline() {
+    for IMAGE in ./$1/*; do
+        local NAME=$(basename "$IMAGE")
+        local TYPE="$1"
+        cat <<EOF >> ./generated-pipeline.yml
+build:${NAME}:
+    <<: *build
+    variables:
+        TYPE: "${TYPE}"
+        NAME: "${NAME}"
+
+scout-analyse:${NAME}:
+    <<: *scout-analyse
+    variables:
+        TYPE: "${TYPE}"
+        NAME: "${NAME}"
+    needs:
+        - "build:${NAME}"
+
+publish:${NAME}:
+    <<: *publish
+    variables:
+        TYPE: "${TYPE}"
+        NAME: "${NAME}"
+    needs:
+        - "scout-analyse:${NAME}"
+EOF
+    done
+}
+
+rm -f ./generated-pipelines.yml
+FOLDERS=$(find . -maxdepth 1 -type d -not -path '*/\.*' -printf '%f\n' | tail -n +2)
+for FOLDER in $FOLDERS; do
+    if [[ -d $FOLDER ]]; then
+        generate_pipeline "${FOLDER}"
+    fi
+done
