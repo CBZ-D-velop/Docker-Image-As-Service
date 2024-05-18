@@ -19,7 +19,7 @@ variables:
   DOCKER_IMAGE__LINT_DOCKERFILE: "labocbz/lint-dockerfile:latest"
   DOCKER_IMAGE__LINT_SECRETS: "labocbz/lint-secrets:latest"
   DOCKER_IMAGE__LINT_MARKDOWN: "labocbz/lint-markdown:latest"
-  DOCKER_IMAGE__RUN_SSH: "labocbz/run-ssh:0.3"
+  DOCKER_IMAGE__RUN_SSH: "labocbz/run-ssh:0.4"
 
 image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__RUN_SSH
 
@@ -141,9 +141,7 @@ generate-pipelines:
   stage: generate
   image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__RUN_SSH
   script:
-    - "chmod +x ./generate-pipelines"
-    - "ls -all"
-    - "bash generate-pipelines"
+    - "./generate-pipelines"
   artifacts:
     paths:
       - "generated-pipelines.yml"
