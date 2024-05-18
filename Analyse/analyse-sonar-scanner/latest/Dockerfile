@@ -66,10 +66,9 @@ COPY --from=NODEJS_BASE --chown="root:root" --chmod="0755" /usr/local/lib /usr/l
 COPY --from=NODEJS_BASE --chown="root:root" --chmod="0755" /usr/local/include /usr/local/include
 COPY --from=NODEJS_BASE --chown="root:root" --chmod="0755" /usr/local/bin /usr/local/bin
 
-# Copy the load-certificates script, give permissions
-COPY --chown="root:root" --chmod="0755" ./scripts/load-certificates.sh /usr/local/bin/load-certificates
-RUN echo "${ENV_DEFAULT_USER} ALL=(ALL) NOPASSWD: /usr/local/bin/load-certificates" >> /etc/sudoers && \
-    chmod 0755 -R /usr/local/share/ca-certificates/
+# Import custom certs
+COPY ./certs/* /usr/local/share/ca-certificates/
+RUN update-ca-certificates
 
 #
 # Actions as user
@@ -94,6 +93,4 @@ RUN ansible --version && \
     node -v && \
     npm -v && \
     python3 -v && \
-    load-certificates --help && \
-    csplit --help
 CMD ["/bin/bash"]
