@@ -25,12 +25,12 @@ image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__RUN_SSH
 
 stages:
   - gitlab-test
-  - lint
-  - sonarqube-check
   - generate
   - build
   - scout-analyse
   - publish
+  - lint
+  - sonarqube-check
 
 ###############################################################################
 #################### EXTENDABLES
@@ -131,7 +131,7 @@ sonarqube-check:
     paths:
       - ".sonar/cache"
   script: 
-    - "sonar-scanner -X"
+    - "sonar-scanner"
 
 ############################################
 #### Generate
