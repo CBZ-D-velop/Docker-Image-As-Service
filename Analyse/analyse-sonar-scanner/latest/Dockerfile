@@ -45,7 +45,7 @@ RUN if ! id -u "${ENV_DEFAULT_GROUP}" > /dev/null 2>&1; then \
 # Install basics requirements, and other packages
 RUN apk update && apk add --no-cache \
     rsync curl git gnupg \
-    sudo openssl zip bzip2 tar unzip gpg coreutils && \
+    sudo openssl zip bzip2 tar unzip gpg coreutils ca-certificates && \
     rm -rf /var/cache/apk/*
 
 #
@@ -68,8 +68,8 @@ COPY --from=NODEJS_BASE --chown="root:root" --chmod="0755" /usr/local/bin /usr/l
 
 # Copy the load-certificates script, give permissions
 COPY --chown="root:root" --chmod="0755" ./scripts/load-certificates.sh /usr/local/bin/load-certificates
-RUN echo "${ENV_DEFAULT_USER} ALL=(ALL) NOPASSWD: /usr/sbin/update-ca-certificates" >> /etc/sudoers && \
-    chmod 0777 -R /usr/local/share/ca-certificates/
+RUN echo "${ENV_DEFAULT_USER} ALL=(ALL) NOPASSWD: /usr/local/bin/load-certificates" >> /etc/sudoers && \
+    chmod 0755 -R /usr/local/share/ca-certificates/
 
 #
 # Actions as user
