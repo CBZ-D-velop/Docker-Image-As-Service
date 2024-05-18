@@ -29,7 +29,7 @@ RUN if ! id -u "${ENV_DEFAULT_GROUP}" > /dev/null 2>&1; then \
         addgroup --group "${ENV_DEFAULT_GROUP}" --gid "${ENV_DEFAULT_GROUP_GID}"; \
     fi && \
     if ! id -u "${ENV_DEFAULT_USER}" > /dev/null 2>&1; then \
-        useradd -u "${ENV_DEFAULT_USER_ID}" -g "${ENV_DEFAULT_GROUP}" \
+        useradd -l -u "${ENV_DEFAULT_USER_ID}" -g "${ENV_DEFAULT_GROUP}" \
         --home "${ENV_DEFAULT_USER_HOME}" --shell "/bin/bash" "${ENV_DEFAULT_USER}"; \
     fi && \
     mkdir -p ${ENV_DEFAULT_WORKDIR} && chmod 0700 -R ${ENV_DEFAULT_WORKDIR} && chown -R ${ENV_DEFAULT_USER}:${ENV_DEFAULT_GROUP} ${ENV_DEFAULT_WORKDIR}
@@ -39,14 +39,14 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN echo "debconf debconf/frontend select Noninteractive" | debconf-set-selections && \
     apt-mark hold debian-archive-keyring && apt-get update && apt-get upgrade -y && \
     apt-get upgrade debian-archive-keyring -y --allow-change-held-packages && \
-    apt clean
+    apt-get clean
 
 # Install basics requirements, and others packages
 RUN apt-get install --no-install-recommends -y \
     rsync curl git gnupg2 software-properties-common \
     apt-transport-https ca-certificates sudo \
     openssl zip init bzip2 tar unzip gpg && \
-    apt clean
+    apt-get clean
 
 #
 # Actions as root
@@ -55,7 +55,7 @@ RUN apt-get install --no-install-recommends -y \
 # Install python and pip
 RUN apt install --no-install-recommends -y python3 python3-jmespath python3-pip \
     python3-lxml python3-apt python3-pip python3-setuptools && \
-    apt clean && \
+    apt-get clean && \
     python3 -m pip install --no-cache-dir --upgrade pip
 
 #
