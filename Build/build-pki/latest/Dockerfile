@@ -53,7 +53,7 @@ RUN apt-get install --no-install-recommends -y \
 #
 
 # Install python and pip
-RUN apt install --no-install-recommends -y python3 python3-jmespath python3-pip \
+RUN apt-get install --no-install-recommends -y python3 python3-jmespath python3-pip \
     python3-lxml python3-apt python3-pip python3-setuptools && \
     apt-get clean && \
     python3 -m pip install --no-cache-dir --upgrade pip
