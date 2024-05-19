@@ -8,6 +8,8 @@ pipeline {
         DOCKER_IMAGE__LINT_DOCKERFILE = "labocbz/lint-dockerfile:latest"
         DOCKER_IMAGE__LINT_SECRETS = "labocbz/lint-secrets:latest"
         DOCKER_IMAGE__LINT_MARKDOWN = "labocbz/lint-markdown:latest"
+        #
+        NEXUS_DOCKER_GROUP_REGISTRY = credentials('NEXUS_DOCKER_GROUP_REGISTRY')
     }    
 
     options {
@@ -23,16 +25,14 @@ pipeline {
 
     stages {
         parallel {
-            stage("lint:dockerfile") {
+            "lint:dockerfile": {
                 agent {
-                    withCredentials([string(credentialsId: "NEXUS_DOCKER_GROUP_REGISTRY", variable: "NEXUS_DOCKER_GROUP_REGISTRY")]) {
-                        docker {
-                            image "${DOCKER_IMAGE__LINT_DOCKERFILE}"
-                            registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
-                            registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
-                            alwaysPull true
-                            reuseNode true
-                        }
+                    docker {
+                        image "${DOCKER_IMAGE__LINT_DOCKERFILE}"
+                        registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
+                        registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
+                        alwaysPull true
+                        reuseNode true
                     }
                 }
 
@@ -43,16 +43,14 @@ pipeline {
                 }
             }
 
-            stage("lint:secrets") {
+            "lint:secrets": {
                 agent {
-                    withCredentials([string(credentialsId: "NEXUS_DOCKER_GROUP_REGISTRY", variable: "NEXUS_DOCKER_GROUP_REGISTRY")]) {
-                        docker {
-                            image "${DOCKER_IMAGE__LIN_SECRETS}"
-                            registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
-                            registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
-                            alwaysPull true
-                            reuseNode true
-                        }
+                    docker {
+                        image "${DOCKER_IMAGE__LIN_SECRETS}"
+                        registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
+                        registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
+                        alwaysPull true
+                        reuseNode true
                     }
                 }
 
@@ -62,16 +60,14 @@ pipeline {
                 }
             }
 
-            stage("lint:markdown") {
+            "lint:markdown": {
                 agent {
-                    withCredentials([string(credentialsId: "NEXUS_DOCKER_GROUP_REGISTRY", variable: "NEXUS_DOCKER_GROUP_REGISTRY")]) {
-                        docker {
-                            image "${DOCKER_IMAGE__LIN_MARKDOWN}"
-                            registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
-                            registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
-                            alwaysPull true
-                            reuseNode true
-                        }
+                    docker {
+                        image "${DOCKER_IMAGE__LIN_MARKDOWN}"
+                        registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
+                        registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
+                        alwaysPull true
+                        reuseNode true
                     }
                 }
 
@@ -85,14 +81,12 @@ pipeline {
 
         stage("sonarqube-check") {
             agent {
-                withCredentials([string(credentialsId: "NEXUS_DOCKER_GROUP_REGISTRY", variable: "NEXUS_DOCKER_GROUP_REGISTRY")]) {
-                    docker {
-                        image "${DOCKER_IMAGE__ANALYSE_SONAR_SCANNER}"
-                        registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
-                        registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
-                        alwaysPull true
-                        reuseNode true
-                    }
+                docker {
+                    image "${DOCKER_IMAGE__ANALYSE_SONAR_SCANNER}"
+                    registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
+                    registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
+                    alwaysPull true
+                    reuseNode true
                 }
             }
 
@@ -108,15 +102,13 @@ pipeline {
 
         stage("build") {
             agent {
-                withCredentials([string(credentialsId: "NEXUS_DOCKER_GROUP_REGISTRY", variable: "NEXUS_DOCKER_GROUP_REGISTRY")]) {
-                    docker {
-                        image "${DOCKER_IMAGE__BUILD_DOCKERFILE}"
-                        registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
-                        registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
-                        alwaysPull true
-                        reuseNode true
-                        args '-u root:root -v /var/run/docker.sock:/var/run/docker.sock'
-                    }
+                docker {
+                    image "${DOCKER_IMAGE__BUILD_DOCKERFILE}"
+                    registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
+                    registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
+                    alwaysPull true
+                    reuseNode true
+                    args '-u root:root -v /var/run/docker.sock:/var/run/docker.sock'
                 }
             }
 
@@ -129,15 +121,13 @@ pipeline {
 
         stage("scout-analyse") {
             agent {
-                withCredentials([string(credentialsId: "NEXUS_DOCKER_GROUP_REGISTRY", variable: "NEXUS_DOCKER_GROUP_REGISTRY")]) {
-                    docker {
-                        image "${DOCKER_IMAGE__ANALYSE_DOCKER_IMAGE}"
-                        registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
-                        registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
-                        alwaysPull true
-                        reuseNode true
-                        args "-u root:root -v /var/run/docker.sock:/var/run/docker.sock"
-                    }
+                docker {
+                    image "${DOCKER_IMAGE__ANALYSE_DOCKER_IMAGE}"
+                    registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
+                    registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
+                    alwaysPull true
+                    reuseNode true
+                    args "-u root:root -v /var/run/docker.sock:/var/run/docker.sock"
                 }
             }
 
@@ -155,15 +145,13 @@ pipeline {
 
         stage("publish") {
             agent {
-                withCredentials([string(credentialsId: "NEXUS_DOCKER_GROUP_REGISTRY", variable: "NEXUS_DOCKER_GROUP_REGISTRY")]) {
-                    docker {
-                        image "${DOCKER_IMAGE__BUILD_DOCKERFILE}"
-                        registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
-                        registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
-                        alwaysPull true
-                        reuseNode true
-                        args '-u root:root -v /var/run/docker.sock:/var/run/docker.sock'
-                    }
+                docker {
+                    image "${DOCKER_IMAGE__BUILD_DOCKERFILE}"
+                    registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
+                    registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
+                    alwaysPull true
+                    reuseNode true
+                    args '-u root:root -v /var/run/docker.sock:/var/run/docker.sock'
                 }
             }
 
