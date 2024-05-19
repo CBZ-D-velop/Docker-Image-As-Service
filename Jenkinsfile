@@ -24,8 +24,6 @@ pipeline {
     }
 
     stages {
-        stage("lint") {
-            parallel {
                 stage("lint:dockerfile") {
                     agent {
                         docker {
@@ -78,7 +76,6 @@ pipeline {
                         }
                     }
                 }
-            }
         }
 
         stage("sonarqube-check") {
