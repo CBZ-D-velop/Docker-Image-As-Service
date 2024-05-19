@@ -34,22 +34,11 @@ pipeline {
                             registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
                             alwaysPull true
                             reuseNode true
-                            args '-u root:root'
                         }
                     }
 
                     steps {
-                        script {
-                            def currentUser = sh(script: "whoami", returnStdout: true).trim()
-                            echo "Running as user: ${currentUser}"
-                            sh("ls -la /home/jenkins-ci/jenkins-runners-5/workspace/Labo-CBZ/Public-Infrastructure/Docker-Image-As-Service/Ansible/debian-11-ansible@2@tmp")
-                        }
                         dir("${TYPE}/${NAME}/latest") {
-                            // Print current directory and list files
-                            sh("pwd")
-                            sh("ls -la")
-                            // Print the environment variables
-                            sh("env")
                             sh("#!/bin/bash\n hadolint --ignore DL3001 --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 Dockerfile > ./hadolint.md")
                         }
                     }
@@ -63,21 +52,10 @@ pipeline {
                             registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
                             alwaysPull true
                             reuseNode true
-                            args '-u root:root'
                         }
                     }
 
                     steps {
-                        script {
-                            def currentUser = sh(script: "whoami", returnStdout: true).trim()
-                            echo "Running as user: ${currentUser}"
-                            sh("ls -la /home/jenkins-ci/jenkins-runners-5/workspace/Labo-CBZ/Public-Infrastructure/Docker-Image-As-Service/Ansible/debian-11-ansible@2@tmp")
-                        }
-                        // Print current directory and list files
-                        sh("pwd")
-                        sh("ls -la")
-                        // Print the environment variables
-                        sh("env")
                         sh("#!/bin/bash\n detect-secrets scan > ./${TYPE}/${NAME}/latest/detect-secrets-scan.md")
                         sh("#!/bin/bash\n detect-secrets audit .secrets.baseline > ./${TYPE}/${NAME}/latest/detect-secrets-audit.md")
                     }
@@ -91,22 +69,11 @@ pipeline {
                             registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
                             alwaysPull true
                             reuseNode true
-                            args '-u root:root'
                         }
                     }
 
                     steps {
-                        script {
-                            def currentUser = sh(script: "whoami", returnStdout: true).trim()
-                            echo "Running as user: ${currentUser}"
-                            sh("ls -la /home/jenkins-ci/jenkins-runners-5/workspace/Labo-CBZ/Public-Infrastructure/Docker-Image-As-Service/Ansible/debian-11-ansible@2@tmp")
-                        }
                         dir("${TYPE}/${NAME}/latest") {
-                            // Print current directory and list files
-                            sh("pwd")
-                            sh("ls -la")
-                            // Print the environment variables
-                            sh("env")
                             sh("#!/bin/bash\n markdownlint './README.md' --disable MD013 > ./hadolint.md")
                         }
                     }
@@ -122,7 +89,6 @@ pipeline {
                     registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
                     alwaysPull true
                     reuseNode true
-                    args '-u root:root'
                 }
             }
 
