@@ -35,10 +35,10 @@ pipeline {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE__LINT_DOCKERFILE"
-                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
-                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
-                    alwaysPull true
-                    reuseNode true
+                            registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
+                            registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
+                            alwaysPull true
+                            reuseNode true
                 }
             }
 
@@ -53,10 +53,10 @@ pipeline {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE__LINT_SECRETS"
-                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
-                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
-                    alwaysPull true
-                    reuseNode true
+                            registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
+                            registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
+                            alwaysPull true
+                            reuseNode true
                 }
             }
 
@@ -70,10 +70,10 @@ pipeline {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE__LINT_MARKDOWN"
-                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
-                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
-                    alwaysPull true
-                    reuseNode true
+                            registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
+                            registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
+                            alwaysPull true
+                            reuseNode true
                 }
             }
 
@@ -88,10 +88,10 @@ pipeline {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE__ANALYSE_SONAR_SCANNER"
-                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
-                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
-                    alwaysPull true
-                    reuseNode true
+                            registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
+                            registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
+                            alwaysPull true
+                            reuseNode true
                 }
             }
 
@@ -104,10 +104,10 @@ pipeline {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
-                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
-                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
-                    alwaysPull true
-                    reuseNode true
+                            registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
+                            registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
+                            alwaysPull true
+                            reuseNode true
                     args '-u root:root -v /var/run/docker.sock:/var/run/docker.sock'
                 }
             }
@@ -124,10 +124,10 @@ pipeline {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_DOCKER_SCOUT"
-                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
-                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
-                    alwaysPull true
-                    reuseNode true
+                            registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
+                            registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
+                            alwaysPull true
+                            reuseNode true
                     args '-u root:root -v /var/run/docker.sock:/var/run/docker.sock'
                 }
             }
@@ -146,10 +146,10 @@ pipeline {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
-                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
-                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
-                    alwaysPull true
-                    reuseNode true
+                            registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
+                            registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
+                            alwaysPull true
+                            reuseNode true
                     args '-u root:root -v /var/run/docker.sock:/var/run/docker.sock'
                 }
             }
@@ -166,10 +166,10 @@ pipeline {
             agent { 
                 docker {
                     image "$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD"
-                    registryUrl "https://$NEXUS_REPOS_DOCKER_REGISTRY"
-                    registryCredentialsId "NEXUS_JENKINS_LOGIN_PASSWORD"
-                    alwaysPull true
-                    reuseNode true
+                            registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
+                            registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
+                            alwaysPull true
+                            reuseNode true
                     args '-u root:root -v /var/run/docker.sock:/var/run/docker.sock'
                 }
             }
