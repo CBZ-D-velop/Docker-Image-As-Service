@@ -24,59 +24,55 @@ pipeline {
     }
 
     stages {
-        stage("lint") {
-            parallel {
-                stage("lint:dockerfile") {
-                    agent {
-                        docker {
-                            image "${DOCKER_IMAGE__LINT_DOCKERFILE}"
-                            registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
-                            registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
-                            alwaysPull true
-                            reuseNode true
-                        }
-                    }
-
-                    steps {
-                        dir("${TYPE}/${NAME}/latest") {
-                            sh("#!/bin/bash\n hadolint --ignore DL3001 --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 Dockerfile > ./hadolint.md")
-                        }
-                    }
+        stage("lint:dockerfile") {
+            agent {
+                docker {
+                    image "${DOCKER_IMAGE__LINT_DOCKERFILE}"
+                    registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
+                    registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
+                    alwaysPull true
+                    reuseNode true
                 }
+            }
 
-                stage("lint:secrets") {
-                    agent {
-                        docker {
-                            image "${DOCKER_IMAGE__LINT_SECRETS}"
-                            registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
-                            registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
-                            alwaysPull true
-                            reuseNode true
-                        }
-                    }
-
-                    steps {
-                        sh("#!/bin/bash\n detect-secrets scan > ./${TYPE}/${NAME}/latest/detect-secrets-scan.md")
-                        sh("#!/bin/bash\n detect-secrets audit .secrets.baseline > ./${TYPE}/${NAME}/latest/detect-secrets-audit.md")
-                    }
+            steps {
+                dir("${TYPE}/${NAME}/latest") {
+                    sh("#!/bin/bash\n hadolint --ignore DL3001 --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 Dockerfile > ./hadolint.md")
                 }
+            }
+        }
 
-                stage("lint:markdown") {
-                    agent {
-                        docker {
-                            image "${DOCKER_IMAGE__LINT_MARKDOWN}"
-                            registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
-                            registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
-                            alwaysPull true
-                            reuseNode true
-                        }
-                    }
+        stage("lint:secrets") {
+            agent {
+                docker {
+                    image "${DOCKER_IMAGE__LINT_SECRETS}"
+                    registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
+                    registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
+                    alwaysPull true
+                    reuseNode true
+                }
+            }
 
-                    steps {
-                        dir("${TYPE}/${NAME}/latest") {
-                            sh("#!/bin/bash\n markdownlint './README.md' --disable MD013 > ./hadolint.md")
-                        }
-                    }
+            steps {
+                sh("#!/bin/bash\n detect-secrets scan > ./${TYPE}/${NAME}/latest/detect-secrets-scan.md")
+                sh("#!/bin/bash\n detect-secrets audit .secrets.baseline > ./${TYPE}/${NAME}/latest/detect-secrets-audit.md")
+            }
+        }
+
+        stage("lint:markdown") {
+            agent {
+                docker {
+                    image "${DOCKER_IMAGE__LINT_MARKDOWN}"
+                    registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
+                    registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
+                    alwaysPull true
+                    reuseNode true
+                }
+            }
+
+            steps {
+                dir("${TYPE}/${NAME}/latest") {
+                    sh("#!/bin/bash\n markdownlint './README.md' --disable MD013 > ./hadolint.md")
                 }
             }
         }
