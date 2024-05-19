@@ -13,13 +13,13 @@ variables:
   SONAR_HOST_URL: "$SONARQUBE_ADDRESS"
   SONAR_TOKEN: "$GITLAB_CI_SONARQUBE_USER_TOKEN"
   #
-  DOCKER_IMAGE__ANALYSE_SONAR_SCANNER: "labocbz/analyse-sonar-scanner:0.15"
-  DOCKER_IMAGE__ANALYSE_DOCKER_IMAGE: "labocbz/analyse-docker-image:0.2"
-  DOCKER_IMAGE__BUILD_DOCKERFILE: "labocbz/build-dockerfile:0.2"
+  DOCKER_IMAGE__ANALYSE_SONAR_SCANNER: "labocbz/analyse-sonar-scanner:latest"
+  DOCKER_IMAGE__ANALYSE_DOCKER_IMAGE: "labocbz/analyse-docker-image:latest"
+  DOCKER_IMAGE__BUILD_DOCKERFILE: "labocbz/build-dockerfile:latest"
   DOCKER_IMAGE__LINT_DOCKERFILE: "labocbz/lint-dockerfile:latest"
   DOCKER_IMAGE__LINT_SECRETS: "labocbz/lint-secrets:latest"
   DOCKER_IMAGE__LINT_MARKDOWN: "labocbz/lint-markdown:latest"
-  DOCKER_IMAGE__RUN_SSH: "labocbz/run-ssh:0.4"
+  DOCKER_IMAGE__RUN_SSH: "labocbz/run-ssh:latest"
 
 image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__RUN_SSH
 
