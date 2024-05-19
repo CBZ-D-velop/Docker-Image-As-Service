@@ -34,6 +34,7 @@ pipeline {
                             registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
                             alwaysPull true
                             reuseNode true
+                            args '-u docker-ci:docker-ci'
                         }
                     }
 
@@ -52,6 +53,7 @@ pipeline {
                             registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
                             alwaysPull true
                             reuseNode true
+                            args '-u docker-ci:docker-ci'
                         }
                     }
 
@@ -69,6 +71,7 @@ pipeline {
                             registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
                             alwaysPull true
                             reuseNode true
+                            args '-u docker-ci:docker-ci'
                         }
                     }
 
@@ -89,6 +92,7 @@ pipeline {
                     registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
                     alwaysPull true
                     reuseNode true
+                    args '-u docker-ci:docker-ci'
                 }
             }
 
