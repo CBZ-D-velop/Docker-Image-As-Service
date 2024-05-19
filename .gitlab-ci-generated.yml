@@ -32,7 +32,7 @@ stages:
     - "cd $(pwd)/${TYPE}/${NAME}/latest"
     - "bash build --scout"
     - "cd ../../../ && pwd"
-    - "docker login -u \"$GITLAB_CI_DOCKER_HUB_CREDENTIALS_USR\" --password-stdin \"$GITLAB_CI_DOCKER_HUB_CREDENTIALS_PSW\""
+    - "docker login -u \"$GITLAB_CI_DOCKER_HUB_CREDENTIALS_USR\" -p \"$GITLAB_CI_DOCKER_HUB_CREDENTIALS_PSW\""
     - "docker scout cves --exit-code --only-severity critical,high --format markdown --output ./cves-report.md local://local/${NAME}:latest-scout || true"
     - "docker scout recommendations local://local/${NAME}:latest-scout || true"
   allow_failure: true
@@ -48,7 +48,7 @@ stages:
   stage: publish
   image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__BUILD_DOCKERFILE
   script:
-    - "docker login -u \"$GITLAB_CI_DOCKER_HUB_CREDENTIALS_USR\" --password-stdin \"$GITLAB_CI_DOCKER_HUB_CREDENTIALS_PSW\""
+    - "docker login -u \"$GITLAB_CI_DOCKER_HUB_CREDENTIALS_USR\" -p \"$GITLAB_CI_DOCKER_HUB_CREDENTIALS_PSW\""
     - "cd $(pwd)/${TYPE}/${NAME}/latest && bash build --cicd"
   allow_failure: false
   rules:
