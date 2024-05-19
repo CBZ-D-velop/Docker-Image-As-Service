@@ -9,7 +9,7 @@ pipeline {
         DOCKER_IMAGE__LINT_SECRETS = "labocbz/lint-secrets:latest"
         DOCKER_IMAGE__LINT_MARKDOWN = "labocbz/lint-markdown:latest"
 
-        NEXUS_DOCKER_GROUP_REGISTRY = string(credentialsId: "NEXUS_DOCKER_GROUP_REGISTRY")
+        NEXUS_DOCKER_GROUP_REGISTRY = credentials('NEXUS_DOCKER_GROUP_REGISTRY')
     }
 
     options {
