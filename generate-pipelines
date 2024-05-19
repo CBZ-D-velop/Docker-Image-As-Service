@@ -5,27 +5,27 @@ generate_pipeline() {
         local NAME=$(basename "$IMAGE")
         local TYPE="$1"
         cat <<EOF >> ./.gitlab-ci-generated.yml
-build:${NAME}:
+build:${TYPE}:${NAME}
     <<: *build
     variables:
         TYPE: "${TYPE}"
         NAME: "${NAME}"
 
-scout-analyse:${NAME}:
+scout-analyse:${TYPE}:${NAME}
     <<: *scout-analyse
     variables:
         TYPE: "${TYPE}"
         NAME: "${NAME}"
     needs:
-        - "build:${NAME}"
+        - "build:${TYPE}:${NAME}"
 
-publish:${NAME}:
+publish:${TYPE}:${NAME}
     <<: *publish
     variables:
         TYPE: "${TYPE}"
         NAME: "${NAME}"
     needs:
-        - "scout-analyse:${NAME}"
+        - "scout-analyse:${TYPE}:${NAME}"
 EOF
     done
 }

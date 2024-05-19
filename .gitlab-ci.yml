@@ -50,14 +50,14 @@ include:
 #### lint
 ############################################
 
-dockerfile-lint:
+lint:dockerfile:
   stage: lint
   image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__LINT_DOCKERFILE
   script:
     - "hadolint --ignore DL3018 --ignore DL3001 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 $(pwd)/*/*/latest/Dockerfile"
   allow_failure: false
 
-markdown-lint:
+lint:markdown:
   stage: lint
   image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__LINT_MARKDOWN
   script:
@@ -65,7 +65,7 @@ markdown-lint:
     - markdownlint './*/*/latest/README.md' --disable MD013
   allow_failure: false
 
-secret-lint:
+lint:secrets:
   stage: lint
   image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__LINT_SECRETS
   script:
@@ -110,7 +110,7 @@ generate-pipelines:
     paths:
       - "./.gitlab-ci-generated.yml"
 
-load-pipelines:
+build:scout-analyse:publish:
   stage: generate
   needs:
     - "generate-pipelines"
