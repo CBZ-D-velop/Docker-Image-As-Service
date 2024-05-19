@@ -25,7 +25,7 @@ pipeline {
 
     stages {
         parallel {
-            "lint:dockerfile": {
+            "lint:dockerfile" {
                 agent {
                     docker {
                         image "${DOCKER_IMAGE__LINT_DOCKERFILE}"
@@ -43,7 +43,7 @@ pipeline {
                 }
             }
 
-            "lint:secrets": {
+            "lint:secrets" {
                 agent {
                     docker {
                         image "${DOCKER_IMAGE__LIN_SECRETS}"
@@ -60,7 +60,7 @@ pipeline {
                 }
             }
 
-            "lint:markdown": {
+            "lint:markdown" {
                 agent {
                     docker {
                         image "${DOCKER_IMAGE__LIN_MARKDOWN}"
