@@ -164,24 +164,5 @@ pipeline {
         }
     }
 
-    post {
-        success {
-            archiveArtifacts "${TYPE}/${NAME}/latest/*.md"
-            cleanWs(
-                    cleanWhenNotBuilt: true,
-                    deleteDirs: true,
-                    disableDeferredWipeout: true,
-                    notFailBuild: true
-            )
-        }
 
-        failure {
-            cleanWs(
-                    cleanWhenNotBuilt: true,
-                    deleteDirs: true,
-                    disableDeferredWipeout: true,
-                    notFailBuild: true
-            )
-        }
-    }
 }
