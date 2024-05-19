@@ -5,9 +5,9 @@ pipeline {
         DOCKER_IMAGE__ANALYSE_SONAR_SCANNER = "labocbz/analyse-sonar-scanner:latest"
         DOCKER_IMAGE__ANALYSE_DOCKER_IMAGE = "labocbz/analyse-docker-image:latest"
         DOCKER_IMAGE__BUILD_DOCKERFILE = "labocbz/build-dockerfile:latest"
-        DOCKER_IMAGE__LINT_DOCKERFILE = "labocbz/lint-dockerfile:latest"
-        DOCKER_IMAGE__LINT_SECRETS = "labocbz/lint-secrets:latest"
-        DOCKER_IMAGE__LINT_MARKDOWN = "labocbz/lint-markdown:latest"
+        DOCKER_IMAGE__LINT_DOCKERFILE = "labocbz/lint-dockerfile:0.2"
+        DOCKER_IMAGE__LINT_SECRETS = "labocbz/lint-secrets:0.2"
+        DOCKER_IMAGE__LINT_MARKDOWN = "labocbz/lint-markdown:0.2"
 
         NEXUS_DOCKER_GROUP_REGISTRY = credentials('NEXUS_DOCKER_GROUP_REGISTRY')
     }
