@@ -8,9 +8,8 @@ pipeline {
         DOCKER_IMAGE__LINT_DOCKERFILE = "labocbz/lint-dockerfile:latest"
         DOCKER_IMAGE__LINT_SECRETS = "labocbz/lint-secrets:latest"
         DOCKER_IMAGE__LINT_MARKDOWN = "labocbz/lint-markdown:latest"
-
-        NEXUS_DOCKER_GROUP_REGISTRY = credentials('NEXUS_DOCKER_GROUP_REGISTRY')
-    }    
+        string(credentialsId: "NEXUS_DOCKER_GROUP_REGISTRY", variable: "NEXUS_DOCKER_GROUP_REGISTRY"),
+    }
 
     options {
         buildDiscarder(
@@ -30,7 +29,7 @@ pipeline {
                     agent {
                         docker {
                             image "${DOCKER_IMAGE__LINT_DOCKERFILE}"
-                            registryUrl 'https://$NEXUS_DOCKER_GROUP_REGISTRY'
+                            registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
                             registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
                             alwaysPull true
                             reuseNode true
@@ -48,7 +47,7 @@ pipeline {
                     agent {
                         docker {
                             image "${DOCKER_IMAGE__LINT_SECRETS}"
-                            registryUrl 'https://$NEXUS_DOCKER_GROUP_REGISTRY'
+                            registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
                             registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
                             alwaysPull true
                             reuseNode true
@@ -65,7 +64,7 @@ pipeline {
                     agent {
                         docker {
                             image "${DOCKER_IMAGE__LINT_MARKDOWN}"
-                            registryUrl 'https://$NEXUS_DOCKER_GROUP_REGISTRY'
+                            registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
                             registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
                             alwaysPull true
                             reuseNode true
@@ -85,7 +84,7 @@ pipeline {
             agent {
                 docker {
                     image "${DOCKER_IMAGE__ANALYSE_SONAR_SCANNER}"
-                    registryUrl 'https://$NEXUS_DOCKER_GROUP_REGISTRY'
+                    registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
                     registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
                     alwaysPull true
                     reuseNode true
@@ -106,7 +105,7 @@ pipeline {
             agent {
                 docker {
                     image "${DOCKER_IMAGE__BUILD_DOCKERFILE}"
-                    registryUrl 'https://$NEXUS_DOCKER_GROUP_REGISTRY'
+                    registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
                     registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
                     alwaysPull true
                     reuseNode true
@@ -125,7 +124,7 @@ pipeline {
             agent {
                 docker {
                     image "${DOCKER_IMAGE__ANALYSE_DOCKER_IMAGE}"
-                    registryUrl 'https://$NEXUS_DOCKER_GROUP_REGISTRY'
+                    registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
                     registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
                     alwaysPull true
                     reuseNode true
@@ -137,7 +136,7 @@ pipeline {
                 withCredentials([string(credentialsId: "JENKINS_CI_DOCKER_HUB_CREDENTIALS", variable: "JENKINS_CI_DOCKER_HUB_CREDENTIALS")]) {
                     dir("${TYPE}/${NAME}/latest") {
                         sh("#!/bin/bash\n bash build --scout")
-                        sh("#!/bin/bash\n docker login -u \"${JENKINS_CI_DOCKER_HUB_CREDENTIALS_USR}\" -p \"${JENKINS_CI_DOCKER_HUB_CREDENTIALS_PSW}\"")
+                        sh("#!/bin/bash\n docker login -u \"${JENKINS_CI_DOCKER_HUB_CREDENTIALS_USR}\" --password-stdin \"${JENKINS_CI_DOCKER_HUB_CREDENTIALS_PSW}\"")
                         sh("#!/bin/bash\n ~/.docker/cli-plugins/docker-scout cves --exit-code --only-severity critical,high --format markdown local://local/${NAME}:latest-scout > ./cves-report.md || true")
                         sh("#!/bin/bash\n ~/.docker/cli-plugins/docker-scout recommendations local://local/${NAME}:latest-scout > ./cves-recommendations.md || true")
                     }
@@ -149,7 +148,7 @@ pipeline {
             agent {
                 docker {
                     image "${DOCKER_IMAGE__BUILD_DOCKERFILE}"
-                    registryUrl 'https://$NEXUS_DOCKER_GROUP_REGISTRY'
+                    registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
                     registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
                     alwaysPull true
                     reuseNode true
@@ -160,7 +159,7 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: "JENKINS_CI_JENKINS_CI_DOCKER_HUB_CREDENTIALS", variable: "JENKINS_CI_JENKINS_CI_DOCKER_HUB_CREDENTIALS")]) {
                         dir("${TYPE}/${NAME}/latest") {
-                            sh("#!/bin/bash\n docker login -u \"${JENKINS_CI_JENKINS_CI_DOCKER_HUB_CREDENTIALS_USR}\" -p \"${JENKINS_CI_JENKINS_CI_DOCKER_HUB_CREDENTIALS_PSW}\"")
+                            sh("#!/bin/bash\n docker login -u \"${JENKINS_CI_JENKINS_CI_DOCKER_HUB_CREDENTIALS_USR}\" --password-stdin \"${JENKINS_CI_JENKINS_CI_DOCKER_HUB_CREDENTIALS_PSW}\"")
                             sh("#!/bin/bash\n bash build --daily")
                         }
                 }
