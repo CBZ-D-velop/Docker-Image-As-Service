@@ -8,7 +8,8 @@ pipeline {
         DOCKER_IMAGE__LINT_DOCKERFILE = "labocbz/lint-dockerfile:latest"
         DOCKER_IMAGE__LINT_SECRETS = "labocbz/lint-secrets:latest"
         DOCKER_IMAGE__LINT_MARKDOWN = "labocbz/lint-markdown:latest"
-        string(credentialsId: "NEXUS_DOCKER_GROUP_REGISTRY", variable: "NEXUS_DOCKER_GROUP_REGISTRY")
+
+        NEXUS_DOCKER_GROUP_REGISTRY = string(credentialsId: "NEXUS_DOCKER_GROUP_REGISTRY")
     }
 
     options {
