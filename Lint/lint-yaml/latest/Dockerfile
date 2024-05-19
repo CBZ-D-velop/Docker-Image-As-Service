@@ -5,66 +5,66 @@ ARG VERSION=""
 ARG MAINTAINER=""
 ARG MAINTAINER_ADDRESS=""
 ARG DEFAULT_USER=""
+ARG DEFAULT_USER_ID=""
 ARG DEFAULT_GROUP=""
+ARG DEFAULT_GROUP_GID=""
+ARG DEFAULT_USER_HOME=""
 ARG DEFAULT_WORKDIR=""
 
-ENV ENV_MAINTAINER="${MAINTAINER}" \
+ENV VERSION="${VERSION}" \
+    ENV_MAINTAINER="${MAINTAINER}" \
     ENV_MAINTAINER_ADDRESS="${MAINTAINER_ADDRESS}" \
     ENV_DEFAULT_USER="${DEFAULT_USER}" \
+    ENV_DEFAULT_USER_ID="${DEFAULT_USER_ID}" \
     ENV_DEFAULT_GROUP="${DEFAULT_GROUP}" \
-    ENV_DEFAULT_WORKDIR="${DEFAULT_WORKDIR}" \
-    ENV_VERSION="${VERSION}"
+    ENV_DEFAULT_GROUP_GID="${DEFAULT_GROUP_GID}" \
+    ENV_DEFAULT_USER_HOME="${DEFAULT_USER_HOME}" \
+    ENV_DEFAULT_WORKDIR="${DEFAULT_WORKDIR}"
 
 LABEL   "version"="${ENV_VERSION}"  \
         "maintainer"="${ENV_MAINTAINER} <${ENV_MAINTAINER_ADDRESS}>"
 
-# Check if the user exists, and create it if not, add workdir
+# Check if the user exists, and create it if not, add home
 RUN if ! id -u "${ENV_DEFAULT_GROUP}" > /dev/null 2>&1; then \
-        addgroup -g "${ENV_DEFAULT_USER_GID}" "${ENV_DEFAULT_GROUP}"; \
+    addgroup -g "${ENV_DEFAULT_GROUP_GID}" "${ENV_DEFAULT_GROUP}"; \
     fi && \
     if ! id -u "${ENV_DEFAULT_USER}" > /dev/null 2>&1; then \
-        adduser -u "${ENV_DEFAULT_USER_ID}" -G "${ENV_DEFAULT_GROUP}" -D \
-        -h "${ENV_DEFAULT_WORKDIR}" "${ENV_DEFAULT_USER}" -s /bin/bash; \
-    fi
+    adduser -u "${ENV_DEFAULT_USER_ID}" -G "${ENV_DEFAULT_GROUP}" \
+    -h "${ENV_DEFAULT_USER_HOME}" -s "/bin/bash" -D "${ENV_DEFAULT_USER}"; \
+    fi && \
+    mkdir -p ${ENV_DEFAULT_WORKDIR} && chmod 0700 -R ${ENV_DEFAULT_WORKDIR} && chown -R ${ENV_DEFAULT_USER}:${ENV_DEFAULT_GROUP} ${ENV_DEFAULT_WORKDIR}
 
-# Update installed packages
-RUN apk update && \
-    apk add --no-cache make bash gnupg
+# Update the host, fix upgrade
+# Install basics requirements, and other packages
+RUN apk update && apk add --no-cache \
+    rsync curl git gnupg openssh \
+    sudo openssl zip bzip2 tar unzip gpg && \
+    rm -rf /var/cache/apk/*
+
+#
+# Actions as root
+#
 
 # Install python and pip
 RUN apk add --update --no-cache python3 && \
     ln -sf python3 /usr/bin/python && \
     python3 -m ensurepip && \
-    pip3 install --no-cache-dir --upgrade pip setuptools
+    python3 -m pip install --no-cache-dir --break-system-packages --upgrade pip setuptools && \
+    python3 --version
 
-# Install yamllint
-RUN pip3 install --no-cache-dir yamllint && \
-    yamllint --version
-
-# Install basics requirements for Ansible (vault)
-RUN apk add --no-cache \
-    rsync curl python3 \
-    libffi-dev wget lsb-release \
-    ca-certificates sudo nano \
-    net-tools procps openssl lsof zip \
-    tree iftop htop nethogs iproute2 \
-    git bzip2 tar unzip py3-pip \
-    py3-jmespath py3-lxml py3-pip py3-setuptools
-
-# Isntall Ansible
-WORKDIR "${ENV_DEFAULT_WORKDIR}"
-COPY --chown="${ENV_DEFAULT_USER}:${ENV_DEFAULT_GROUP}" ./requirements.txt ./requirements.txt
+# Install Ansible, Molecule, comunity additions
+WORKDIR "${HOME}"
+COPY --chown="root:root" ./requirements.txt ./requirements.txt
 RUN python3 -m pip install --no-cache-dir -r ./requirements.txt --break-system-packages && \
-    ansible-galaxy collection install community.general && \
-    ansible-galaxy collection install community.docker && \
-    ansible --version
+    export PATH="/$HOME/.local/bin:${PATH}"
 
-# Remove packages cache
-RUN apk del build-dependencies; \
-    rm -rf /var/cache/apk/* && \
-    rm -rf ~/.cache/*
+#
+# Actions as user
+#
 
-# Set CMD
 USER "${ENV_DEFAULT_USER}":"${ENV_DEFAULT_GROUP}"
 WORKDIR "${ENV_DEFAULT_WORKDIR}"
-CMD ["yamllint", "--version"]
+
+# Checks & CMD
+RUN yamllint --version
+CMD ["/bin/bash"]
