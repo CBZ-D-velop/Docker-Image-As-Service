@@ -76,7 +76,6 @@ pipeline {
                         }
                     }
                 }
-        }
 
         stage("sonarqube-check") {
             agent {
