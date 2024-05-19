@@ -30,7 +30,7 @@ pipeline {
                     agent {
                         docker {
                             image "${DOCKER_IMAGE__LINT_DOCKERFILE}"
-                            registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
+                            registryUrl 'https://$NEXUS_DOCKER_GROUP_REGISTRY'
                             registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
                             alwaysPull true
                             reuseNode true
@@ -47,8 +47,8 @@ pipeline {
                 stage("lint:secrets") {
                     agent {
                         docker {
-                            image "${DOCKER_IMAGE__LIN_SECRETS}"
-                            registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
+                            image "${DOCKER_IMAGE__LINT_SECRETS}"
+                            registryUrl 'https://$NEXUS_DOCKER_GROUP_REGISTRY'
                             registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
                             alwaysPull true
                             reuseNode true
@@ -64,8 +64,8 @@ pipeline {
                 stage("lint:markdown") {
                     agent {
                         docker {
-                            image "${DOCKER_IMAGE__LIN_MARKDOWN}"
-                            registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
+                            image "${DOCKER_IMAGE__LINT_MARKDOWN}"
+                            registryUrl 'https://$NEXUS_DOCKER_GROUP_REGISTRY'
                             registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
                             alwaysPull true
                             reuseNode true
@@ -85,7 +85,7 @@ pipeline {
             agent {
                 docker {
                     image "${DOCKER_IMAGE__ANALYSE_SONAR_SCANNER}"
-                    registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
+                    registryUrl 'https://$NEXUS_DOCKER_GROUP_REGISTRY'
                     registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
                     alwaysPull true
                     reuseNode true
@@ -106,7 +106,7 @@ pipeline {
             agent {
                 docker {
                     image "${DOCKER_IMAGE__BUILD_DOCKERFILE}"
-                    registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
+                    registryUrl 'https://$NEXUS_DOCKER_GROUP_REGISTRY'
                     registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
                     alwaysPull true
                     reuseNode true
@@ -125,7 +125,7 @@ pipeline {
             agent {
                 docker {
                     image "${DOCKER_IMAGE__ANALYSE_DOCKER_IMAGE}"
-                    registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
+                    registryUrl 'https://$NEXUS_DOCKER_GROUP_REGISTRY'
                     registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
                     alwaysPull true
                     reuseNode true
@@ -149,7 +149,7 @@ pipeline {
             agent {
                 docker {
                     image "${DOCKER_IMAGE__BUILD_DOCKERFILE}"
-                    registryUrl "https://${NEXUS_DOCKER_GROUP_REGISTRY}"
+                    registryUrl 'https://$NEXUS_DOCKER_GROUP_REGISTRY'
                     registryCredentialsId "JENKINS_CI_NEXUS_CREDENTIALS"
                     alwaysPull true
                     reuseNode true
