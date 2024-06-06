@@ -45,7 +45,7 @@ RUN echo "debconf debconf/frontend select Noninteractive" | debconf-set-selectio
 RUN apt-get install --no-install-recommends -y \
     rsync curl git gnupg2 software-properties-common \
     apt-transport-https ca-certificates sudo \
-    openssl zip init bzip2 tar unzip gpg apt-utils usrmerge && \
+    openssl zip init bzip2 tar unzip gpg apt-utils && \
     apt-get clean
 
 #
