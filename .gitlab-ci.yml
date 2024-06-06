@@ -110,7 +110,7 @@ generate-pipelines:
     paths:
       - "./.gitlab-ci-generated.yml"
 
-build:scout-analyse:publish:
+build:scout:analyse:publish:
   stage: generate
   needs:
     - "generate-pipelines"
