@@ -54,17 +54,6 @@ build_major() {
     echo "============ MAJOR BUILD DONE ============"
 }
 
-# Function for major build
-build_major() {
-    echo "============ MAJOR BUILD ============"
-    MAJOR_TAG=$((MAJOR_TAG + 1))
-    MINOR_TAG="0"
-    VERSION="${MAJOR_TAG}.${MINOR_TAG}"
-    image_build
-    image_push
-    echo "============ MAJOR BUILD DONE ============"
-}
-
 # Function for daily build
 build_daily() {
     echo "============ DAILY BUILD ============"
