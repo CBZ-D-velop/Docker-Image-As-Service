@@ -1,2 +1,2 @@
 requests==2.31
-passlib
+passlib==1.7.4
