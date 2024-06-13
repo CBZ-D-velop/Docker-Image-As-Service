@@ -134,7 +134,7 @@ pipeline {
             }
 
             steps {
-                withCredentials([string(credentialsId: "JENKINS_CI_DOCKER_HUB_CREDENTIALS", variable: "JENKINS_CI_DOCKER_HUB_CREDENTIALS")]) {
+                withCredentials([usernamePassword(credentialsId: "JENKINS_CI_DOCKER_HUB_CREDENTIALS", variable: "JENKINS_CI_DOCKER_HUB_CREDENTIALS")]) {
                     dir("${TYPE}/${NAME}/latest") {
                         sh("bash build --scout")
                         sh("docker login -u \"${JENKINS_CI_DOCKER_HUB_CREDENTIALS_USR}\" -p \"${JENKINS_CI_DOCKER_HUB_CREDENTIALS_PSW}\"")
@@ -158,7 +158,7 @@ pipeline {
             }
 
             steps {
-                withCredentials([string(credentialsId: "JENKINS_CI_JENKINS_CI_DOCKER_HUB_CREDENTIALS", variable: "JENKINS_CI_JENKINS_CI_DOCKER_HUB_CREDENTIALS")]) {
+                withCredentials([usernamePassword(credentialsId: "JENKINS_CI_JENKINS_CI_DOCKER_HUB_CREDENTIALS", variable: "JENKINS_CI_JENKINS_CI_DOCKER_HUB_CREDENTIALS")]) {
                         dir("${TYPE}/${NAME}/latest") {
                             sh("docker login -u \"${JENKINS_CI_JENKINS_CI_DOCKER_HUB_CREDENTIALS_USR}\" -p \"${JENKINS_CI_JENKINS_CI_DOCKER_HUB_CREDENTIALS_PSW}\"")
                             sh("bash build --daily")
