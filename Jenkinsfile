@@ -134,8 +134,8 @@ pipeline {
             }
 
             steps {
-                withCredentials([usernamePassword(credentialsId: "JENKINS_CI_DOCKER_HUB_CREDENTIALS", variable: "JENKINS_CI_DOCKER_HUB_CREDENTIALS")]) {
-                    dir("${TYPE}/${NAME}/latest") {
+                dir("${TYPE}/${NAME}/latest") {
+                    withCredentials([usernamePassword(credentialsId: "JENKINS_CI_DOCKER_HUB_CREDENTIALS", usernameVariable : "JENKINS_CI_DOCKER_HUB_CREDENTIALS_USR", passwordVariable: "JENKINS_CI_DOCKER_HUB_CREDENTIALS_PSW")]) {
                         sh("bash build --scout")
                         sh("docker login -u \"${JENKINS_CI_DOCKER_HUB_CREDENTIALS_USR}\" -p \"${JENKINS_CI_DOCKER_HUB_CREDENTIALS_PSW}\"")
                         sh("~/.docker/cli-plugins/docker-scout cves --exit-code --only-severity critical,high --format markdown local://local/${NAME}:latest-scout > ./cves-report.md || true")
@@ -158,11 +158,11 @@ pipeline {
             }
 
             steps {
-                withCredentials([usernamePassword(credentialsId: "JENKINS_CI_JENKINS_CI_DOCKER_HUB_CREDENTIALS", variable: "JENKINS_CI_JENKINS_CI_DOCKER_HUB_CREDENTIALS")]) {
-                        dir("${TYPE}/${NAME}/latest") {
-                            sh("docker login -u \"${JENKINS_CI_JENKINS_CI_DOCKER_HUB_CREDENTIALS_USR}\" -p \"${JENKINS_CI_JENKINS_CI_DOCKER_HUB_CREDENTIALS_PSW}\"")
-                            sh("bash build --daily")
-                        }
+                dir("${TYPE}/${NAME}/latest") {
+                    withCredentials([usernamePassword(credentialsId: "JENKINS_CI_DOCKER_HUB_CREDENTIALS", usernameVariable : "JENKINS_CI_DOCKER_HUB_CREDENTIALS_USR", passwordVariable: "JENKINS_CI_DOCKER_HUB_CREDENTIALS_PSW")]) {
+                        sh("docker login -u \"${JENKINS_CI_JENKINS_CI_DOCKER_HUB_CREDENTIALS_USR}\" -p \"${JENKINS_CI_JENKINS_CI_DOCKER_HUB_CREDENTIALS_PSW}\"")
+                        sh("bash build --daily")
+                    }
                 }
             }
         }
