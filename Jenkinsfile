@@ -39,7 +39,7 @@ pipeline {
 
                     steps {
                         dir("${TYPE}/${NAME}/latest") {
-                            sh("#!/bin/bash\n hadolint --ignore DL3001 --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 Dockerfile > ./hadolint.md")
+                            sh("hadolint --ignore DL3001 --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 Dockerfile > ./hadolint.md")
                         }
                     }
                 }
@@ -56,8 +56,8 @@ pipeline {
                     }
 
                     steps {
-                        sh("#!/bin/bash\n detect-secrets scan > ./${TYPE}/${NAME}/latest/detect-secrets-scan.md")
-                        sh("#!/bin/bash\n detect-secrets audit .secrets.baseline > ./${TYPE}/${NAME}/latest/detect-secrets-audit.md")
+                        sh("detect-secrets scan > ./${TYPE}/${NAME}/latest/detect-secrets-scan.md")
+                        sh("detect-secrets audit .secrets.baseline > ./${TYPE}/${NAME}/latest/detect-secrets-audit.md")
                     }
                 }
 
@@ -74,7 +74,7 @@ pipeline {
 
                     steps {
                         dir("${TYPE}/${NAME}/latest") {
-                            sh("#!/bin/bash\n markdownlint './README.md' --disable MD013 > ./hadolint.md")
+                            sh("markdownlint './README.md' --disable MD013 > ./hadolint.md")
                         }
                     }
                 }
@@ -97,7 +97,7 @@ pipeline {
                     string(credentialsId: "SONARQUBE_ADDRESS", variable: "SONAR_HOST_URL"),
                     string(credentialsId: "JENKINS_CI_SONARQUBE_USER_TOKEN", variable: "SONAR_TOKEN")
                 ]) {
-                    sh("#!/bin/bash\n sonar-scanner")
+                    sh("sonar-scanner")
                 }
             }
         }
@@ -116,7 +116,7 @@ pipeline {
 
             steps {
                 dir("${TYPE}/${NAME}/latest") {
-                    sh("#!/bin/bash\n bash build --test")
+                    sh("bash build --test")
                 }
             }
         }
@@ -136,10 +136,10 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: "JENKINS_CI_DOCKER_HUB_CREDENTIALS", variable: "JENKINS_CI_DOCKER_HUB_CREDENTIALS")]) {
                     dir("${TYPE}/${NAME}/latest") {
-                        sh("#!/bin/bash\n bash build --scout")
-                        sh("#!/bin/bash\n docker login -u \"${JENKINS_CI_DOCKER_HUB_CREDENTIALS_USR}\" -p \"${JENKINS_CI_DOCKER_HUB_CREDENTIALS_PSW}\"")
-                        sh("#!/bin/bash\n ~/.docker/cli-plugins/docker-scout cves --exit-code --only-severity critical,high --format markdown local://local/${NAME}:latest-scout > ./cves-report.md || true")
-                        sh("#!/bin/bash\n ~/.docker/cli-plugins/docker-scout recommendations local://local/${NAME}:latest-scout > ./cves-recommendations.md || true")
+                        sh("bash build --scout")
+                        sh("docker login -u \"${JENKINS_CI_DOCKER_HUB_CREDENTIALS_USR}\" -p \"${JENKINS_CI_DOCKER_HUB_CREDENTIALS_PSW}\"")
+                        sh("~/.docker/cli-plugins/docker-scout cves --exit-code --only-severity critical,high --format markdown local://local/${NAME}:latest-scout > ./cves-report.md || true")
+                        sh("~/.docker/cli-plugins/docker-scout recommendations local://local/${NAME}:latest-scout > ./cves-recommendations.md || true")
                     }
                 }
             }
@@ -160,8 +160,8 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: "JENKINS_CI_JENKINS_CI_DOCKER_HUB_CREDENTIALS", variable: "JENKINS_CI_JENKINS_CI_DOCKER_HUB_CREDENTIALS")]) {
                         dir("${TYPE}/${NAME}/latest") {
-                            sh("#!/bin/bash\n docker login -u \"${JENKINS_CI_JENKINS_CI_DOCKER_HUB_CREDENTIALS_USR}\" -p \"${JENKINS_CI_JENKINS_CI_DOCKER_HUB_CREDENTIALS_PSW}\"")
-                            sh("#!/bin/bash\n bash build --daily")
+                            sh("docker login -u \"${JENKINS_CI_JENKINS_CI_DOCKER_HUB_CREDENTIALS_USR}\" -p \"${JENKINS_CI_JENKINS_CI_DOCKER_HUB_CREDENTIALS_PSW}\"")
+                            sh("bash build --daily")
                         }
                 }
             }
