@@ -138,8 +138,8 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: "JENKINS_CI_DOCKER_HUB_CREDENTIALS", usernameVariable : "JENKINS_CI_DOCKER_HUB_CREDENTIALS_USR", passwordVariable: "JENKINS_CI_DOCKER_HUB_CREDENTIALS_PSW")]) {
                         sh("docker login -u \"${JENKINS_CI_DOCKER_HUB_CREDENTIALS_USR}\" -p \"${JENKINS_CI_DOCKER_HUB_CREDENTIALS_PSW}\"")
                         sh("bash build --scout")
-                        sh("docker-scout cves --exit-code --only-severity critical,high --format markdown local://local/${NAME}:latest-scout > ./cves-report.md || true")
-                        sh("docker-scout recommendations local://local/${NAME}:latest-scout > ./cves-recommendations.md || true")
+                        sh("~/.docker/cli-plugins/docker-scout cves --exit-code --only-severity critical,high --format markdown local://local/${NAME}:latest-scout > ./cves-report.md || true")
+                        sh("~/.docker/cli-plugins/docker-scout recommendations local://local/${NAME}:latest-scout > ./cves-recommendations.md || true")
                     }
                 }
             }
