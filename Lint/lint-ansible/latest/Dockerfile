@@ -38,7 +38,7 @@ RUN if ! id -u "${ENV_DEFAULT_GROUP}" > /dev/null 2>&1; then \
 # Install basics requirements, and other packages
 RUN apk update && apk add --no-cache \
     rsync curl git gnupg openssh \
-    sudo openssl zip bzip2 tar unzip gpg && \
+    sudo bash openssl zip bzip2 tar unzip gpg && \
     rm -rf /var/cache/apk/*
 
 #

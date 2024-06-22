@@ -43,7 +43,7 @@ RUN echo "debconf debconf/frontend select Noninteractive" | debconf-set-selectio
 
 # Install basics requirements, and others packages
 RUN apt-get install --no-install-recommends -y \
-    rsync curl git gnupg2 software-properties-common \
+    rsync curl bash git gnupg2 software-properties-common \
     apt-transport-https ca-certificates sudo \
     openssl zip init bzip2 tar unzip gpg && \
     apt-get clean
