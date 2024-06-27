@@ -49,8 +49,7 @@ RUN apk update && apk add --no-cache \
 
 # Install Hadolint
 RUN apk update && apk add --no-cache make shellcheck && \
-    wget -q "https://github.com/hadolint/hadolint/releases/download/v${ENV_HADOLINT_VERSION}/hadolint-Linux-x86_64" && \
-    mv hadolint-Linux-x86_64 /usr/local/bin/hadolint && \
+    curl --proto "=https" --tlsv1.2 -sSf -L "https://github.com/hadolint/hadolint/releases/download/v${ENV_HADOLINT_VERSION}/hadolint-Linux-x86_64" -o /usr/local/bin/hadolint && \
     chmod +x /usr/local/bin/hadolint
 #
 # Actions as user
