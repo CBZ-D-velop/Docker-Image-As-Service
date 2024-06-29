@@ -1,0 +1,38 @@
+#!/bin/bash
+
+generate_pipeline() {
+    for IMAGE in ./$1/*; do
+        local NAME=$(basename "$IMAGE")
+        local TYPE="$1"
+        cat <<EOF >> ./.gitlab-ci-generated.yml
+build:${TYPE}:${NAME}:
+    <<: *build
+    variables:
+        TYPE: "${TYPE}"
+        NAME: "${NAME}"
+
+scout-analyse:${TYPE}:${NAME}:
+    <<: *scout-analyse
+    variables:
+        TYPE: "${TYPE}"
+        NAME: "${NAME}"
+    needs:
+        - "build:${TYPE}:${NAME}"
+
+publish:${TYPE}:${NAME}:
+    <<: *publish
+    variables:
+        TYPE: "${TYPE}"
+        NAME: "${NAME}"
+    needs:
+        - "scout-analyse:${TYPE}:${NAME}"
+EOF
+    done
+}
+
+FOLDERS=$(find . -maxdepth 1 -type d -not -path '*/\.*' -exec basename {} \; | tail -n +2)
+for FOLDER in $FOLDERS; do
+    if [[ -d $FOLDER ]]; then
+        generate_pipeline "${FOLDER}"
+    fi
+done

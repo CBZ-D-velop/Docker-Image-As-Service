@@ -6,71 +6,31 @@
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 
-stages:
-- gitlab-test
-- lint
-- sonarqube-check
-- test-build
-- scout-cve
-- publish-build
-
 variables:
   ANSIBLE_FORCE_COLOR: "true"
   PY_COLORS: "1"
   #
-  DOCKER_IMAGE_ALPINE_SONAR_SCANNER_CLI: "robincbz/alpine-sonarcli:latest"
-  DOCKER_IMAGE_ALPINE_GIT: robincbz/alpine-git:latest
-  DOCKER_IMAGE_ALPINE_RELEASE_CLI: "robincbz/alpine-releasecli:latest"
-  DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT: "robincbz/alpine-dockerfilelint:latest"
-  DOCKER_IMAGE_MARKDOWN_LINT: "robincbz/debian-markdownlint:latest"
-  DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD: "robincbz/docker-dockerfilebuild:latest"
-  DOCKER_IMAGE_DOCKER_SECRET_LINT: "robincbz/alpine-secretlint:latest"
-  DOCKER_IMAGE_DOCKER_SCOUT: "robincbz/docker-scout:latest"
+  SONAR_HOST_URL: "$SONARQUBE_ADDRESS"
+  SONAR_TOKEN: "$GITLAB_CI_SONARQUBE_USER_TOKEN"
+  #
+  DOCKER_IMAGE__ANALYSE_SONAR_SCANNER: "labocbz/analyse-sonar-scanner:latest"
+  DOCKER_IMAGE__ANALYSE_DOCKER_IMAGE: "labocbz/analyse-docker-image:latest"
+  DOCKER_IMAGE__BUILD_DOCKERFILE: "labocbz/build-dockerfile:latest"
+  DOCKER_IMAGE__LINT_DOCKERFILE: "labocbz/lint-dockerfile:latest"
+  DOCKER_IMAGE__LINT_SECRETS: "labocbz/lint-secrets:latest"
+  DOCKER_IMAGE__LINT_MARKDOWN: "labocbz/lint-markdown:latest"
+  DOCKER_IMAGE__RUN_SSH: "labocbz/run-ssh:latest"
 
-###############################################################################
-#################### EXTENDABLES
-###############################################################################
+image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__RUN_SSH
 
-.test-build: &test-build
-  stage: test-build
-  image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD
-  script:
-    - "cd $(pwd)/${TYPE}/${NAME}/latest && bash build --test-build"
-  allow_failure: false
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-    - if: '$CI_COMMIT_BRANCH == "develop"'
-
-.scout-cve: &scout-cve
-  stage: scout-cve
-  image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_DOCKER_SCOUT
-  before_script:
-    - "docker login -u \"${DOCKER_HUB_REPOS_USERNAME}\" -p \"${DOCKER_HUB_REPOS_PASSWORD}\""
-    - "cd $(pwd)/${TYPE}/${NAME}/latest"
-    - "bash build --docker-scout"
-    - "cd ../../../ && pwd"
-  script:
-    - "docker scout cves --exit-code --only-severity critical,high --format markdown --output ./cves-report.md local://local/${NAME}:docker-scout || true"
-    - "docker scout recommendations local://local/${NAME}:docker-scout || true"
-  allow_failure: true
-  artifacts:
-    expire_in: "1 month"
-    paths:
-      - "cves-report.md"
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-    - if: '$CI_COMMIT_BRANCH == "develop"'
-
-.publish-build: &publish-build
-  stage: publish-build
-  image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_DOCKER_DOCKERFILE_BUILD
-  before_script:
-    - "docker login -u \"${DOCKER_HUB_REPOS_USERNAME}\" -p \"${DOCKER_HUB_REPOS_PASSWORD}\""
-  script:
-    - "cd $(pwd)/${TYPE}/${NAME}/latest && bash build --gitlab-ci"
-  allow_failure: false
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
+stages:
+  - gitlab-test
+  - lint
+  - sonarqube-check
+  - generate
+  - build
+  - scout-analyse
+  - publish
 
 ###############################################################################
 #################### CI JOBS
@@ -85,30 +45,29 @@ sast:
   stage: gitlab-test
 include:
 - template: Security/SAST.gitlab-ci.yml
-  allow_failure: false
 
 ############################################
 #### lint
 ############################################
 
-dockerfile-lint:
+lint:dockerfile:
   stage: lint
-  image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_ALPINE_DOCKERFILE_LINT
+  image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__LINT_DOCKERFILE
   script:
-    - "hadolint --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 $(pwd)/*/*/latest/Dockerfile"
+    - "hadolint --ignore DL3018 --ignore DL3001 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 $(pwd)/*/*/latest/Dockerfile"
   allow_failure: false
 
-markdown-lint:
+lint:markdown:
   stage: lint
-  image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_MARKDOWN_LINT
+  image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__LINT_MARKDOWN
   script:
     - markdownlint './README.md' --disable MD013
     - markdownlint './*/*/latest/README.md' --disable MD013
   allow_failure: false
 
-secret-lint:
+lint:secrets:
   stage: lint
-  image: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_DOCKER_SECRET_LINT
+  image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__LINT_SECRETS
   script:
     - "detect-secrets scan"
     - "detect-secrets audit .secrets.baseline"
@@ -121,7 +80,7 @@ secret-lint:
 sonarqube-check:
   stage: sonarqube-check
   image: 
-    name: $NEXUS_REPOS_DOCKER_REGISTRY/$DOCKER_IMAGE_ALPINE_SONAR_SCANNER_CLI
+    name: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__ANALYSE_SONAR_SCANNER
     entrypoint: [""]
   variables:
     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
@@ -134,409 +93,29 @@ sonarqube-check:
     - "sonar-scanner"
 
 ############################################
-#### test-build
+#### Generate
 ############################################
 
-test-build_debian_11_ansible:
-  <<: *test-build
-  variables:
-    TYPE: "Ansible"
-    NAME: "debian-11-ansible"
+generate-pipelines:
+  stage: generate
+  image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__RUN_SSH
+  before_script:
+    - "ls -all"
+    - "cat ./generate-pipelines > ./local-generate-pipelines"
+    - "chmod +x ./local-generate-pipelines"
+  script:
+    - "./local-generate-pipelines"
+    - "ls -all ./.gitlab-ci-generated.yml"
+  artifacts:
+    paths:
+      - "./.gitlab-ci-generated.yml"
 
-test-build_debian_12_ansible:
-  <<: *test-build
-  variables:
-    TYPE: "Ansible"
-    NAME: "debian-12-ansible"
-
-test-build_docker_dind_ansible:
-  <<: *test-build
-  variables:
-    TYPE: "Ansible"
-    NAME: "docker-dind-ansible"
-
-test-build_docker_dind_molecule:
-  <<: *test-build
-  variables:
-    TYPE: "Ansible"
-    NAME: "docker-dind-molecule"
-
-test-build_ubuntu_22_ansible:
-  <<: *test-build
-  variables:
-    TYPE: "Ansible"
-    NAME: "ubuntu-22-ansible"
-
-test-build_debian_11_certification:
-  <<: *test-build
-  variables:
-    TYPE: "Build"
-    NAME: "debian-11-certification"
-
-test-build_debian_npmbuild:
-  <<: *test-build
-  variables:
-    TYPE: "Build"
-    NAME: "debian-npmbuild"
-
-test-build_docker_dockerfilebuild:
-  <<: *test-build
-  variables:
-    TYPE: "Build"
-    NAME: "docker-dockerfilebuild"
-
-test-build_alpine_ansiblelint:
-  <<: *test-build
-  variables:
-    TYPE: "Lint"
-    NAME: "alpine-ansiblelint"
-
-test-build_alpine_dockerfilelint:
-  <<: *test-build
-  variables:
-    TYPE: "Lint"
-    NAME: "alpine-dockerfilelint"
-
-test-build_alpine_jinjalint:
-  <<: *test-build
-  variables:
-    TYPE: "Lint"
-    NAME: "alpine-jinjalint"
-
-test-build_alpine_secretlint:
-  <<: *test-build
-  variables:
-    TYPE: "Lint"
-    NAME: "alpine-secretlint"
-
-test-build_alpine_sonarcli:
-  <<: *test-build
-  variables:
-    TYPE: "Lint"
-    NAME: "alpine-sonarcli"
-
-test-build_alpine_yamllint:
-  <<: *test-build
-  variables:
-    TYPE: "Lint"
-    NAME: "alpine-yamllint"
-
-test-build_alpine_markdownlint:
-  <<: *test-build
-  variables:
-    TYPE: "Lint"
-    NAME: "debian-markdownlint"
-
-test-build_alpine_git:
-  <<: *test-build
-  variables:
-    TYPE: "Publish"
-    NAME: "alpine-git"
-
-test-build_alpine_releasecli:
-  <<: *test-build
-  variables:
-    TYPE: "Publish"
-    NAME: "alpine-releasecli"
-
-test-build_alpine_nginx:
-  <<: *test-build
-  variables:
-    TYPE: "Hosting"
-    NAME: "alpine-nginx"
-
-############################################
-#### scout-cve
-############################################
-
-scout-cve_debian_11_ansible:
-  <<: *scout-cve
-  variables:
-    TYPE: "Ansible"
-    NAME: "debian-11-ansible"
+build:scout:analyse:publish:
+  stage: generate
   needs:
-    - "test-build_debian_11_ansible"
-
-scout-cve_debian_12_ansible:
-  <<: *scout-cve
-  variables:
-    TYPE: "Ansible"
-    NAME: "debian-12-ansible"
-  needs:
-    - "test-build_debian_12_ansible"
-
-scout-cve_docker_dind_ansible:
-  <<: *scout-cve
-  variables:
-    TYPE: "Ansible"
-    NAME: "docker-dind-ansible"
-  needs:
-    - "test-build_docker_dind_ansible"
-
-scout-cve_docker_dind_molecule:
-  <<: *scout-cve
-  variables:
-    TYPE: "Ansible"
-    NAME: "docker-dind-molecule"
-  needs:
-    - "test-build_docker_dind_molecule"
-
-scout-cve_ubuntu_22_ansible:
-  <<: *scout-cve
-  variables:
-    TYPE: "Ansible"
-    NAME: "ubuntu-22-ansible"
-  needs:
-    - "test-build_ubuntu_22_ansible"
-
-scout-cve_debian_11_certification:
-  <<: *scout-cve
-  variables:
-    TYPE: "Build"
-    NAME: "debian-11-certification"
-  needs:
-    - "test-build_debian_11_certification"
-
-scout-cve_debian_npmbuild:
-  <<: *scout-cve
-  variables:
-    TYPE: "Build"
-    NAME: "debian-npmbuild"
-  needs:
-    - "test-build_debian_npmbuild"
-
-scout-cve_docker_dockerfilebuild:
-  <<: *scout-cve
-  variables:
-    TYPE: "Build"
-    NAME: "docker-dockerfilebuild"
-  needs:
-    - "test-build_docker_dockerfilebuild"
-
-scout-cve_alpine_ansiblelint:
-  <<: *scout-cve
-  variables:
-    TYPE: "Lint"
-    NAME: "alpine-ansiblelint"
-  needs:
-    - "test-build_alpine_ansiblelint"
-
-scout-cve_alpine_dockerfilelint:
-  <<: *scout-cve
-  variables:
-    TYPE: "Lint"
-    NAME: "alpine-dockerfilelint"
-  needs:
-    - "test-build_alpine_dockerfilelint"
-
-scout-cve_alpine_jinjalint:
-  <<: *scout-cve
-  variables:
-    TYPE: "Lint"
-    NAME: "alpine-jinjalint"
-  needs:
-    - "test-build_alpine_jinjalint"
-
-scout-cve_alpine_secretlint:
-  <<: *scout-cve
-  variables:
-    TYPE: "Lint"
-    NAME: "alpine-secretlint"
-  needs:
-    - "test-build_alpine_secretlint"
-
-scout-cve_alpine_sonarcli:
-  <<: *scout-cve
-  variables:
-    TYPE: "Lint"
-    NAME: "alpine-sonarcli"
-  needs:
-    - "test-build_alpine_sonarcli"
-
-scout-cve_alpine_yamllint:
-  <<: *scout-cve
-  variables:
-    TYPE: "Lint"
-    NAME: "alpine-yamllint"
-  needs:
-    - "test-build_alpine_yamllint"
-
-scout-cve_alpine_markdownlint:
-  <<: *scout-cve
-  variables:
-    TYPE: "Lint"
-    NAME: "debian-markdownlint"
-  needs:
-    - "test-build_alpine_markdownlint"
-
-scout-cve_alpine_git:
-  <<: *scout-cve
-  variables:
-    TYPE: "Publish"
-    NAME: "alpine-git"
-  needs:
-    - "test-build_alpine_git"
-
-scout-cve_alpine_releasecli:
-  <<: *scout-cve
-  variables:
-    TYPE: "Publish"
-    NAME: "alpine-releasecli"
-  needs:
-    - "test-build_alpine_releasecli"
-
-scout-cve_alpine_nginx:
-  <<: *scout-cve
-  variables:
-    TYPE: "Hosting"
-    NAME: "alpine-nginx"
-  needs:
-    - "test-build_alpine_nginx"
-
-############################################
-#### publish-build
-############################################
-
-publish-build_debian_11_ansible:
-  <<: *publish-build
-  variables:
-    TYPE: "Ansible"
-    NAME: "debian-11-ansible"
-  needs:
-    - "scout-cve_debian_11_ansible"
-
-publish-build_debian_12_ansible:
-  <<: *publish-build
-  variables:
-    TYPE: "Ansible"
-    NAME: "debian-12-ansible"
-  needs:
-    - "scout-cve_debian_12_ansible"
-
-publish-build_docker_dind_ansible:
-  <<: *publish-build
-  variables:
-    TYPE: "Ansible"
-    NAME: "docker-dind-ansible"
-  needs:
-    - "scout-cve_docker_dind_ansible"
-
-publish-build_docker_dind_molecule:
-  <<: *publish-build
-  variables:
-    TYPE: "Ansible"
-    NAME: "docker-dind-molecule"
-  needs:
-    - "scout-cve_docker_dind_molecule"
-
-publish-build_ubuntu_22_ansible:
-  <<: *publish-build
-  variables:
-    TYPE: "Ansible"
-    NAME: "ubuntu-22-ansible"
-  needs:
-    - "scout-cve_ubuntu_22_ansible"
-
-publish-build_debian_11_certification:
-  <<: *publish-build
-  variables:
-    TYPE: "Build"
-    NAME: "debian-11-certification"
-  needs:
-    - "scout-cve_debian_11_certification"
-
-publish-build_debian_npmbuild:
-  <<: *publish-build
-  variables:
-    TYPE: "Build"
-    NAME: "debian-npmbuild"
-  needs:
-    - "scout-cve_debian_npmbuild"
-
-publish-build_docker_dockerfilebuild:
-  <<: *publish-build
-  variables:
-    TYPE: "Build"
-    NAME: "docker-dockerfilebuild"
-  needs:
-    - "scout-cve_docker_dockerfilebuild"
-
-publish-build_alpine_ansiblelint:
-  <<: *publish-build
-  variables:
-    TYPE: "Lint"
-    NAME: "alpine-ansiblelint"
-  needs:
-    - "scout-cve_alpine_ansiblelint"
-
-publish-build_alpine_dockerfilelint:
-  <<: *publish-build
-  variables:
-    TYPE: "Lint"
-    NAME: "alpine-dockerfilelint"
-  needs:
-    - "scout-cve_alpine_dockerfilelint"
-
-publish-build_alpine_jinjalint:
-  <<: *publish-build
-  variables:
-    TYPE: "Lint"
-    NAME: "alpine-jinjalint"
-  needs:
-    - "scout-cve_alpine_jinjalint"
-
-publish-build_alpine_secretlint:
-  <<: *publish-build
-  variables:
-    TYPE: "Lint"
-    NAME: "alpine-secretlint"
-  needs:
-    - "scout-cve_alpine_secretlint"
-
-publish-build_alpine_sonarcli:
-  <<: *publish-build
-  variables:
-    TYPE: "Lint"
-    NAME: "alpine-sonarcli"
-  needs:
-    - "scout-cve_alpine_sonarcli"
-
-publish-build_alpine_yamllint:
-  <<: *publish-build
-  variables:
-    TYPE: "Lint"
-    NAME: "alpine-yamllint"
-  needs:
-    - "scout-cve_alpine_yamllint"
-
-publish-build_alpine_markdownlint:
-  <<: *publish-build
-  variables:
-    TYPE: "Lint"
-    NAME: "debian-markdownlint"
-  needs:
-    - "scout-cve_alpine_markdownlint"
-
-publish-build_alpine_git:
-  <<: *publish-build
-  variables:
-    TYPE: "Publish"
-    NAME: "alpine-git"
-  needs:
-    - "scout-cve_alpine_git"
-
-publish-build_alpine_releasecli:
-  <<: *publish-build
-  variables:
-    TYPE: "Publish"
-    NAME: "alpine-releasecli"
-  needs:
-    - "scout-cve_alpine_releasecli"
-
-publish-build_alpine_nginx:
-  <<: *publish-build
-  variables:
-    TYPE: "Hosting"
-    NAME: "alpine-nginx"
-  needs:
-    - "scout-cve_alpine_nginx"
+    - "generate-pipelines"
+  trigger:
+    include:
+      - artifact: ".gitlab-ci-generated.yml"
+        job: generate-pipelines
+    strategy: depend

@@ -1,0 +1,62 @@
+# You can override the included template(s) by including variable overrides
+# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
+# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
+# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
+# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
+# Note that environment variables can be set in several places
+# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
+
+stages:
+  - build
+  - scout-analyse
+  - publish
+
+###############################################################################
+#################### EXTENDABLES
+###############################################################################
+
+.build: &build
+  stage: build
+  image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__BUILD_DOCKERFILE
+  script:
+    - "cd $(pwd)/${TYPE}/${NAME}/latest && bash build --test"
+  allow_failure: false
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+
+.scout-analyse: &scout-analyse
+  stage: scout-analyse
+  image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__ANALYSE_DOCKER_IMAGE
+  script:
+    - "cd $(pwd)/${TYPE}/${NAME}/latest"
+    - "bash build --scout"
+    - "cd ../../../ && pwd"
+    - "docker login -u \"$GITLAB_CI_DOCKER_HUB_CREDENTIALS_USR\" -p \"$GITLAB_CI_DOCKER_HUB_CREDENTIALS_PSW\""
+    - "docker scout cves --exit-code --only-severity critical,high --format markdown --output ./cves-report.md local://local/${NAME}:latest-scout || true"
+    - "docker scout recommendations local://local/${NAME}:latest-scout || true"
+  allow_failure: true
+  artifacts:
+    expire_in: "1 month"
+    paths:
+      - "cves-report.md"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+
+.publish: &publish
+  stage: publish
+  image: $NEXUS_DOCKER_GROUP_REGISTRY/$DOCKER_IMAGE__BUILD_DOCKERFILE
+  script:
+    - "docker login -u \"$GITLAB_CI_DOCKER_HUB_CREDENTIALS_USR\" -p \"$GITLAB_CI_DOCKER_HUB_CREDENTIALS_PSW\""
+    - "cd $(pwd)/${TYPE}/${NAME}/latest && bash build --cicd"
+  allow_failure: false
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+###############################################################################
+#################### GENERATED CI JOBS
+###############################################################################
+#
+#
+#
