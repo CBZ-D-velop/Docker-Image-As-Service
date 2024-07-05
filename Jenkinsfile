@@ -13,6 +13,7 @@ pipeline {
     }
 
     options {
+        retry(3)
         buildDiscarder(
             logRotator(      
                 artifactDaysToKeepStr: "",
@@ -91,14 +92,13 @@ pipeline {
                     reuseNode true
                 }
             }
-            retry(count: 3) {
-                steps {
-                    withCredentials([
-                        string(credentialsId: "SONARQUBE_ADDRESS", variable: "SONAR_HOST_URL"),
-                        string(credentialsId: "JENKINS_CI_SONARQUBE_USER_TOKEN", variable: "SONAR_TOKEN")
-                    ]) {
-                        sh("sonar-scanner")
-                    }
+
+            steps {
+                withCredentials([
+                    string(credentialsId: "SONARQUBE_ADDRESS", variable: "SONAR_HOST_URL"),
+                    string(credentialsId: "JENKINS_CI_SONARQUBE_USER_TOKEN", variable: "SONAR_TOKEN")
+                ]) {
+                    sh("sonar-scanner")
                 }
             }
         }
@@ -115,11 +115,9 @@ pipeline {
                 }
             }
 
-            retry(count: 3) {
-                steps {
-                    dir("${TYPE}/${NAME}/latest") {
-                        sh("bash build --test")
-                    }
+            steps {
+                dir("${TYPE}/${NAME}/latest") {
+                    sh("bash build --test")
                 }
             }
         }
@@ -136,15 +134,13 @@ pipeline {
                 }
             }
 
-            retry(count: 3) {
-                steps {
-                    dir("${TYPE}/${NAME}/latest") {
-                        withCredentials([usernamePassword(credentialsId: "JENKINS_CI_DOCKER_HUB_CREDENTIALS", usernameVariable : "JENKINS_CI_DOCKER_HUB_CREDENTIALS_USR", passwordVariable: "JENKINS_CI_DOCKER_HUB_CREDENTIALS_PSW")]) {
-                            sh("docker login -u \"${JENKINS_CI_DOCKER_HUB_CREDENTIALS_USR}\" -p \"${JENKINS_CI_DOCKER_HUB_CREDENTIALS_PSW}\"")
-                            sh("bash build --scout")
-                            sh("~/.docker/cli-plugins/docker-scout cves --exit-code --only-severity critical,high --format markdown local://local/${NAME}:latest-scout > ./cves-report.md || true")
-                            sh("~/.docker/cli-plugins/docker-scout recommendations local://local/${NAME}:latest-scout > ./cves-recommendations.md || true")
-                        }
+            steps {
+                dir("${TYPE}/${NAME}/latest") {
+                    withCredentials([usernamePassword(credentialsId: "JENKINS_CI_DOCKER_HUB_CREDENTIALS", usernameVariable : "JENKINS_CI_DOCKER_HUB_CREDENTIALS_USR", passwordVariable: "JENKINS_CI_DOCKER_HUB_CREDENTIALS_PSW")]) {
+                        sh("docker login -u \"${JENKINS_CI_DOCKER_HUB_CREDENTIALS_USR}\" -p \"${JENKINS_CI_DOCKER_HUB_CREDENTIALS_PSW}\"")
+                        sh("bash build --scout")
+                        sh("~/.docker/cli-plugins/docker-scout cves --exit-code --only-severity critical,high --format markdown local://local/${NAME}:latest-scout > ./cves-report.md || true")
+                        sh("~/.docker/cli-plugins/docker-scout recommendations local://local/${NAME}:latest-scout > ./cves-recommendations.md || true")
                     }
                 }
             }
@@ -162,13 +158,11 @@ pipeline {
                 }
             }
 
-            retry(count: 3) {
-                steps {
-                    dir("${TYPE}/${NAME}/latest") {
-                        withCredentials([usernamePassword(credentialsId: "JENKINS_CI_DOCKER_HUB_CREDENTIALS", usernameVariable : "JENKINS_CI_DOCKER_HUB_CREDENTIALS_USR", passwordVariable: "JENKINS_CI_DOCKER_HUB_CREDENTIALS_PSW")]) {
-                            sh("docker login -u \"${JENKINS_CI_DOCKER_HUB_CREDENTIALS_USR}\" -p \"${JENKINS_CI_DOCKER_HUB_CREDENTIALS_PSW}\"")
-                            sh("bash build --daily")
-                        }
+            steps {
+                dir("${TYPE}/${NAME}/latest") {
+                    withCredentials([usernamePassword(credentialsId: "JENKINS_CI_DOCKER_HUB_CREDENTIALS", usernameVariable : "JENKINS_CI_DOCKER_HUB_CREDENTIALS_USR", passwordVariable: "JENKINS_CI_DOCKER_HUB_CREDENTIALS_PSW")]) {
+                        sh("docker login -u \"${JENKINS_CI_DOCKER_HUB_CREDENTIALS_USR}\" -p \"${JENKINS_CI_DOCKER_HUB_CREDENTIALS_PSW}\"")
+                        sh("bash build --daily")
                     }
                 }
             }
