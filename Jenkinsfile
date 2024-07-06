@@ -40,6 +40,7 @@ pipeline {
 
                     steps {
                         dir("${TYPE}/${NAME}/latest") {
+                            sh("date")
                             sh("hadolint --ignore DL3001 --ignore DL3018 --ignore DL3013 --ignore DL3008 --ignore DL3009 --ignore DL3015 Dockerfile > ./hadolint.md")
                         }
                     }
